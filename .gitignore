@@ -4,6 +4,7 @@ dist/
 .build-tmp/
 npm-debug.log
 yarn-error.log
+.history/
 
 # Editor directories and files
 .idea

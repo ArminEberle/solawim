@@ -14,29 +14,46 @@ module.exports = {
     // devtoolModuleFilenameTemplate: 'file:///[absolute-resource-path]',
   },
   optimization: {
-      splitChunks: {
-          chunks: 'async',
-          minSize: 10000,
-          maxSize: 600000,
-          minChunks: 1,
-          maxAsyncRequests: 6,
-          maxInitialRequests: 4,
-          automaticNameDelimiter: '_',
-          cacheGroups: {
-              vendor: {
-                  test: /[\\/]node_modules[\\/]/,
-                  priority: -10,
-                  reuseExistingChunk: true,
-              },
-              main: {
-                  minChunks: 1,
-                  priority: -20,
-                  reuseExistingChunk: true,
-              },
-          },
+    splitChunks: {
+      chunks: 'all',
+      cacheGroups: {
+        vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            priority: -10,
+            reuseExistingChunk: true,
+        },
+        main: {
+            minChunks: 1,
+            priority: -20,
+            reuseExistingChunk: true,
+        },
       },
-      minimize: false,
+    }
   },
+  // optimization: {
+  //     splitChunks: {
+  //         chunks: 'async',
+  //         minSize: 10000,
+  //         maxSize: 600000,
+  //         minChunks: 1,
+  //         maxAsyncRequests: 6,
+  //         maxInitialRequests: 4,
+  //         automaticNameDelimiter: '_',
+          // cacheGroups: {
+          //     vendor: {
+          //         test: /[\\/]node_modules[\\/]/,
+          //         priority: -10,
+          //         reuseExistingChunk: true,
+          //     },
+          //     main: {
+          //         minChunks: 1,
+          //         priority: -20,
+          //         reuseExistingChunk: true,
+          //     },
+          // },
+  //     },
+  //     minimize: false,
+  // },
   module: {
     rules: [
       {
@@ -124,6 +141,11 @@ module.exports = {
     // hints: 'warning'
   },
   plugins: [
+    // new webpack.DllReferencePlugin({
+    //   context: __dirname,
+    //   manifest: path.join(__dirname, '.build-tmp/vendor', 'vendor-manifest.json'),
+    //   name: 'vendor'
+    // }),
     new ( require( 'clean-webpack-plugin' ).CleanWebpackPlugin )( {
       cleanAfterEveryBuildPatterns: [
           '!index.html',
@@ -150,8 +172,8 @@ if (process.env.NODE_ENV === 'production') {
       minimize: true
     })
   ]);
-  module.exports.optimization.minimizer= [new (require('uglifyjs-webpack-plugin'))()];
-  module.exports.optimization.minimize= true;
+  // module.exports.optimization.minimizer= [new (require('uglifyjs-webpack-plugin'))()];
+  // module.exports.optimization.minimize= true;
   module.mode = 'production';
   delete module.devtool;
 }
