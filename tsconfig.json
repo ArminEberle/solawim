@@ -1,0 +1,21 @@
+{
+  "rootDir": "./src",
+  "include": ["**/*.ts"],
+  "compilerOptions": {
+    "outDir": ".build-tmp/tsc",
+    "tsBuildInfoFile": ".build-tmp/.tsBuildInfo",
+    "incremental": true,
+    // this aligns with Vue's browser support
+    "target": "esNext",
+    // this enables stricter inference for data properties on `this`
+    "strict": true,
+    // if using webpack 2+ or rollup, to leverage tree shaking:
+    "module": "es2015",
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "lib": ["DOM", "ESNext"],
+    "esModuleInterop": true,
+    "allowJs": true
+  }
+}
