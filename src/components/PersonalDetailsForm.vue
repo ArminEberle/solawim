@@ -3,17 +3,6 @@
     <h2>Das bin ich</h2>
     <b-form>
       <div class="row">
-        <b-form-group label="Anrede" label-for="salutation">
-          <b-form-input
-            name="salutation"
-            v-model="formdata.salutation"
-            type="text"
-            autocomplete="honorific-prefix"
-            maxlength="10"
-          />
-        </b-form-group>
-      </div>
-      <div class="row">
         <b-form-group label="Vorname" label-for="firstname">
           <b-form-input
             name="firstname"
@@ -93,7 +82,6 @@ import Vue from "vue";
 import Component from "vue-class-component";
 
 export type PersonDetails = {
-  salutation: string;
   lastname: string;
   firstname: string;
   street: string;
@@ -105,7 +93,6 @@ export type PersonDetails = {
 @Component({})
 export default class PersonalDetailsForm extends Vue {
   formdata: PersonDetails = {
-    salutation: "",
     lastname: "",
     firstname: "",
     street: "",

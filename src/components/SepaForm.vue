@@ -6,7 +6,7 @@
         <div class="row">
           <validation-provider
             name="iban"
-            :rules="{ required: true, min: 3, max: 34 }"
+            :rules="{ required: true, min: 22, max: 40, iban: true }"
             v-slot="validationContext"
           >
             <b-form-group label="IBAN" label-for="iban">
@@ -15,7 +15,7 @@
                 v-model="formdata.iban"
                 type="text"
                 autocomplete="cc-number"
-                maxlength="34"
+                maxlength="40"
                 :state="getValidationState(validationContext)"
                 aria-describedby="iban-feedback"
               />

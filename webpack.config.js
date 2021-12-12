@@ -30,30 +30,6 @@ module.exports = {
       },
     }
   },
-  // optimization: {
-  //     splitChunks: {
-  //         chunks: 'async',
-  //         minSize: 10000,
-  //         maxSize: 600000,
-  //         minChunks: 1,
-  //         maxAsyncRequests: 6,
-  //         maxInitialRequests: 4,
-  //         automaticNameDelimiter: '_',
-          // cacheGroups: {
-          //     vendor: {
-          //         test: /[\\/]node_modules[\\/]/,
-          //         priority: -10,
-          //         reuseExistingChunk: true,
-          //     },
-          //     main: {
-          //         minChunks: 1,
-          //         priority: -20,
-          //         reuseExistingChunk: true,
-          //     },
-          // },
-  //     },
-  //     minimize: false,
-  // },
   module: {
     rules: [
       {
@@ -128,7 +104,7 @@ module.exports = {
     alias: {
       'vue$': 'vue/dist/vue.esm.js'
     },
-    extensions: ['.ts', '.js', '.vue', '.json'],
+    extensions: ['.ts', '.js', '.vue', '.json', '.scss'],
   },
   devServer: {
     client: {
@@ -154,7 +130,7 @@ module.exports = {
     new (require('vue-loader').VueLoaderPlugin)(),
     new (require('html-webpack-plugin'))({
       template: 'src/index.html'
-    })
+    }),
   ],
   devtool: 'eval-source-map'
 }
@@ -170,10 +146,16 @@ if (process.env.NODE_ENV === 'production') {
     }),
     new webpack.LoaderOptionsPlugin({
       minimize: true
-    })
+    }),
+    new (require("compression-webpack-plugin"))(
+      {
+        exclude: /(LICENSE)|(index)/,
+      }
+    )
   ]);
   // module.exports.optimization.minimizer= [new (require('uglifyjs-webpack-plugin'))()];
-  // module.exports.optimization.minimize= true;
-  module.mode = 'production';
-  delete module.devtool;
+  module.exports.optimization.minimize= true;
+  module.exports.mode = 'production';
+  module.exports.devtool = false;
+  // delete module.devtool;
 }
