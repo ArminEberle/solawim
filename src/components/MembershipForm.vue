@@ -91,7 +91,7 @@
       </div>
       <div class="row" >
         <div class="col">
-          <b-alert show variant="primary">In Summe werde ich dann monatlich {{ sum }} EUR bezahlen.</b-alert>
+          <b-alert show variant="primary">In Summe werde ich dann <b>monatlich {{ sum }},- EUR</b> bezahlen.</b-alert>
         </div>
       </div>
       <b-button v-on:click="save" variant="primary">Speichern</b-button>

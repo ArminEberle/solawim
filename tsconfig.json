@@ -16,6 +16,7 @@
     "emitDecoratorMetadata": true,
     "lib": ["DOM", "ESNext"],
     "esModuleInterop": true,
-    "allowJs": true
+    "allowJs": true,
+    "sourceMap": true
   }
 }

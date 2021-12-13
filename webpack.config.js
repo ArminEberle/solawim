@@ -11,7 +11,7 @@ module.exports = {
     chunkFilename: 'cacheme-[contenthash].js',
     path: outpath,
     // this comment just as a reminder - in other types of devtools, this (or something similar) is required
-    // devtoolModuleFilenameTemplate: 'file:///[absolute-resource-path]',
+    devtoolModuleFilenameTemplate: 'file:///[absolute-resource-path]',
   },
   optimization: {
     splitChunks: {
@@ -97,7 +97,12 @@ module.exports = {
         options: {
           name: '[name].[ext]?[hash]'
         }
-      }
+      },
+      {
+        test: /\.js$/,
+        use: [ 'source-map-loader' ], // load existing source maps from tsc-compile
+        enforce: 'pre',
+      },
     ]
   },
   resolve: {

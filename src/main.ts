@@ -33,10 +33,14 @@ extend('max', {
   ...max,
   message: 'Das ist zu lang'
 });
+
+// DE95 7601 0085 0916 7418 58
+
 extend('iban', {
   message: 'Das scheint keine gültige IBAN zu sein',
-  validate: (value: string): string => {
-    const msg = 'Diese IBAN scheint nicht gültig zu sein.';
+  validate: function(value: string, params: any): any {
+    const self = (this as ValidationRuleSchema);
+    const msg = self?.message?.toString() ?? 'Das scheint keine gültige IBAN zu sein';
     if(value === null) {
       return msg;
     }
@@ -44,16 +48,17 @@ extend('iban', {
     if(iban === null) {
       return msg;
     }
-    if(value === null || !isValidIBAN(msg)) {
+    if(!isValidIBAN(iban)) {
       return msg;
     }
-    return '';
+    return true;
   }
 });
 
 import MembershipForm from './components/MembershipForm.vue';
 import PersonalDetailsForm from './components/PersonalDetailsForm.vue';
 import SepaForm from './components/SepaForm.vue';
+import { ValidationResult, ValidationRuleSchema } from 'vee-validate/dist/types/types';
 
 new Vue({
     el: '#membership',
