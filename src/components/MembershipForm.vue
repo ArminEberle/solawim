@@ -108,9 +108,9 @@ import { toInt } from "../utils/toInt";
 export default class MembershipComponent extends Vue {
   membership = false;
 
-  priceVegetables = 40;
+  priceVegetables = 100;
   priceBread = 30;
-  priceMeat = 60;
+  priceMeat = 100;
 
   vegetables = 0;
   bread = 0;
