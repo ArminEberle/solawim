@@ -1,32 +1,34 @@
-const OFF = 0, WARN = 1, ERROR = 2;
+const OFF = 0,
+    WARN = 1,
+    ERROR = 2;
 
 module.exports = {
     root: true,
     ignorePatterns: [
-        'depot/regdn/**',
         '**/node_modules/**',
         '*.d.ts',
         '**/dist/**',
-        '**/.build-tmp/**'
+        '**/.build-tmp/**',
+        '**/*.vue',
     ],
-    parser: '@typescript-eslint/parser',  // Specifies the ESLint parser
+    parser: '@typescript-eslint/parser', // Specifies the ESLint parser
     plugins: [
         '@typescript-eslint',
         'unused-imports',
         'regex',
     ],
     extends: [
-      'plugin:@typescript-eslint/recommended',  // Uses the recommended rules from
+        'plugin:@typescript-eslint/recommended', // Uses the recommended rules from
         // the
         // @typescript-eslint/eslint-plugin
         'plugin:vue/vue3-recommended',
     ],
     parserOptions: {
-        ecmaVersion: 2015,  // Allows for the parsing of modern ECMAScript features
-        sourceType: 'module',  // Allows for the use of imports
+        ecmaVersion: 2015, // Allows for the parsing of modern ECMAScript features
+        sourceType: 'module', // Allows for the use of imports
     },
     env: {
-        browser: true, node: true
+        browser: true, node: true,
     },
     rules: {
         // Place to specify ESLint rules. Can be used to overwrite rules
@@ -50,11 +52,11 @@ module.exports = {
                 'regex': 'import[^@]*@wesense-.*(\/src\/ts\/)',
                 'message': 'importing from src/ts does not work in the cluster',
                 'replacement': {
-                    function: 'text.replace(\'/src/ts/\', \'/dist/\')'
-                }
-              }
-            ]
-          ],
+                    function: 'text.replace(\'/src/ts/\', \'/dist/\')',
+                },
+            },
+            ],
+        ],
         'for-direction': [ERROR],
         'no-async-promise-executor': [WARN],
         'no-await-in-loop': [WARN],
@@ -74,7 +76,7 @@ module.exports = {
         'no-import-assign': [ERROR],
         'no-inner-declarations': [ERROR],
         'no-invalid-regexp': [ERROR],
-        'no-irregular-whitespace': [ERROR, {skipStrings: false, skipComments: false, skipRegExps: false, skipTemplates: false}],
+        'no-irregular-whitespace': [ERROR, { skipStrings: false, skipComments: false, skipRegExps: false, skipTemplates: false }],
         'no-misleading-character-class': [ERROR],
         'no-obj-calls': [ERROR],
         // set this to ERROR when all PRs are switched to this eslint
@@ -103,7 +105,7 @@ module.exports = {
         // from sql databases which are usually not  camel cased.
         '@typescript-eslint/camelcase': [OFF],
         '@typescript-eslint/member-ordering': [WARN, {
-            'default': ['field', 'constructor', 'method']
+            'default': ['field', 'constructor', 'method'],
         }], // Only FIXME and XXX are forbidden. TODO is still allowed
         '@typescript-eslint/interface-name-prefix': [OFF],
         '@typescript-eslint/naming-convention': [ERROR,
@@ -131,8 +133,8 @@ module.exports = {
                 format: ['PascalCase', 'UPPER_CASE'],
             },
         ],
-        'no-warning-comments': [ERROR, {'terms': ['fixme', 'xxx'], 'location': 'start'}],
-        'max-len': [ERROR, 200, { "ignoreTemplateLiterals": true }],
+        'no-warning-comments': [ERROR, { 'terms': ['fixme', 'xxx'], 'location': 'start' }],
+        'max-len': [ERROR, 200, { 'ignoreTemplateLiterals': true }],
         '@typescript-eslint/semi': [ERROR],
         '@typescript-eslint/comma-dangle': [ERROR, 'always-multiline'],
         '@typescript-eslint/comma-spacing': [ERROR],
@@ -153,7 +155,7 @@ module.exports = {
         'yoda': [ERROR],
         'array-bracket-spacing': [ERROR],
         'block-spacing': [ERROR, 'always'],
-        '@typescript-eslint/brace-style': [ERROR, '1tbs', {allowSingleLine: true}],
+        '@typescript-eslint/brace-style': [ERROR, '1tbs', { allowSingleLine: true }],
         'computed-property-spacing': [ERROR],
         'eol-last': [ERROR, 'never'],
         '@typescript-eslint/func-call-spacing': [ERROR],
@@ -161,8 +163,8 @@ module.exports = {
         'jsx-quotes': [ERROR],
         'key-spacing': [ERROR],
         'linebreak-style': [ERROR],
-        '@typescript-eslint/lines-between-class-members': [ERROR, 'always', {exceptAfterSingleLine: true}],
-        'newline-per-chained-call': [ERROR, { ignoreChainWithDepth: 1}],
+        '@typescript-eslint/lines-between-class-members': [ERROR, 'always', { exceptAfterSingleLine: true }],
+        'newline-per-chained-call': [ERROR, { ignoreChainWithDepth: 1 }],
         '@typescript-eslint/no-extra-semi': [ERROR],
         'no-lonely-if': [ERROR],
         'no-multiple-empty-lines': [ERROR],
@@ -183,12 +185,12 @@ module.exports = {
         'unicode-bom': [ERROR],
         'wrap-regex': [ERROR],
         // 'sort-imports': [ERROR, {ignoreCase: true}],
-        '@typescript-eslint/indent': ['error', 4, {'FunctionDeclaration': {'parameters': 'first'}, 'FunctionExpression': {'parameters': 'first'}}],
+        '@typescript-eslint/indent': ['error', 4, { 'FunctionDeclaration': { 'parameters': 'first' }, 'FunctionExpression': { 'parameters': 'first' } }],
         'no-unused-vars': 'off',
         'unused-imports/no-unused-imports': 'error',
         'unused-imports/no-unused-vars': [
             'warn',
-            { 'vars': 'all', 'varsIgnorePattern': '^_', 'args': 'after-used', 'argsIgnorePattern': '^_' }
+            { 'vars': 'all', 'varsIgnorePattern': '^_', 'args': 'after-used', 'argsIgnorePattern': '^_' },
         ],
-    }
+    },
 };

@@ -1,5 +1,5 @@
-<template>
-  <div class="container">
+<template >
+  <div class="container" >
     <h2>Das bin ich</h2>
     <b-form>
       <div class="row">
@@ -80,29 +80,31 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-
-export type PersonDetails = {
-  lastname: string;
-  firstname: string;
-  street: string;
-  zip: string;
-  city: string;
-  phone: string;
-};
+import { getPersonData, setPersonData } from "../api";
+import { PersonData } from "../structs/PersonData";
+import { showToast } from '../utils/showToast';
 
 @Component({})
 export default class PersonalDetailsForm extends Vue {
-  formdata: PersonDetails = {
+  formdata: PersonData = {
     lastname: "",
     firstname: "",
     street: "",
-    zip: "",
+    zip: null,
     city: "",
     phone: "",
   };
 
+  created(): void {
+    getPersonData().then(personData => {
+      Object.assign(this.formdata, personData);
+    }).catch(e => {
+      showToast('Es gab ein Problem beim Laden der Daten vom Server');
+    });
+  }
+
   save(): void {
-    console.log(JSON.stringify(this.formdata, null, 2));
+    setPersonData(this.formdata).then(() => showToast('Die Daten wurden gespeichert'));
   }
 }
 </script>

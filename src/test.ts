@@ -3,9 +3,12 @@ import {
     getStatic,
     getMembership,
     setMembership,
+    setPersonData,
+    getPersonData,
 } from './api';
 import $ from 'jquery';
 import { MembershipData } from './structs/MembershipData';
+import { PersonData } from './structs/PersonData';
 import { StaticData } from './structs/StaticData';
 import deepEqual from 'deep-equal';
 import clone from 'clone-deep';
@@ -22,7 +25,7 @@ async function executeAndReport(name: string, cb: () => string | void | Promise<
             .append(`<h2 class="entry-title">${name} Test failed with:</h2><pre>${result}</pre>`);
     } else {
         $('body')
-            .append(`<h2 class="entry-title green">${name} Test succeeded:</h2>`);
+            .append(`<p class="entry-title green">${name} Test succeeded</p>`);
     }
 }
 
@@ -32,7 +35,7 @@ async function executeAndFail(name: string, cb: () => string | void | Promise<st
         result = await cb();
     } catch (e) {
         $('body')
-            .append(`<h2 class="entry-title green">${name} Test succeeded:</h2>`);
+            .append(`<p class="entry-title green">${name} Test succeeded</p>`);
         return;
     }
     $('body')
@@ -102,6 +105,51 @@ async function test() {
     badRequest = clone(myMembership);
     (badRequest as any).signed = 'armin';
     await executeAndFail('bad signed', () => setMembership(badRequest));
+
+    const myPersonal: PersonData = {
+        firstname: 'a',
+        lastname: 'a',
+        zip: 12345,
+        city: 'a',
+        phone: 'a',
+        street: 'a',
+    };
+
+    await executeAndReport('setPersonal', async() => {
+        await setPersonData(myPersonal);
+        const personData = await getPersonData();
+        if (!deepEqual(myPersonal, personData)) {
+            return 'Did not store';
+        }
+    });
+
+    let badPersonal: Partial<PersonData> = clone(myPersonal);
+    delete badPersonal.city;
+    await executeAndFail('personal missing attribute', () => setPersonData(badPersonal as any));
+
+    badPersonal = clone(myPersonal);
+    delete badPersonal.firstname;
+    await executeAndFail('personal missing attribute', () => setPersonData(badPersonal as any));
+
+    badPersonal = clone(myPersonal);
+    delete badPersonal.lastname;
+    await executeAndFail('personal missing attribute', () => setPersonData(badPersonal as any));
+
+    badPersonal = clone(myPersonal);
+    delete badPersonal.street;
+    await executeAndFail('personal missing attribute', () => setPersonData(badPersonal as any));
+
+    badPersonal = clone(myPersonal);
+    delete badPersonal.city;
+    await executeAndFail('personal missing attribute', () => setPersonData(badPersonal as any));
+
+    badPersonal = clone(myPersonal);
+    badPersonal.zip = 10;
+    await executeAndFail('personal zip too small', () => setPersonData(badPersonal as any));
+
+    badPersonal = clone(myPersonal);
+    (badPersonal as any).zip = 'asdfsadf';
+    await executeAndFail('personal zip string', () => setPersonData(badPersonal as any));
 }
 
 test();

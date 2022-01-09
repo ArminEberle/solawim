@@ -1,4 +1,5 @@
 import { MembershipData } from './structs/MembershipData';
+import { PersonData } from './structs/PersonData';
 import { StaticData } from './structs/StaticData';
 
 async function getJsonBody(response: Response | Promise<Response>): Promise<any> {
@@ -23,6 +24,19 @@ export const getMembership = (): Promise<MembershipData> => getJsonBody(fetch('a
 
 export const setMembership = (data: MembershipData): Promise<void> => getJsonBody(
     fetch('api/membership', {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    })
+);
+
+export const getPersonData = (): Promise<PersonData> => getJsonBody(fetch('api/personal'));
+
+export const setPersonData = (data: PersonData): Promise<void> => getJsonBody(
+    fetch('api/personal', {
         method: 'POST',
         headers: {
             'Accept': 'application/json',

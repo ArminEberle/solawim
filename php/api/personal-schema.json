@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "http://example.com/example.json",
+  "type": "object",
+  "required": [
+      "zip",
+      "city",
+      "phone",
+      "street",
+      "lastname",
+      "firstname"
+  ],
+  "properties": {
+      "zip": {
+          "$id": "#/properties/zip",
+          "type": "string"
+      },
+      "city": {
+          "$id": "#/properties/city",
+          "type": "string"
+      },
+      "phone": {
+          "$id": "#/properties/phone",
+          "type": "string"
+      },
+      "street": {
+          "$id": "#/properties/street",
+          "type": "string"
+      },
+      "lastname": {
+          "$id": "#/properties/lastname",
+          "type": "string"
+      },
+      "firstname": {
+          "$id": "#/properties/firstname",
+          "type": "string"
+      }
+  },
+  "additionalProperties": false
+}

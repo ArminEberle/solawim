@@ -11,6 +11,7 @@ use JsonSchema\Constraints\Constraint;
 require_once(__DIR__ . '/../../../../wp-load.php');
 
 global $wpdb;
+
 $membershipTable = "{$wpdb->prefix}solawim_membership";
 $personTable = "{$wpdb->prefix}solawim_person";
 
@@ -42,6 +43,11 @@ function checkBool($object, $propName)
     return $object[$propName] === true || $object[$propName] === false;
 }
 
+function checkNotEmpty($strVal)
+{
+    return !empty($strVal) && strlen(trim($strVal)) > 0;
+}
+
 function getUserId()
 {
     global $current_user;
@@ -49,7 +55,7 @@ function getUserId()
     return $current_user->get('ID');
 }
 
-function getUserData(string $tablename, object $defaultContent)
+function getUserData(string $tablename, object $defaultContent, string $accountId)
 {
     ensureDBInitialized();
     global $wpdb;
@@ -65,59 +71,73 @@ function getUserData(string $tablename, object $defaultContent)
     return $results;
 }
 
-function getMembershipData(string $accountId)
+function setUserData(string $tablename, object $content, string $accountId)
 {
     ensureDBInitialized();
     global $wpdb;
-    global $membershipTable;
-    $results = $wpdb->get_results(
-        $wpdb->prepare("SELECT content FROM {$membershipTable} WHERE user_id = %d", $accountId),
-        ARRAY_A
-    );
-    if (count($results) === 0) {
-        $results = [
-            'lastModified'=> null,
-            'applied' => false,
-            'signed' => false,
-            'orders' => [
-              'bread' => [
-                  'count' => 0,
-                  'factor' => 1,
-              ],
-              'meat' => [
-                  'count' => 0,
-                  'factor' => 1,
-              ],
-            ],
-            'pos'=>null,
-        ];
-    } else {
-        $results = json_decode($results[0]['content'], false);
-    }
-    return $results;
-}
-
-function setMembershipData(string $accountId, $membershipData)
-{
-    ensureDBInitialized();
-    global $wpdb;
-    global $membershipTable;
-    $content = json_encode($membershipData);
+    $content = json_encode($content);
     $results = $wpdb->get_results(
         $wpdb->prepare("
-        INSERT INTO {$membershipTable} (user_id, content)
+        INSERT INTO {$tablename} (user_id, content)
         VALUES(%s, %s)
         ON DUPLICATE KEY UPDATE content = %s
         ", $accountId, $content, $content),
         ARRAY_A
     );
-    return getMembershipData($accountId);
+    return getUserData($tablename, (object) null, $accountId);
 }
 
-function validateMembershipSubmission($submission)
+function getMembershipData(string $accountId)
+{
+    global $membershipTable;
+    return getUserData($membershipTable, (object)[
+            'lastModified'=> null,
+            'applied' => false,
+            'signed' => false,
+            'orders' => (object)[
+              'bread' => (object)[
+                  'count' => 0,
+                  'factor' => 0,
+              ],
+              'meat' =>  (object)[
+                  'count' => 0,
+                  'factor' => 0,
+              ],
+            ],
+            'pos'=>null,
+          ], $accountId);
+}
+
+function setPersonData(string $accountId, $content)
+{
+    global $personTable;
+    return setUserData($personTable, $content, $accountId);
+}
+
+function getPersonData(string $accountId)
+{
+    global $personTable;
+    return getUserData($personTable, (object)[
+            'firstname' => null,
+            'lastname' => null,
+            'street' => null,
+            'zip' => null,
+            'city' => null,
+            'phone' => null,
+          ], $accountId);
+}
+
+function setMembershipData(string $accountId, $membershipData)
+{
+    global $membershipTable;
+    return setUserData($membershipTable, $membershipData, $accountId);
+}
+
+
+function validateJson($submission, $schemaName)
 {
     $validator = new Validator();
-    $validator->validate($submission, (object)['$ref' => 'file://' . __DIR__ . '/membership-schema.json'], Constraint::CHECK_MODE_COERCE_TYPES);
+    $validator->validate($submission, (object)['$ref' => 'file://' . __DIR__ . '/' . $schemaName], Constraint::CHECK_MODE_COERCE_TYPES);
     if ($validator->isValid()) {
         return null;
     }
@@ -182,7 +202,7 @@ $app->post('/membership', function (Request $request, Response $response, array 
     }
     $content = json_decode($request->getBody()->getContents(), false);
 
-    $validateResult = validateMembershipSubmission($content);
+    $validateResult = validateJson($content, 'membership-schema.json');
 
     if (!is_null($validateResult)) {
         return reportError($validateResult, $response, 404);
@@ -201,6 +221,49 @@ $app->post('/membership', function (Request $request, Response $response, array 
     }
 
     $result = setMembershipData($userId, $content);
+
+    $response->getBody()->write(json_encode($result));
+    return $response;
+});
+
+$app->get('/personal', function (Request $request, Response $response, array $args) {
+    $userId = getUserId();
+    if (!($userId > 0)) {
+        return reportError('Please login before proceeding', $response, 401);
+    }
+    $result = getPersonData($userId);
+    $response->getBody()->write(json_encode($result));
+    return $response;
+});
+
+$app->post('/personal', function (Request $request, Response $response, array $args) {
+    $userId = getUserId();
+    if (!($userId > 0)) {
+        return reportError('Please login before proceeding', $response, 401);
+    }
+    $content = json_decode($request->getBody()->getContents(), false);
+
+    $validateResult = validateJson($content, 'personal-schema.json');
+    if (!checkNotEmpty($content->city)) {
+        return reportError("Attribute city may not be empty", $response);
+    }
+    if (!checkNotEmpty($content->phone)) {
+        return reportError("Attribute phone may not be empty", $response);
+    }
+    if (!checkNotEmpty($content->street)) {
+        return reportError("Attribute street may not be empty", $response);
+    }
+    if (!checkNotEmpty($content->lastname)) {
+        return reportError("Attribute lastname may not be empty", $response);
+    }
+    if (!checkNotEmpty($content->firstname)) {
+        return reportError("Attribute firstname may not be empty", $response);
+    }
+    if ($content->zip < 10000 || $content->zip > 99999) {
+        return reportError("Attribute zip must be between 10000 and 99999", $response);
+    }
+
+    $result = setPersonData($userId, $content);
 
     $response->getBody()->write(json_encode($result));
     return $response;
