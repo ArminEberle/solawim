@@ -3,7 +3,7 @@
     <h1>Mitgliedschaft ankündigen</h1>
     <b-form>
       <div class="row">
-        <b-form-checkbox v-model="membership">
+        <b-form-checkbox v-model="formdata.applied">
           &nbsp;Ja ich möchte dabei sein. Folgende Anteile möchte ich buchen:
         </b-form-checkbox>
       </div>
@@ -13,11 +13,11 @@
             type="number"
             min="0"
             max="10"
-            v-model="vegetables"
-            :disabled="!membership"
+            v-model="formdata.orders.bread.count"
+            :disabled="!formdata.applied"
           />
         </div>
-        <div class="col">Anteile Gemüse ({{ priceVegetables }} EUR / Anteil)</div>
+        <div class="col">Anteile Brot ({{ staticdata.app.products.bread.price }} EUR / Anteil)</div>
       </div>
       <div class="row">
         <div class="col-3">
@@ -25,54 +25,30 @@
             type="number"
             min="0"
             max="10"
-            v-model="bread"
-            :disabled="!membership"
-          />
-        </div>
-        <div class="col">Anteile Brot ({{ priceBread }} EUR / Anteil)</div>
-      </div>
-      <div class="row">
-        <div class="col-3">
-          <b-form-spinbutton
-            type="number"
-            min="0"
-            max="10"
-            v-model="meat"
-            :disabled="!membership"
+            v-model="formdata.orders.meat.count"
+            :disabled="!formdata.applied"
           />
         </div>
         <div class="col">
-          Anteile Milchprodukte / Fleisch ({{ priceMeat }} EUR / Anteil)
+          Anteile Milchprodukte / Fleisch ({{ staticdata.app.products.meat.price }} EUR / Anteil)
         </div>
       </div>
       <div class="row">
         <div class="col">
-        Zusätzlich möchte ich folgende Beträge monatlich als Solidarbeitrag
-        für andere Mitglieder bereitstellen. Unter den Mitgliedern, die
-        solidarische Hilfe erbitten, wird dieser dann aufgeteilt, je nach
-        Anteilsart.
+          Zusätzlich möchte ich folgende Beträge monatlich als Solidarbeitrag
+          für andere Mitglieder bereitstellen. Unter den Mitgliedern, die
+          solidarische Hilfe erbitten, wird dieser dann aufgeteilt, je nach
+          Anteilsart.
         </div>
       </div>
-      <div class="row">
-        <div class="col-3">
-          <b-form-spinbutton
-            type="number"
-            min="0"
-            max="200"
-            v-model="solidarVegetables"
-            :disabled="!membership"
-          />
-        </div>
-        <div class="col">EUR für Gemüse</div>
-      </div>
-      <div class="row">
+      <!-- <div class="row">
         <div class="col-3">
           <b-form-spinbutton
             type="number"
             min="0"
             max="200"
             v-model="solidarBread"
-            :disabled="!membership"
+            :disabled="!formdata.applied"
           />
         </div>
         <div class="col">EUR für Brot</div>
@@ -84,14 +60,17 @@
             min="0"
             max="200"
             v-model="solidarMeat"
-            :disabled="!membership"
+            :disabled="!formdata.applied"
           />
         </div>
         <div class="col">EUR für Milchprodukte / Fleisch</div>
-      </div>
-      <div class="row" >
+      </div> -->
+      <div class="row">
         <div class="col">
-          <b-alert show variant="primary">In Summe werde ich dann <b>monatlich {{ sum }},- EUR</b> bezahlen.</b-alert>
+          <b-alert show variant="primary"
+            >In Summe werde ich dann
+            <b>monatlich {{ sum }},- EUR</b> bezahlen.</b-alert
+          >
         </div>
       </div>
       <b-button v-on:click="save" variant="primary">Speichern</b-button>
@@ -102,37 +81,80 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
+import { getMembership, getStatic } from "../api";
+import { MembershipData } from "../structs/MembershipData";
+import { StaticData } from "../structs/StaticData";
+import { showToast } from "../utils/showToast";
 import { toInt } from "../utils/toInt";
 
 @Component({})
 export default class MembershipComponent extends Vue {
-  membership = false;
+  formdata: MembershipData = {
+    applied: false,
+    signed: false,
+    pos: "",
+    orders: {
+      meat: {
+        count: 0,
+        factor: 0,
+      },
+      bread: {
+        count: 0,
+        factor: 0,
+      },
+    },
+  };
 
-  priceVegetables = 100;
+  staticdata: StaticData = {
+    userName: "",
+    app: {
+      products: {
+        meat: {
+          price: 0,
+          target: 0,
+        },
+        bread: {
+          price: 0,
+          target: 0,
+        },
+      },
+      pos: {},
+    },
+  };
+
   priceBread = 30;
   priceMeat = 100;
 
-  vegetables = 0;
-  bread = 0;
-  meat = 0;
-
-  solidarVegetables = 0;
-  solidarBread = 0;
-  solidarMeat = 0;
-
   save(): void {
-    console.log(this.membership);
+    console.log(this.formdata);
+  }
+
+  created(): void {
+    getStatic()
+      .then((staticData) => (this.staticdata = staticData))
+      .catch((e) =>
+        showToast("Es gab ein Problem beim Laden der Daten vom Server " + e)
+      );
+    getMembership()
+      .then((membershipData) => {
+        this.formdata.applied = membershipData.applied;
+        this.formdata.signed = membershipData.signed;
+        this.formdata.pos = membershipData.pos;
+        Object.assign(this.formdata.orders.meat, membershipData.orders.meat);
+        Object.assign(this.formdata.orders.bread, membershipData.orders.bread);
+      })
+      .catch((e) =>
+        showToast("Es gab ein Problem beim Laden der Daten vom Server " + e)
+      );
   }
 
   get sum(): number {
-    return !this.membership
+    return !this.formdata.applied
       ? 0
-      : this.vegetables * this.priceVegetables +
-          this.bread * this.priceBread +
-          this.meat * this.priceMeat +
-          this.solidarVegetables +
-          this.solidarBread +
-          this.solidarMeat;
+      : this.formdata.orders.meat.count *
+          this.staticdata.app.products.meat.price +
+          this.formdata.orders.bread.count *
+            this.staticdata.app.products.bread.price;
   }
 }
 </script>

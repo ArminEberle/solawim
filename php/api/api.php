@@ -14,8 +14,9 @@ global $wpdb;
 
 $membershipTable = "{$wpdb->prefix}solawim_membership";
 $personTable = "{$wpdb->prefix}solawim_person";
+$sepaTable = "{$wpdb->prefix}solawim_sepa";
 
-$solatables = [$membershipTable, $personTable];
+$solatables = [$membershipTable, $personTable, $sepaTable];
 
 function ensureDBInitialized()
 {
@@ -87,6 +88,17 @@ function setUserData(string $tablename, object $content, string $accountId)
     return getUserData($tablename, (object) null, $accountId);
 }
 
+function clearUserData(string $tablename, string $accountId)
+{
+    ensureDBInitialized();
+    global $wpdb;
+    $results = $wpdb->get_results(
+        $wpdb->prepare("DELETE FROM {$tablename} WHERE user_id = %d", $accountId),
+        ARRAY_A
+    );
+    return getUserData($tablename, (object) null, $accountId);
+}
+
 function getMembershipData(string $accountId)
 {
     global $membershipTable;
@@ -108,12 +120,6 @@ function getMembershipData(string $accountId)
           ], $accountId);
 }
 
-function setPersonData(string $accountId, $content)
-{
-    global $personTable;
-    return setUserData($personTable, $content, $accountId);
-}
-
 function getPersonData(string $accountId)
 {
     global $personTable;
@@ -127,12 +133,19 @@ function getPersonData(string $accountId)
           ], $accountId);
 }
 
-function setMembershipData(string $accountId, $membershipData)
+function getSepaData(string $accountId)
 {
-    global $membershipTable;
-    return setUserData($membershipTable, $membershipData, $accountId);
+    global $sepaTable;
+    return getUserData($sepaTable, (object)[
+          'iban' => null,
+          'bank' => null,
+          'bic' => null,
+          'name' => null,
+          'street' => null,
+          'zip' => null,
+          'city' => null,
+        ], $accountId);
 }
-
 
 function validateJson($submission, $schemaName)
 {
@@ -196,11 +209,19 @@ $app->get('/membership', function (Request $request, Response $response, array $
 });
 
 $app->post('/membership', function (Request $request, Response $response, array $args) {
+    global $membershipTable;
     $userId = getUserId();
     if (!($userId > 0)) {
         return reportError('Please login before proceeding', $response, 401);
     }
-    $content = json_decode($request->getBody()->getContents(), false);
+    $contentString = $request->getBody()->getContents();
+    if (strlen(trim($contentString)) === 0) {
+        $result = clearUserData($membershipTable, $userId);
+        $response->getBody()->write(json_encode($result));
+        return $response;
+    }
+
+    $content = json_decode($contentString, false);
 
     $validateResult = validateJson($content, 'membership-schema.json');
 
@@ -220,7 +241,7 @@ $app->post('/membership', function (Request $request, Response $response, array 
         }
     }
 
-    $result = setMembershipData($userId, $content);
+    $result = setUserData($membershipTable, $content, $userId);
 
     $response->getBody()->write(json_encode($result));
     return $response;
@@ -237,13 +258,23 @@ $app->get('/personal', function (Request $request, Response $response, array $ar
 });
 
 $app->post('/personal', function (Request $request, Response $response, array $args) {
+    global $personTable;
     $userId = getUserId();
     if (!($userId > 0)) {
         return reportError('Please login before proceeding', $response, 401);
     }
-    $content = json_decode($request->getBody()->getContents(), false);
+    $contentString = $request->getBody()->getContents();
+    if (strlen(trim($contentString)) === 0) {
+        $result = clearUserData($personTable, $userId);
+        $response->getBody()->write(json_encode($result));
+        return $response;
+    }
+    $content = json_decode($contentString, false);
 
     $validateResult = validateJson($content, 'personal-schema.json');
+    if (!is_null($validateResult)) {
+        return reportError($validateResult, $response, 404);
+    }
     if (!checkNotEmpty($content->city)) {
         return reportError("Attribute city may not be empty", $response);
     }
@@ -263,7 +294,63 @@ $app->post('/personal', function (Request $request, Response $response, array $a
         return reportError("Attribute zip must be between 10000 and 99999", $response);
     }
 
-    $result = setPersonData($userId, $content);
+    $result = setUserData($personTable, $content, $userId);
+
+    $response->getBody()->write(json_encode($result));
+    return $response;
+});
+
+$app->get('/sepa', function (Request $request, Response $response, array $args) {
+    $userId = getUserId();
+    if (!($userId > 0)) {
+        return reportError('Please login before proceeding', $response, 401);
+    }
+    $result = getSepaData($userId);
+    $response->getBody()->write(json_encode($result));
+    return $response;
+});
+
+$app->post('/sepa', function (Request $request, Response $response, array $args) {
+    global $sepaTable;
+    $userId = getUserId();
+    if (!($userId > 0)) {
+        return reportError('Please login before proceeding', $response, 401);
+    }
+    $contentString = $request->getBody()->getContents();
+    if (strlen(trim($contentString)) === 0) {
+        $result = clearUserData($sepaTable, $userId);
+        $response->getBody()->write(json_encode($result));
+        return $response;
+    }
+    $content = json_decode($contentString, false);
+
+    $validateResult = validateJson($content, 'sepa-schema.json');
+    if (!is_null($validateResult)) {
+        return reportError($validateResult, $response, 404);
+    }
+    if (!checkNotEmpty($content->iban)) {
+        return reportError("Attribute iban may not be empty", $response);
+    }
+    if (!checkNotEmpty($content->bank)) {
+        return reportError("Attribute bank may not be empty", $response);
+    }
+    if (!checkNotEmpty($content->bic)) {
+        return reportError("Attribute bic may not be empty", $response);
+    }
+    if (!checkNotEmpty($content->city)) {
+        return reportError("Attribute city may not be empty", $response);
+    }
+    if (!checkNotEmpty($content->street)) {
+        return reportError("Attribute street may not be empty", $response);
+    }
+    if (!checkNotEmpty($content->name)) {
+        return reportError("Attribute name may not be empty", $response);
+    }
+    if ($content->zip < 10000 || $content->zip > 99999) {
+        return reportError("Attribute zip must be between 10000 and 99999", $response);
+    }
+
+    $result = setUserData($sepaTable, $content, $userId);
 
     $response->getBody()->write(json_encode($result));
     return $response;

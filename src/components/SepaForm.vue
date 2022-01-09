@@ -2,7 +2,7 @@
   <div class="container">
     <h2>SEPA-Einzug</h2>
     <validation-observer ref="observer" v-slot="{ handleSubmit }">
-      <b-form @submit.stop.prevent="handleSubmit(onSubmit)">
+      <b-form @submit.stop.prevent="handleSubmit(onSubmit)" @reset.stop.prevent="onReset">
         <div class="row">
           <validation-provider
             name="iban"
@@ -14,12 +14,34 @@
                 name="iban"
                 v-model="formdata.iban"
                 type="text"
-                autocomplete="cc-number"
+                autocomplete="payee-account-number"
                 maxlength="40"
                 :state="getValidationState(validationContext)"
                 aria-describedby="iban-feedback"
               />
               <b-form-invalid-feedback id="iban-feedback">{{
+                validationContext.errors[0]
+              }}</b-form-invalid-feedback>
+            </b-form-group>
+          </validation-provider>
+        </div>
+        <div class="row">
+          <validation-provider
+            name="bic"
+            :rules="{ required: true, min: 3, max: 50 }"
+            v-slot="validationContext"
+          >
+            <b-form-group label="BIC" label-for="bic">
+              <b-form-input
+                name="bic"
+                v-model="formdata.bic"
+                type="text"
+                autocomplete="payee-bank-code"
+                maxlength="100"
+                :state="getValidationState(validationContext)"
+                aria-describedby="bic-feedback"
+              />
+              <b-form-invalid-feedback id="bic-feedback">{{
                 validationContext.errors[0]
               }}</b-form-invalid-feedback>
             </b-form-group>
@@ -56,7 +78,7 @@
             <b-form-group label="Name des Kontoinhabers" label-for="firstname">
               <b-form-input
                 name="name"
-                v-model="formdata.firstname"
+                v-model="formdata.name"
                 type="text"
                 autocomplete="cc-name"
                 maxlength="150"
@@ -93,11 +115,12 @@
         </div>
         <div class="row">
           <validation-provider
+            class="col-3"
             name="zip"
             :rules="{ required: true, min: 5, max: 5 }"
             v-slot="validationContext"
           >
-            <b-form-group label="Postleitzahl" label-for="zip" class="col-3">
+            <b-form-group label="Postleitzahl" label-for="zip" >
               <b-form-input
                 name="zip"
                 v-model="formdata.zip"
@@ -113,6 +136,7 @@
             </b-form-group>
           </validation-provider>
           <validation-provider
+            class="col-9"
             name="city"
             :rules="{ required: true, min: 3, max: 100 }"
             v-slot="validationContext"
@@ -120,7 +144,6 @@
             <b-form-group
               label="Ort/Stadt/Gemeinde"
               label-for="city"
-              class="col-9"
             >
               <b-form-input
                 name="city"
@@ -138,6 +161,7 @@
           </validation-provider>
         </div>
         <b-button type="submit" variant="primary">Speichern</b-button>
+        <b-button type="reset" variant="secondary">Zurücksetzen</b-button>
       </b-form>
     </validation-observer>
   </div>
@@ -147,15 +171,9 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import { ValidationProvider, ValidationObserver } from "vee-validate";
-
-export type SepaDetails = {
-  iban: string;
-  bank: string;
-  name: string;
-  street: string;
-  zip: string;
-  city: string;
-};
+import { SepaData } from '../structs/SepaData';
+import { showToast } from '../utils/showToast';
+import { getSepaData, setSepaData } from '../api';
 
 @Component({
   components: {
@@ -164,12 +182,13 @@ export type SepaDetails = {
   },
 })
 export default class SepaForm extends Vue {
-  formdata: SepaDetails = {
+  formdata: SepaData = {
     iban: "",
     bank: "",
+    bic: "",
     name: "",
     street: "",
-    zip: "",
+    zip: null,
     city: "",
   };
 
@@ -185,8 +204,38 @@ export default class SepaForm extends Vue {
     return dirty || validated ? valid : null;
   }
 
+  created(): void {
+    getSepaData().then((data) => {
+      Object.assign(this.formdata, data);
+    }).catch(e => {
+      showToast('Es gab ein Problem beim Laden der Daten vom Server: '+e);
+    });
+  }
+
   onSubmit(): void {
-    console.log(JSON.stringify(this.formdata, null, 2));
+    setSepaData(this.formdata).then(result => {
+      Object.assign(this.formdata, result);
+      showToast('Die Daten wurden gespeichert');
+    }).catch(e => {
+      showToast('Es gab ein Problem beim Speichern der Daten: '+e);
+    });
+  }
+
+  onReset(): boolean {
+    if (!confirm("Wirklich zurücksetzen?")) {
+      return false;
+    }
+    setSepaData(null).then(result => {
+      this.formdata.iban = '';
+      this.formdata.bank = '';
+      this.formdata.bic = '';
+      this.formdata.name = '';
+      this.formdata.city = '';
+      this.formdata.zip = null;
+      this.formdata.street = '';
+      showToast("Die Daten wurden gelöscht");
+    }).catch(e => showToast('Es gab ein Problem bei Löschen der Daten: '+e));
+    return true;
   }
 }
 </script>

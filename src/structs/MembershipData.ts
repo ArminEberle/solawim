@@ -1,10 +1,15 @@
+export type OrderType = {
+    count: number;
+    factor: number;
+};
+
 export type MembershipData = {
-    lastModified: string;
+    lastModified?: string;
     applied: boolean;
     signed: boolean;
-    orders: {[key: string]: {
-        count: number;
-        factor: number;
-    }};
+    orders: {
+        bread: OrderType;
+        meat: OrderType;
+    };
     pos: string;
 };
