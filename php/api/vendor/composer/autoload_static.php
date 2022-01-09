@@ -20,6 +20,10 @@ class ComposerStaticInit54ff884ae4ac11cdbbe6c0ad8ccc2cbe
             'Psr\\Http\\Message\\' => 17,
             'Psr\\Container\\' => 14,
         ),
+        'J' => 
+        array (
+            'JsonSchema\\' => 11,
+        ),
         'F' => 
         array (
             'FastRoute\\' => 10,
@@ -38,6 +42,10 @@ class ComposerStaticInit54ff884ae4ac11cdbbe6c0ad8ccc2cbe
         'Psr\\Container\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
+        ),
+        'JsonSchema\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/justinrainbow/json-schema/src/JsonSchema',
         ),
         'FastRoute\\' => 
         array (

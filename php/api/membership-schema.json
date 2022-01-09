@@ -1,0 +1,69 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema",
+  "id": "http://example.com/example.json",
+  "type": "object",
+  "required": [
+    "pos",
+    "orders",
+    "signed",
+    "applied",
+    "lastModified"
+  ],
+  "properties": {
+    "pos": {
+      "id": "#/properties/pos",
+      "type": "string"
+    },
+    "orders": {
+      "id": "#/properties/orders",
+      "type": "object",
+      "required": [
+        "meat",
+        "bread"
+      ],
+      "properties": {
+        "meat": { "$ref": "#/$defs/orderPart" },
+        "bread": { "$ref": "#/$defs/orderPart" }
+      },
+      "additionalProperties": false
+    },
+    "signed": {
+      "id": "#/properties/signed",
+      "type": "boolean",
+      "default": false
+    },
+    "applied": {
+      "id": "#/properties/applied",
+      "type": "boolean",
+      "default": false
+    },
+    "lastModified": {
+      "id": "#/properties/lastModified",
+      "type": "string",
+      "default": ""
+    }
+  },
+  "$defs": {
+    "orderPart": {
+      "type": "object",
+      "default": {
+        "count": 0,
+        "factor": 0
+      },
+      "required": [
+        "count",
+        "factor"
+      ],
+      "properties": {
+        "count": {
+          "type": "integer"
+        },
+        "factor": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

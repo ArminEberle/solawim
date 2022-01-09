@@ -1,35 +1,33 @@
 import { MembershipData } from './structs/MembershipData';
 import { StaticData } from './structs/StaticData';
 
-export const getStatic = async(): Promise<StaticData> => {
-    const fetchResponse = await fetch('api/statics');
-    const content = await fetchResponse.json();
-    if (fetchResponse.status !== 200) {
-        throw new Error(content.message);
+async function getJsonBody(response: Response | Promise<Response>): Promise<any> {
+    const resolvedResponse = await response;
+    let content = await resolvedResponse.json();
+    if (typeof content === 'string') {
+        try {
+            content = JSON.parse(content);
+        } catch (e) {
+            throw new Error('Error while parsing response: ' + e);
+        }
+    }
+    if (resolvedResponse.status !== 200) {
+        throw new Error('Serverside error: ' + content.message);
     }
     return content;
-};
+}
 
-export const getMembership = async(): Promise<MembershipData> => {
-    const fetchResponse = await fetch('api/membership');
-    const content = await fetchResponse.json();
-    if (fetchResponse.status !== 200) {
-        throw new Error(content.message);
-    }
-    return content;
-};
+export const getStatic = (): Promise<StaticData> => getJsonBody(fetch('api/statics'));
 
-export const setMembership = async(data: MembershipData): Promise<void> => {
-    const fetchResponse = await fetch('api/membership', {
+export const getMembership = (): Promise<MembershipData> => getJsonBody(fetch('api/membership'));
+
+export const setMembership = (data: MembershipData): Promise<void> => getJsonBody(
+    fetch('api/membership', {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
-    });
-    const content = await fetchResponse.json();
-    if (fetchResponse.status !== 200) {
-        throw new Error(content.message);
-    }
-};
+    })
+);

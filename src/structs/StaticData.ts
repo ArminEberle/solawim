@@ -1,10 +1,13 @@
 export type StaticData = {
-    pos: {[key: string]: {
-        name: string;
-        address: string;
-    }};
-    products: {[key: string]: {
-        price: number;
-        target: number;
-    }}
+    app: {
+        pos: {[key: string]: {
+            name: string;
+            address: string;
+        }};
+        products: {[key: string]: {
+            price: number;
+            target: number;
+        }}
+    };
+    userName: string;
 };
