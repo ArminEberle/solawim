@@ -9,7 +9,6 @@ import 'bootstrap-vue/dist/bootstrap-vue.css';
 import './style.scss';
 
 import { electronicFormatIBAN, isValidIBAN } from 'ibantools';
-import { ValidationProvider } from 'vee-validate';
 
 // Make BootstrapVue available throughout your project
 Vue.use(BootstrapVue);
@@ -48,6 +47,7 @@ extend('numeric', {
 });
 
 // DE95 7601 0085 0916 7418 58
+// DE95760100850916741858
 
 extend('iban', {
     message: 'Das scheint keine gültige IBAN zu sein',
@@ -71,14 +71,14 @@ extend('iban', {
 
 import { ValidationRuleSchema } from 'vee-validate/dist/types/types';
 
-if (document.querySelector('#solawim-membership')) {
-    import('./components/MembershipForm.vue').then(form => {
-        new Vue({
-            el: '#solawim-membership',
-            render: (h) => h(form.default),
-        });
-    });
-}
+// if (document.querySelector('#solawim-membership')) {
+//     import('./components/MembershipForm.vue').then(form => {
+//         new Vue({
+//             el: '#solawim-membership',
+//             render: (h) => h(form.default),
+//         });
+//     });
+// }
 
 if (document.querySelector('#solawim-personal')) {
     import('./components/PersonalDetailsForm.vue').then(form => {
@@ -89,14 +89,14 @@ if (document.querySelector('#solawim-personal')) {
     });
 }
 
-if (document.querySelector('#solawim-sepa')) {
-    import('./components/SepaForm.vue').then(form => {
-        new Vue({
-            el: '#solawim-sepa',
-            components: {
-                ValidationProvider,
-            },
-            render: (h) => h(form.default),
-        });
-    });
-}
+// if (document.querySelector('#solawim-sepa')) {
+//     import('./components/SepaForm.vue').then(form => {
+//         new Vue({
+//             el: '#solawim-sepa',
+//             components: {
+//                 ValidationProvider,
+//             },
+//             render: (h) => h(form.default),
+//         });
+//     });
+// }

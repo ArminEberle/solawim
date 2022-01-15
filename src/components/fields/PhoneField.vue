@@ -1,21 +1,21 @@
 <template>
   <validation-provider
-    name="street"
-    :rules="{ required: true, min: 3, max: 150 }"
+    name="phone"
+    :rules="{ required: true, min: 8, max: 40 }"
     v-slot="validationContext"
   >
-    <b-form-group label="Straße und Hausnummer" label-for="street">
+    <b-form-group label="Telefon" label-for="phone">
       <b-form-input
-        name="street"
+        name="phone"
         v-model="fieldValue"
         :input="handleInput()"
         type="text"
-        autocomplete="street-address"
-        maxlength="150"
+        autocomplete="tel"
+        maxlength="40"
         :state="getValidationState(validationContext)"
-        aria-describedby="street-feedback"
+        aria-describedby="phone-feedback"
       />
-      <b-form-invalid-feedback id="street-feedback">{{
+      <b-form-invalid-feedback id="phone-feedback">{{
         validationContext.errors[0]
       }}</b-form-invalid-feedback>
     </b-form-group>

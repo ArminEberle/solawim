@@ -7,7 +7,8 @@
     <b-form-group label="PLZ" label-for="zip">
       <b-form-input
         name="zip"
-        v-model="value"
+        v-model="fieldValue"
+        :input="handleInput()"
         type="text"
         autocomplete="postal-code"
         maxlength="5"
@@ -25,7 +26,6 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import { Prop } from 'vue-property-decorator'
 import { ValidationProvider, ValidationObserver } from "vee-validate";
 
 @Component({
@@ -33,10 +33,18 @@ import { ValidationProvider, ValidationObserver } from "vee-validate";
     ValidationProvider,
     ValidationObserver,
   },
+  props: ["value"],
 })
-export default class PlzField extends Vue {
+export default class Field extends Vue {
+  private my: string | null = null;
 
-  @Prop() value: string|null = null;
+  get fieldValue() {
+    return this.my ?? this.$props.value;
+  }
+
+  set fieldValue(val) {
+    this.my = val;
+  }
 
   getValidationState({
     dirty,
@@ -50,12 +58,8 @@ export default class PlzField extends Vue {
     return dirty || validated ? valid : null;
   }
 
-  getData() {
-    return this.value;
-  }
-
-  handleInput () {
-      this.$emit('input', this.value)
+  handleInput() {
+    this.$emit("input", this.fieldValue);
   }
 }
 </script>

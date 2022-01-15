@@ -3,141 +3,20 @@
     <validation-observer ref="observer" v-slot="{ handleSubmit }">
     <b-form @submit.stop.prevent="handleSubmit(onSubmit)" @reset.stop.prevent="onReset">
       <div class="row">
-        <validation-provider
-          name="firstname"
-          :rules="{ required: true, min: 3, max: 150 }"
-          v-slot="validationContext"
-        >
-          <b-form-group label="Vorname" label-for="firstname">
-            <b-form-input
-              name="firstname"
-              v-model="formdata.firstname"
-              type="text"
-              autocomplete="given-name"
-              maxlength="150"
-              :state="getValidationState(validationContext)"
-              aria-describedby="firstname-feedback"
-            />
-            <b-form-invalid-feedback id="firstname-feedback">{{
-              validationContext.errors[0]
-            }}</b-form-invalid-feedback>
-          </b-form-group>
-        </validation-provider>
+        <name-field label="Vorname(n)" autocomplete="given-name" v-model="formdata.firstname" class="col-12" />
       </div>
       <div class="row">
-        <validation-provider
-          name="lastname"
-          :rules="{ required: true, min: 3, max: 150 }"
-          v-slot="validationContext"
-        >
-          <b-form-group label="Nachname" label-for="lastname">
-            <b-form-input
-              name="lastname"
-              v-model="formdata.lastname"
-              type="text"
-              autocomplete="family-name"
-              maxlength="150"
-              :state="getValidationState(validationContext)"
-              aria-describedby="lastname-feedback"
-            />
-            <b-form-invalid-feedback id="lastname-feedback">{{
-              validationContext.errors[0]
-            }}</b-form-invalid-feedback>
-          </b-form-group>
-        </validation-provider>
-      </div>
-
-      <div class="row">
-        <validation-provider
-          name="street"
-          :rules="{ required: true, min: 3, max: 150 }"
-          v-slot="validationContext"
-        >
-          <b-form-group label="Straße und Hausnummer" label-for="street">
-            <b-form-input
-              name="street"
-              v-model="formdata.street"
-              type="text"
-              autocomplete="street-address"
-              maxlength="150"
-              :state="getValidationState(validationContext)"
-              aria-describedby="street-feedback"
-            />
-            <b-form-invalid-feedback id="street-feedback">{{
-              validationContext.errors[0]
-            }}</b-form-invalid-feedback>
-          </b-form-group>
-        </validation-provider>
+        <name-field label="Nachname(n)" autocomplete="family-name" v-model="formdata.lastname" class="col-12" />
       </div>
       <div class="row">
-        <validation-provider
-          class="col-3"
-          name="zip"
-          :rules="{ required: true, min: 5, max: 5, numeric: true }"
-          v-slot="validationContext"
-        >
-          <b-form-group label="PLZ" label-for="zip">
-            <b-form-input
-              name="zip"
-              v-model="formdata.zip"
-              type="text"
-              autocomplete="postal-code"
-              maxlength="5"
-              :state="getValidationState(validationContext)"
-              aria-describedby="zip-feedback"
-            />
-            <b-form-invalid-feedback id="zip-feedback">{{
-              validationContext.errors[0]
-            }}</b-form-invalid-feedback>
-          </b-form-group>
-        </validation-provider>
-        <validation-provider
-          class="col-9"
-          name="city"
-          :rules="{ required: true, min: 3, max: 100 }"
-          v-slot="validationContext"
-        >
-          <b-form-group
-            label="Ort/Stadt/Gemeinde"
-            label-for="city"
-          >
-            <b-form-input
-              name="city"
-              v-model="formdata.city"
-              type="text"
-              autocomplete="address-level2"
-              maxlength="100"
-              :state="getValidationState(validationContext)"
-              aria-describedby="city-feedback"
-            />
-            <b-form-invalid-feedback id="city-feedback">{{
-              validationContext.errors[0]
-            }}</b-form-invalid-feedback>
-          </b-form-group>
-        </validation-provider>
+        <street-field v-model="formdata.street" class="col-12" />
       </div>
-
       <div class="row">
-        <validation-provider
-          name="phone"
-          :rules="{ required: true, min: 8, max: 40 }"
-          v-slot="validationContext"
-        >
-          <b-form-group label="Telefon" label-for="phone">
-            <b-form-input
-              name="phone"
-              v-model="formdata.phone"
-              type="text"
-              autocomplete="tel"
-              maxlength="40"
-              :state="getValidationState(validationContext)"
-              aria-describedby="phone-feedback"
-            />
-            <b-form-invalid-feedback id="phone-feedback">{{
-              validationContext.errors[0]
-            }}</b-form-invalid-feedback>
-          </b-form-group>
-        </validation-provider>
+        <plz-field v-model="formdata.zip" class="col-3" />
+        <city-field v-model="formdata.city" class="col-9" />
+      </div>
+      <div class="row">
+        <phone-field v-model="formdata.phone" class="col-12" />
       </div>
 
       <b-button type="submit" variant="primary">Speichern</b-button>
@@ -154,11 +33,21 @@ import { getPersonData, setPersonData } from "../api";
 import { PersonData } from "../structs/PersonData";
 import { showToast } from '../utils/showToast';
 import { ValidationProvider, ValidationObserver } from "vee-validate";
+import NameField from './fields/NameField.vue';
+import PlzField from "./fields/PlzField.vue";
+import CityField from "./fields/CityField.vue";
+import StreetField from "./fields/StreetField.vue";
+import PhoneField from "./fields/PhoneField.vue";
 
 @Component({
   components: {
     ValidationProvider,
     ValidationObserver,
+    NameField,
+    PlzField,
+    CityField,
+    StreetField,
+    PhoneField,
   },
 })
 export default class PersonalDetailsForm extends Vue {
@@ -214,6 +103,3 @@ export default class PersonalDetailsForm extends Vue {
   }
 }
 </script>
-
-<style lang="scss">
-</style>

@@ -201,6 +201,3 @@ export default class MembershipComponent extends Vue {
   }
 }
 </script>
-
-<style lang="scss">
-</style>

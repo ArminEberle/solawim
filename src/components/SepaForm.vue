@@ -125,6 +125,3 @@ export default class SepaForm extends Vue {
   }
 }
 </script>
-
-<style lang="scss">
-</style>

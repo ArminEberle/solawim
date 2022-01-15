@@ -7,8 +7,8 @@
     <b-form-group label="BIC" label-for="bic">
       <b-form-input
         name="bic"
-        v-model="value"
-        @input="handleInput"
+        v-model="fieldValue"
+        :input="handleInput()"
         type="text"
         autocomplete="payee-bank-code"
         maxlength="100"
@@ -25,7 +25,6 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import { Prop } from "vue-property-decorator";
 import { ValidationProvider, ValidationObserver } from "vee-validate";
 
 @Component({
@@ -33,9 +32,18 @@ import { ValidationProvider, ValidationObserver } from "vee-validate";
     ValidationProvider,
     ValidationObserver,
   },
+  props: ["value"],
 })
-export default class BicField extends Vue {
-  @Prop() value: string | null = null;
+export default class Field extends Vue {
+  private my: string | null = null;
+
+  get fieldValue() {
+    return this.my ?? this.$props.value;
+  }
+
+  set fieldValue(val) {
+    this.my = val;
+  }
 
   getValidationState({
     dirty,
@@ -49,12 +57,8 @@ export default class BicField extends Vue {
     return dirty || validated ? valid : null;
   }
 
-  getData() {
-    return this.value;
-  }
-
   handleInput() {
-    this.$emit("input", this.value);
+    this.$emit("input", this.fieldValue);
   }
 }
 </script>

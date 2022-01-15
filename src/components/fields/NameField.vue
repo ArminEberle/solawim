@@ -1,21 +1,21 @@
 <template>
   <validation-provider
-    name="street"
+    name="name"
     :rules="{ required: true, min: 3, max: 150 }"
     v-slot="validationContext"
   >
-    <b-form-group label="Straße und Hausnummer" label-for="street">
+    <b-form-group :label="label" label-for="name">
       <b-form-input
-        name="street"
+        name="name"
         v-model="fieldValue"
         :input="handleInput()"
         type="text"
-        autocomplete="street-address"
+        :autocomplete="autocomplete"
         maxlength="150"
         :state="getValidationState(validationContext)"
-        aria-describedby="street-feedback"
+        aria-describedby="name-feedback"
       />
-      <b-form-invalid-feedback id="street-feedback">{{
+      <b-form-invalid-feedback id="name-feedback">{{
         validationContext.errors[0]
       }}</b-form-invalid-feedback>
     </b-form-group>
@@ -32,7 +32,7 @@ import { ValidationProvider, ValidationObserver } from "vee-validate";
     ValidationProvider,
     ValidationObserver,
   },
-  props: ["value"],
+  props: ["value", "label", "autocomplete"],
 })
 export default class Field extends Vue {
   private my: string | null = null;
@@ -62,3 +62,4 @@ export default class Field extends Vue {
   }
 }
 </script>
+

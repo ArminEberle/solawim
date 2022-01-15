@@ -7,7 +7,8 @@
     <b-form-group label="Ort/Stadt/Gemeinde" label-for="city">
       <b-form-input
         name="city"
-        v-model="value"
+        v-model="fieldValue"
+        :input="handleInput()"
         type="text"
         autocomplete="address-level2"
         maxlength="100"
@@ -25,7 +26,6 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import { Prop } from "vue-property-decorator";
 import { ValidationProvider, ValidationObserver } from "vee-validate";
 
 @Component({
@@ -33,9 +33,18 @@ import { ValidationProvider, ValidationObserver } from "vee-validate";
     ValidationProvider,
     ValidationObserver,
   },
+  props: ["value"],
 })
-export default class CityField extends Vue {
-  @Prop() value: string | null = null;
+export default class Field extends Vue {
+  private my: string | null = null;
+
+  get fieldValue() {
+    return this.my ?? this.$props.value;
+  }
+
+  set fieldValue(val) {
+    this.my = val;
+  }
 
   getValidationState({
     dirty,
@@ -49,12 +58,8 @@ export default class CityField extends Vue {
     return dirty || validated ? valid : null;
   }
 
-  getData() {
-    return this.value;
-  }
-
   handleInput() {
-    this.$emit("input", this.value);
+    this.$emit("input", this.fieldValue);
   }
 }
 </script>

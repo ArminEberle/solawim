@@ -1,14 +1,14 @@
 <template>
   <validation-provider
     name="bank"
-    :rules="{ required: true, min: 3, max: 50, alpha_num: true }"
+    :rules="{ required: true, min: 3, max: 50 }"
     v-slot="validationContext"
   >
     <b-form-group label="Name der Bank" label-for="bank">
       <b-form-input
         name="bank"
-        v-model="value"
-        @input="handleInput"
+        v-model="fieldValue"
+        :input="handleInput()"
         type="text"
         autocomplete="cc-type"
         maxlength="100"
@@ -25,7 +25,6 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import { Prop } from "vue-property-decorator";
 import { ValidationProvider, ValidationObserver } from "vee-validate";
 
 @Component({
@@ -33,9 +32,18 @@ import { ValidationProvider, ValidationObserver } from "vee-validate";
     ValidationProvider,
     ValidationObserver,
   },
+  props: ["value"],
 })
-export default class BanknameField extends Vue {
-  @Prop() value: string | null = null;
+export default class Field extends Vue {
+  private my: string | null = null;
+
+  get fieldValue() {
+    return this.my ?? this.$props.value;
+  }
+
+  set fieldValue(val) {
+    this.my = val;
+  }
 
   getValidationState({
     dirty,
@@ -49,12 +57,8 @@ export default class BanknameField extends Vue {
     return dirty || validated ? valid : null;
   }
 
-  getData() {
-    return this.value;
-  }
-
   handleInput() {
-    this.$emit("input", this.value);
+    this.$emit("input", this.fieldValue);
   }
 }
 </script>
