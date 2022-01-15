@@ -6,8 +6,7 @@
     "pos",
     "orders",
     "signed",
-    "applied",
-    "lastModified"
+    "applied"
   ],
   "properties": {
     "pos": {

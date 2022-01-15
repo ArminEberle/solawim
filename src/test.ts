@@ -79,11 +79,11 @@ async function test() {
     });
 
     let badRequest = clone(myMembership);
-    badRequest.orders.trash = {
+    (badRequest as any).orders.trash = {
         count: 1,
         factor: 1,
     };
-    delete badRequest.orders.meat;
+    delete (badRequest as any).orders.meat;
     await executeAndFail('bad ingredient', () => setMembership(badRequest));
 
     badRequest = clone(myMembership);

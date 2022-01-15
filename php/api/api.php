@@ -165,21 +165,20 @@ $staticData = [
     'pos' => array(
         'hutzelberghof' => [
             'name' => 'Hutzelberghof',
-            'address' => 'Oberrieden',
+            'address' => 'Hilgershäuser Str. 20, Oberrieden, Bad Sooden-Allendorf',
         ],
-        'freudenthal' => [
-            'name' => 'Freudenthal',
-
-            'address' => 'Am Mittelberg 6a, Witzenhausen',
-        ]
+        'witzenhausen' => [
+            'name' => 'Witzenhausen',
+            'address' => 'Nordbahnhofstraße, beim Falafelladen gegenüber der Esso-Tankstelle, Witzenhausen',
+        ],
     ),
     'products' => [
       'meat' => [
-        'price' => 100,
-        'target' => 100,
+        'price' => 90,
+        'target' => 80,
       ],
       'bread' => [
-        'price' => 100,
+        'price' => 25,
         'target' => 100,
       ]
       ]
