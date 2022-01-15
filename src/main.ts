@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import { BootstrapVue } from 'bootstrap-vue';
 // import { IconsPlugin } from 'bootstrap-vue'
-import { ValidationProvider, extend } from 'vee-validate';
+import { extend } from 'vee-validate';
 
 // Import Bootstrap an BootstrapVue CSS files (order is important)
 import 'bootstrap/dist/css/bootstrap.css';
@@ -9,18 +9,19 @@ import 'bootstrap-vue/dist/bootstrap-vue.css';
 import './style.scss';
 
 import { electronicFormatIBAN, isValidIBAN } from 'ibantools';
-// const ibantools = require('ibantools');
-// const iban = ibantools.electronicFormatIBAN('NL91 ABNA 0517 1643 00'); // 'NL91ABNA0517164300'
-// ibantools.isValidIBAN(iban);
-
+import { ValidationProvider } from 'vee-validate';
 
 // Make BootstrapVue available throughout your project
 Vue.use(BootstrapVue);
-// Optionally install the BootstrapVue icon components plugin
-// Vue.use(IconsPlugin);
 
-
-import { required, min, max } from 'vee-validate/dist/rules';
+import {
+    required,
+    min,
+    max,
+    alpha,
+    alpha_num,
+    numeric,
+} from 'vee-validate/dist/rules';
 extend('required', {
     ...required,
     message: 'Hier fehlt ein Wert',
@@ -33,14 +34,27 @@ extend('max', {
     ...max,
     message: 'Das ist zu lang',
 });
+extend('alpha', {
+    ...alpha,
+    message: 'Hier sind nur Buchstaben erlaubt',
+});
+extend('alpha_num', {
+    ...alpha_num,
+    message: 'Hier sind nur Buchstaben und Ziffern erlaubt',
+});
+extend('numeric', {
+    ...numeric,
+    message: 'Hier sind nur Ziffern erlaubt',
+});
 
 // DE95 7601 0085 0916 7418 58
 
 extend('iban', {
     message: 'Das scheint keine gültige IBAN zu sein',
     validate: function(value: string, params: any): any {
-        const self = (this as ValidationRuleSchema);
-        const msg = self?.message?.toString() ?? 'Das scheint keine gültige IBAN zu sein';
+        const self = this as ValidationRuleSchema;
+        const msg
+      = self?.message?.toString() ?? 'Das scheint keine gültige IBAN zu sein';
         if (value === null) {
             return msg;
         }
@@ -55,25 +69,34 @@ extend('iban', {
     },
 });
 
-import MembershipForm from './components/MembershipForm.vue';
-import PersonalDetailsForm from './components/PersonalDetailsForm.vue';
-import SepaForm from './components/SepaForm.vue';
 import { ValidationRuleSchema } from 'vee-validate/dist/types/types';
 
-new Vue({
-    el: '#membership',
-    render: h => h(MembershipForm),
-});
+if (document.querySelector('#solawim-membership')) {
+    import('./components/MembershipForm.vue').then(form => {
+        new Vue({
+            el: '#solawim-membership',
+            render: (h) => h(form.default),
+        });
+    });
+}
 
-new Vue({
-    el: '#personal',
-    render: h => h(PersonalDetailsForm),
-});
+if (document.querySelector('#solawim-personal')) {
+    import('./components/PersonalDetailsForm.vue').then(form => {
+        new Vue({
+            el: '#solawim-personal',
+            render: (h) => h(form.default),
+        });
+    });
+}
 
-new Vue({
-    el: '#sepa',
-    components: {
-        ValidationProvider,
-    },
-    render: h => h(SepaForm),
-});
+if (document.querySelector('#solawim-sepa')) {
+    import('./components/SepaForm.vue').then(form => {
+        new Vue({
+            el: '#solawim-sepa',
+            components: {
+                ValidationProvider,
+            },
+            render: (h) => h(form.default),
+        });
+    });
+}

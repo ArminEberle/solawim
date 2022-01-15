@@ -7,7 +7,7 @@
   "private": true,
   "scripts": {
     "eslint": "eslint --ext .js,.vue,.ts src",
-    "dev": "cross-env NODE_ENV=development --watch",
+    "dev": "cross-env NODE_ENV=development webpack --watch",
     "build": "cross-env NODE_ENV=production webpack --progress",
     "buildFully": "yarn clean && yarn build",
     "buildDeploy": "yarn clean && yarn build",
@@ -42,7 +42,8 @@
     "uglifyjs-webpack-plugin": "^2.2.0",
     "vee-validate": "^3.4.14",
     "vue": "^2.5.11",
-    "vue-class-component": "^7.2.6"
+    "vue-class-component": "^7.2.6",
+    "vue-property-decorator": "^9.1.2"
   },
   "browserslist": [
     "> 1%",

@@ -2,36 +2,38 @@ var path = require('path');
 var webpack = require('webpack');
 const outpath = path.resolve('/var/www/localhost/wp-content/plugins/solawim/');
 // const outpath = path.resolve(__dirname, './dist');
-const srcPath = path.join(__dirname, 'src');
 module.exports = {
     entry: {
-        main: './src/main.ts',
+        solawim: './src/main.ts',
         test: './src/test.ts',
     },
     mode: 'development',
     output: {
-        filename: '[contenthash].js',
+        // filename: '[contenthash].js',
+        filename: '[name].js',
         // chunkFilename: 'cacheme-[contenthash].js',
         path: path.resolve(outpath, 'mime'),
         // this comment just as a reminder - in other types of devtools, this (or something similar) is required
         devtoolModuleFilenameTemplate: 'file:///[absolute-resource-path]',
     },
     optimization: {
-        splitChunks: {
-            chunks: 'all',
-            cacheGroups: {
-                vendor: {
-                    test: /[\\/]node_modules[\\/]/,
-                    priority: -10,
-                    reuseExistingChunk: true,
-                },
-                main: {
-                    minChunks: 1,
-                    priority: -20,
-                    reuseExistingChunk: true,
-                },
-            },
-        },
+        // splitChunks: {
+        //     chunks: 'all',
+        //     hidePathInfo: true,
+        //     cacheGroups: {
+        //         solawim: {
+        //             minChunks: 1,
+        //             priority: -20,
+        //             reuseExistingChunk: true,
+        //         },
+        //         lib: {
+        //             test: /[\\/]node_modules[\\/]/,
+        //             priority: -10,
+        //             reuseExistingChunk: true,
+        //             name: 'libs',
+        //         },
+        //     },
+        // },
     },
     module: {
         rules: [
@@ -134,14 +136,14 @@ module.exports = {
         new (require('html-webpack-plugin'))({
             template: 'src/index.html',
             filename: '../index.html',
-            chunks: 'main',
+            chunks: 'solawim',
             excludeChunks: ['test'],
         }),
         new (require('html-webpack-plugin'))({
             template: 'src/index.html',
             filename: '../test.html',
             chunks: 'test',
-            excludeChunks: ['main'],
+            excludeChunks: ['solawim'],
         }),
         new (require('copy-webpack-plugin'))({
             patterns: [

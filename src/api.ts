@@ -3,6 +3,8 @@ import { PersonData } from './structs/PersonData';
 import { SepaData } from './structs/SepaData';
 import { StaticData } from './structs/StaticData';
 
+const apiBaseUrl = '/wp-content/plugins/solawim/api/';
+
 async function getJsonBody(response: Response | Promise<Response>): Promise<any> {
     const resolvedResponse = await response;
     let content = await resolvedResponse.json();
@@ -19,12 +21,12 @@ async function getJsonBody(response: Response | Promise<Response>): Promise<any>
     return content;
 }
 
-export const getStatic = (): Promise<StaticData> => getJsonBody(fetch('api/statics'));
+export const getStatic = (): Promise<StaticData> => getJsonBody(fetch(apiBaseUrl + 'statics'));
 
-export const getMembership = (): Promise<MembershipData> => getJsonBody(fetch('api/membership'));
+export const getMembership = (): Promise<MembershipData> => getJsonBody(fetch(apiBaseUrl + 'membership'));
 
 export const setMembership = (data: MembershipData | null): Promise<void> => getJsonBody(
-    fetch('api/membership', {
+    fetch(apiBaseUrl + 'membership', {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -34,10 +36,10 @@ export const setMembership = (data: MembershipData | null): Promise<void> => get
     })
 );
 
-export const getPersonData = (): Promise<PersonData> => getJsonBody(fetch('api/personal'));
+export const getPersonData = (): Promise<PersonData> => getJsonBody(fetch(apiBaseUrl + 'personal'));
 
 export const setPersonData = (data: PersonData | null): Promise<void> => getJsonBody(
-    fetch('api/personal', {
+    fetch(apiBaseUrl + 'personal', {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -47,10 +49,10 @@ export const setPersonData = (data: PersonData | null): Promise<void> => getJson
     })
 );
 
-export const getSepaData = (): Promise<SepaData> => getJsonBody(fetch('api/sepa'));
+export const getSepaData = (): Promise<SepaData> => getJsonBody(fetch(apiBaseUrl + 'sepa'));
 
 export const setSepaData = (data: SepaData | null): Promise<void> => getJsonBody(
-    fetch('api/sepa', {
+    fetch(apiBaseUrl + 'sepa', {
         method: 'POST',
         headers: {
             'Accept': 'application/json',

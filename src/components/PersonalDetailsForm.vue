@@ -1,6 +1,5 @@
 <template >
-  <div class="container" >
-    <h2>Das bin ich</h2>
+  <section class="solawim container px-0 mx-0">
     <validation-observer ref="observer" v-slot="{ handleSubmit }">
     <b-form @submit.stop.prevent="handleSubmit(onSubmit)" @reset.stop.prevent="onReset">
       <div class="row">
@@ -74,10 +73,10 @@
         <validation-provider
           class="col-3"
           name="zip"
-          :rules="{ required: true, min: 5, max: 5 }"
+          :rules="{ required: true, min: 5, max: 5, numeric: true }"
           v-slot="validationContext"
         >
-          <b-form-group label="Postleitzahl" label-for="zip">
+          <b-form-group label="PLZ" label-for="zip">
             <b-form-input
               name="zip"
               v-model="formdata.zip"
@@ -145,7 +144,7 @@
       <b-button type="reset" variant="secondary">Zurücksetzen</b-button>
     </b-form>
     </validation-observer>
-  </div>
+  </section>
 </template>
 
 <script lang="ts">

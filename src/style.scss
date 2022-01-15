@@ -1,18 +1,66 @@
-$base-space: 7.5px;
+$space-1: 15px;
+$space-2: 35px;
 
-body {
-  // font-family: unset;
+$color-white: white;
+$color-light-green: #536941CC;
+$color-full-green: #536942;
+
+section.solawim {
+  color: $color-light-green;
 }
 
-div.row {
-  margin-top: $base-space;
-  margin-bottom: $base-space;
-}
-div.container {
-  padding-top: $base-space;
-  padding-bottom: $base-space;
+.solawim select {
+  background-color: $color-white;
+  color: $color-light-green;
+  padding: 3pt;
+  margin-left: 1pt;
+  margin-right: 1pt;
+  border-radius: 4px;
+  border: solid 1px $color-light-green;
 }
 
-.green {
-  background-color: lightgreen;
+.form-control {
+  border: solid 1px $color-light-green;
+  color: $color-full-green;
+}
+
+.solawim div.row {
+  margin-top: $space-1;
+  margin-bottom: $space-1;
+}
+
+.solawim div.container {
+  padding-top: $space-1;
+  padding-bottom: $space-1;
+}
+
+.solawim .alert {
+  background-color: $color-light-green;
+  border-color: $color-light-green;
+  color: $color-white;
+}
+
+.solawim ::selection {
+  background-color: $color-light-green !important;
+}
+
+.solawim input[type="checkbox"] {
+  background-color: $color-light-green !important;
+}
+
+.solawim button {
+  transition: all .3s;
+  text-decoration: none;
+  color: $color-light-green;
+  background-color: transparent;
+  border: solid 1px $color-light-green;
+  border-radius: 4px 4px 4px 4px;
+  // font-size: 14px;
+  font-family: 'DM Sans',sans-serif;
+  padding: $space-1 $space-2 $space-1 $space-2 ;
+  // padding: $base-space;
+  &:hover {
+    background-color: $color-full-green;
+    border-color: $color-full-green;
+  }
 }

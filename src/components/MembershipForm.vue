@@ -1,6 +1,5 @@
 <template>
-  <div class="container">
-    <h1>Mitgliedschaft ankündigen</h1>
+  <section class="solawim container px-0 mx-0">
     <b-form @submit.stop.prevent="onSubmit()">
       <div class="row">
         <b-form-checkbox v-model="formdata.applied">
@@ -24,7 +23,7 @@
             :options="factorOptions"
             :disabled="!formdata.applied"
           ></b-form-select>
-          Beitrag ({{ breadPrice }} EUR / Anteil)
+          Beitrag <b>({{ breadPrice }} EUR / Anteil</b>)
         </div>
       </div>
       <div class="row">
@@ -44,7 +43,7 @@
             :options="factorOptions"
             :disabled="!formdata.applied"
           ></b-form-select>
-          Beitrag ({{ meatPrice }} EUR / Anteil)
+          Beitrag <b>({{ meatPrice }} EUR / Anteil</b>)
         </div>
       </div>
       <div class="row">
@@ -71,7 +70,7 @@
       </div>
       <b-button type="submit" variant="primary">Speichern</b-button>
     </b-form>
-  </div>
+  </section>
 </template>
 
 <script lang="ts">
