@@ -12,7 +12,7 @@
           <bic-field class="col-12" v-model="formdata.bic" />
         </div>
         <div class="row">
-          <bankname-field class="col-12" v-model="formdata.bankname" />
+          <bankname-field class="col-12" v-model="formdata.bank" />
         </div>
         <div class="row">
           <account-holder-field class="col-12" v-model="formdata.name" />
@@ -22,7 +22,7 @@
         </div>
         <div class="row">
           <plz-field v-model="formdata.zip" class="col-3" />
-          <city-field v-model="formdata.citry" class="col-9" />
+          <city-field v-model="formdata.city" class="col-9" />
         </div>
         <b-button type="submit" variant="primary">Speichern</b-button>
         <b-button type="reset" variant="secondary">Zurücksetzen</b-button>
