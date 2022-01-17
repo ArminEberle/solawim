@@ -5,7 +5,7 @@ const outpath = path.resolve('/var/www/localhost/wp-content/plugins/solawim/');
 module.exports = {
     entry: {
         solawim: './src/main.ts',
-        test: './src/test.ts',
+        // test: './src/test.ts',
     },
     mode: 'development',
     output: {
@@ -17,23 +17,24 @@ module.exports = {
         devtoolModuleFilenameTemplate: 'file:///[absolute-resource-path]',
     },
     optimization: {
-        // splitChunks: {
-        //     chunks: 'all',
-        //     hidePathInfo: true,
-        //     cacheGroups: {
-        //         solawim: {
-        //             minChunks: 1,
-        //             priority: -20,
-        //             reuseExistingChunk: true,
-        //         },
-        //         lib: {
-        //             test: /[\\/]node_modules[\\/]/,
-        //             priority: -10,
-        //             reuseExistingChunk: true,
-        //             name: 'libs',
-        //         },
-        //     },
-        // },
+        splitChunks: {
+            chunks: 'all',
+            //     hidePathInfo: true,
+            cacheGroups: {
+                solawim: {
+                    minChunks: 1,
+                    test: /\./,
+                    priority: -20,
+                    reuseExistingChunk: true,
+                },
+                // lib: {
+                //     test: /[\\/]node_modules[\\/]/,
+                //     priority: -10,
+                //     reuseExistingChunk: true,
+                //     name: 'libs',
+                // },
+            },
+        },
     },
     module: {
         rules: [
@@ -153,6 +154,9 @@ module.exports = {
                 },
             ],
         }),
+        new webpack.optimize.LimitChunkCountPlugin({
+            maxChunks: 1,
+        }),
     ],
     devtool: 'eval-source-map',
 };
@@ -169,11 +173,6 @@ if (process.env.NODE_ENV === 'production') {
         new webpack.LoaderOptionsPlugin({
             minimize: true,
         }),
-        new (require('compression-webpack-plugin'))(
-            {
-                exclude: /(LICENSE)|(index)/,
-            }
-        ),
     ]);
     // module.exports.optimization.minimizer= [new (require('uglifyjs-webpack-plugin'))()];
     module.exports.optimization.minimize = true;

@@ -169,7 +169,7 @@ $staticData = [
         ],
         'witzenhausen' => [
             'name' => 'Witzenhausen',
-            'address' => 'Nordbahnhofstraße, beim Falafelladen gegenüber der Esso-Tankstelle, Witzenhausen',
+            'address' => 'Nordbahnhofstraße, beim Falafelladen, Witzenhausen',
         ],
     ),
     'products' => [
@@ -353,6 +353,14 @@ $app->post('/sepa', function (Request $request, Response $response, array $args)
 
     $response->getBody()->write(json_encode($result));
     return $response;
+});
+
+$app->get('/loggedin', function (Request $request, Response $response, array $args) {
+    $userId = getUserId();
+    if (!($userId > 0)) {
+        return reportError('Please login before proceeding', $response, 401);
+    }
+    return $response->withStatus(200);
 });
 
 $app->run();

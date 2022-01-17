@@ -19,6 +19,14 @@ section.solawim {
   border: solid 1px $color-light-green;
 }
 
+a, .solawim a {
+  color: $color-full-green !important;
+}
+
+.solawim h3 {
+  margin: 4pt;
+}
+
 .form-control {
   border: solid 1px $color-light-green;
   color: $color-full-green;
@@ -48,7 +56,7 @@ section.solawim {
   background-color: $color-light-green !important;
 }
 
-.solawim button {
+.btn, .solawim button {
   transition: all .3s;
   text-decoration: none;
   color: $color-light-green;
@@ -63,4 +71,8 @@ section.solawim {
     background-color: $color-full-green;
     border-color: $color-full-green;
   }
+}
+
+.b-form-spinbutton button {
+  width: 2em;
 }

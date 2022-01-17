@@ -8,12 +8,16 @@
   "scripts": {
     "eslint": "eslint --ext .js,.vue,.ts src",
     "dev": "cross-env NODE_ENV=development webpack --watch",
+    "devLikeProd": "cross-env NODE_ENV=production webpack --watch",
     "build": "cross-env NODE_ENV=production webpack --progress",
     "buildFully": "yarn clean && yarn build",
     "buildDeploy": "yarn clean && yarn build",
     "clean": "rm -rf dist .build-tmp"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.36",
+    "@fortawesome/free-solid-svg-icons": "^5.15.4",
+    "@fortawesome/vue-fontawesome": "^2.0.6",
     "@types/clone-deep": "^4.0.1",
     "@types/deep-equal": "^1.0.1",
     "@types/jquery": "^3.5.11",

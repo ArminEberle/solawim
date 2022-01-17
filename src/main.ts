@@ -7,10 +7,10 @@ import { extend } from 'vee-validate';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 import './style.scss';
-
 import { electronicFormatIBAN, isValidIBAN } from 'ibantools';
+import { ValidationRuleSchema } from 'vee-validate/dist/types/types';
+import { isLoggedIn } from './api';
 
-// Make BootstrapVue available throughout your project
 Vue.use(BootstrapVue);
 
 import {
@@ -69,34 +69,28 @@ extend('iban', {
     },
 });
 
-import { ValidationRuleSchema } from 'vee-validate/dist/types/types';
+async function main() {
+    const loggedIn = await isLoggedIn();
+    if (!loggedIn) {
+        if (document.querySelector('#solawim_membership')) {
+            import('./components/RegisterForm.vue').then(form => {
+                new Vue({
+                    el: '#solawim_membership',
+                    render: (h) => h(form.default),
+                });
+            });
+        }
+        return;
+    }
 
-// if (document.querySelector('#solawim-membership')) {
-//     import('./components/MembershipForm.vue').then(form => {
-//         new Vue({
-//             el: '#solawim-membership',
-//             render: (h) => h(form.default),
-//         });
-//     });
-// }
-
-if (document.querySelector('#solawim-personal')) {
-    import('./components/PersonalDetailsForm.vue').then(form => {
-        new Vue({
-            el: '#solawim-personal',
-            render: (h) => h(form.default),
+    if (document.querySelector('#solawim_membership')) {
+        import('./components/MainForm.vue').then(form => {
+            new Vue({
+                el: '#solawim_membership',
+                render: (h) => h(form.default),
+            });
         });
-    });
+    }
 }
 
-// if (document.querySelector('#solawim-sepa')) {
-//     import('./components/SepaForm.vue').then(form => {
-//         new Vue({
-//             el: '#solawim-sepa',
-//             components: {
-//                 ValidationProvider,
-//             },
-//             render: (h) => h(form.default),
-//         });
-//     });
-// }
+main();
