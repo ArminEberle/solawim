@@ -134,18 +134,12 @@ module.exports = {
             ],
         }),
         new (require('vue-loader').VueLoaderPlugin)(),
-        new (require('html-webpack-plugin'))({
-            template: 'src/index.html',
-            filename: '../index.html',
-            chunks: 'solawim',
-            excludeChunks: ['test'],
-        }),
-        new (require('html-webpack-plugin'))({
-            template: 'src/index.html',
-            filename: '../test.html',
-            chunks: 'test',
-            excludeChunks: ['solawim'],
-        }),
+        // new (require('html-webpack-plugin'))({
+        //     template: 'src/index.html',
+        //     filename: '../test.html',
+        //     chunks: 'test',
+        //     excludeChunks: ['solawim'],
+        // }),
         new (require('copy-webpack-plugin'))({
             patterns: [
                 {
@@ -174,9 +168,7 @@ if (process.env.NODE_ENV === 'production') {
             minimize: true,
         }),
     ]);
-    // module.exports.optimization.minimizer= [new (require('uglifyjs-webpack-plugin'))()];
     module.exports.optimization.minimize = true;
     module.exports.mode = 'production';
     module.exports.devtool = false;
-    // delete module.devtool;
 }

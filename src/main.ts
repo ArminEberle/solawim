@@ -4,8 +4,8 @@ import { BootstrapVue } from 'bootstrap-vue';
 import { extend } from 'vee-validate';
 
 // Import Bootstrap an BootstrapVue CSS files (order is important)
-import 'bootstrap/dist/css/bootstrap.css';
-import 'bootstrap-vue/dist/bootstrap-vue.css';
+// import 'bootstrap/dist/css/bootstrap.css';
+// import 'bootstrap-vue/dist/bootstrap-vue.css';
 import './style.scss';
 import { electronicFormatIBAN, isValidIBAN } from 'ibantools';
 import { ValidationRuleSchema } from 'vee-validate/dist/types/types';
