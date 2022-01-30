@@ -64,6 +64,12 @@ a, .solawim a {
   background-color: $color-light-green !important;
 }
 
+.solawim form {
+  select:disabled, input:disabled, button:disabled {
+  color: #DDD;
+  }
+}
+
 .btn, .solawim button {
   transition: all .3s;
   text-decoration: none;
@@ -76,6 +82,7 @@ a, .solawim a {
   padding: $space-1 $space-2 $space-1 $space-2 ;
   // padding: $base-space;
   &:hover {
+    color: $color-white !important;
     background-color: $color-full-green;
     border-color: $color-full-green;
   }

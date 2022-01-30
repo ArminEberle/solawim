@@ -20,13 +20,13 @@
       den Zugang zu gesunden, regionale Biolebensmittel ermöglichen.
     </p>
 
-    <b-form @submit.stop.prevent="onSubmit()" @reset.stop.prevent="onReset">
+    <b-form class="pl-3" @submit.stop.prevent="onSubmit()" @reset.stop.prevent="onReset">
       <div class="row">
         <b-form-checkbox v-model="formdata.applied">
           &nbsp;<b>Ja ich möchte dabei sein.</b>
         </b-form-checkbox>
       </div>
-      <div class="row">
+      <div class="row ml-0">
         <p>
           Zur Auswahl stehen dir dieses Jahr 2 verschiedene Anteilsoptionen.
         </p><p>
@@ -102,8 +102,8 @@
           ></b-form-select>
         </div>
       </div>
+      <h3 class="mx-0 ml-n3">Bezahlung und Kündigung</h3>
       <div class="row">
-      <h3 class="mx-0">Bezahlung und Kündigung</h3>
       <p >
         Mit dem Speichern erklärst Du dich vertraglich gebunden.
       </p><p>
@@ -121,9 +121,10 @@
         sollte sich bei euch etwas grundlegend verändern.
       </p>
       </div>
-
-      <b-button type="submit" variant="primary">Speichern</b-button>
-      <b-button type="reset" variant="secondary">Zurücksetzen</b-button>
+      <div class="row">
+        <b-button type="submit" variant="primary">Speichern</b-button>
+        <b-button type="reset" variant="secondary" class="ml-1">Zurücksetzen</b-button>
+      </div>
     </b-form>
   </section>
 </template>
@@ -136,7 +137,10 @@ import { MembershipData } from "../structs/MembershipData";
 import { Pos, StaticData } from "../structs/StaticData";
 import { showToast } from "../utils/showToast";
 
-@Component({})
+@Component({
+  components: {
+  }
+})
 export default class MembershipComponent extends Vue {
   factorOptions = [
     { value: -1, text: "reduzierten" },

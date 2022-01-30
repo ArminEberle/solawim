@@ -1,5 +1,6 @@
 <template>
   <section class="solawim container px-0 mx-0">
+    <h3 class="ml-0">SEPA-Basislastschrift für wiederkehrende Zahlungen</h3>
     <validation-observer ref="observer" v-slot="{ handleSubmit }">
       <b-form
         @submit.stop.prevent="handleSubmit(onSubmit)"

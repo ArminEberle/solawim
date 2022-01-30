@@ -25,13 +25,8 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import { ValidationProvider, ValidationObserver } from "vee-validate";
 
 @Component({
-  components: {
-    ValidationProvider,
-    ValidationObserver,
-  },
   props: ["value"],
 })
 export default class Field extends Vue {

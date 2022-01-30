@@ -1,8 +1,8 @@
 <template>
   <div>
     <!-- <status-form /> -->
-    <membership-form />
-    <personal-details-form />
+    <membership-form class="mb-5" />
+    <personal-details-form class="mb-5" />
     <sepa-form />
   </div>
 </template>

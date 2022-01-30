@@ -1,5 +1,6 @@
 <template >
   <section class="solawim container px-0 mx-0">
+    <h3 class="ml-0">Deine Person</h3>
     <validation-observer ref="observer" v-slot="{ handleSubmit }">
     <b-form @submit.stop.prevent="handleSubmit(onSubmit)" @reset.stop.prevent="onReset">
       <div class="row">
@@ -39,6 +40,14 @@ import CityField from "./fields/CityField.vue";
 import StreetField from "./fields/StreetField.vue";
 import PhoneField from "./fields/PhoneField.vue";
 
+import {
+  BForm,
+  BFormInvalidFeedback,
+  BFormValidFeedback
+} from 'bootstrap-vue/esm/components/form';
+import { BFormCheckbox } from 'bootstrap-vue/esm/components/form-checkbox';
+import { BButton } from 'bootstrap-vue/esm/components/button';
+
 @Component({
   components: {
     ValidationProvider,
@@ -48,6 +57,11 @@ import PhoneField from "./fields/PhoneField.vue";
     CityField,
     StreetField,
     PhoneField,
+    BForm,
+    BFormInvalidFeedback,
+    BFormValidFeedback,
+    BFormCheckbox,
+    BButton,
   },
 })
 export default class PersonalDetailsForm extends Vue {

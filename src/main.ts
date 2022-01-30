@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import { BootstrapVue } from 'bootstrap-vue';
+// import { BootstrapVue } from 'bootstrap-vue';
 // import { IconsPlugin } from 'bootstrap-vue'
 import { extend } from 'vee-validate';
 
@@ -11,7 +11,38 @@ import { electronicFormatIBAN, isValidIBAN } from 'ibantools';
 import { ValidationRuleSchema } from 'vee-validate/dist/types/types';
 import { isLoggedIn } from './api';
 
-Vue.use(BootstrapVue);
+// Vue.use(BootstrapVue);
+import {
+    BForm,
+    BFormInvalidFeedback,
+    BFormValidFeedback,
+} from 'bootstrap-vue/esm/components/form';
+import {
+    BFormGroup,
+} from 'bootstrap-vue/esm/components/form-group';
+import {
+    BFormInput,
+} from 'bootstrap-vue/esm/components/form-input';
+import {
+    BButton,
+} from 'bootstrap-vue/esm/components/button';
+import { BFormCheckbox } from 'bootstrap-vue/esm/components/form-checkbox';
+import { BFormSelect } from 'bootstrap-vue/esm/components/form-select';
+import { BAlert } from 'bootstrap-vue/esm/components/alert';
+import { ValidationProvider, ValidationObserver } from 'vee-validate';
+
+Vue.component('BForm', BForm);
+Vue.component('BFormInvalidFeedback', BFormInvalidFeedback);
+Vue.component('BFormValidFeedback', BFormValidFeedback);
+Vue.component('BFormGroup', BFormGroup);
+Vue.component('BFormInput', BFormInput);
+Vue.component('BButton', BButton);
+Vue.component('BFormCheckbox', BFormCheckbox);
+Vue.component('BFormSelect', BFormSelect);
+Vue.component('BAlert', BAlert);
+Vue.component('ValidationProvider', ValidationProvider);
+Vue.component('ValidationObserver', ValidationObserver);
+
 
 import {
     required,
