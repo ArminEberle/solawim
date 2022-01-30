@@ -12,6 +12,8 @@ require_once(__DIR__ . '/../../../../wp-load.php');
 
 global $wpdb;
 
+add_role('vereinsverwaltung', 'Vereinsverwaltung');
+
 $membershipTable = "{$wpdb->prefix}solawim_membership";
 $personTable = "{$wpdb->prefix}solawim_person";
 $sepaTable = "{$wpdb->prefix}solawim_sepa";
@@ -97,6 +99,43 @@ function clearUserData(string $tablename, string $accountId)
         ARRAY_A
     );
     return getUserData($tablename, (object) null, $accountId);
+}
+
+function getAllMemberData()
+{
+    ensureDBInitialized();
+    global $wpdb;
+    $results = $wpdb->get_results(
+        $wpdb->prepare("
+        SELECT 	u.id,
+              u.user_nicename,
+              u.user_email,
+              m.content as membership,
+              p.content as person,
+              s.content as sepa
+        FROM 	{$wpdb->prefix}users u
+              left join {$wpdb->prefix}solawim_membership m on u.ID = m.user_id
+              left join {$wpdb->prefix}solawim_person p on u.ID = p.user_id
+              left join {$wpdb->prefix}solawim_sepa s on u.ID = s.user_id
+        where m.content is not null
+              or p.content is not null
+              or s.content is not null
+        order by u.user_nicename
+        "),
+        ARRAY_A
+    );
+    foreach ($results as &$row) {
+        if (!is_null($row["membership"])) {
+            $row["membership"] = json_decode($row["membership"]);
+        }
+        if (!is_null($row["person"])) {
+            $row["person"] = json_decode($row["person"]);
+        }
+        if (!is_null($row["sepa"])) {
+            $row["sepa"] = json_decode($row["sepa"]);
+        }
+    }
+    return $results;
 }
 
 function getMembershipData(string $accountId)
@@ -360,6 +399,22 @@ $app->get('/loggedin', function (Request $request, Response $response, array $ar
     if (!($userId > 0)) {
         return reportError('Please login before proceeding', $response, 401);
     }
+    return $response->withStatus(200);
+});
+
+$app->get('/members', function (Request $request, Response $response, array $args) {
+    global $wp_roles;
+    $current_user = wp_get_current_user();
+    if (!in_array('vereinsverwaltung', $current_user->roles)) {
+        return reportError('Dir fehlt eine Rolle um hier fortzufahren', $response, 401);
+    }
+    // var_dump($current_user->roles);
+    // var_dump($wp_roles);
+    $userId = getUserId();
+    if (!($userId > 0)) {
+        return reportError('Please login before proceeding', $response, 401);
+    }
+    $response->getBody()->write(json_encode(getAllMemberData()));
     return $response->withStatus(200);
 });
 
