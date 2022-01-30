@@ -1,3 +1,4 @@
+import { AllMembersData } from './structs/AllMembersData';
 import { MembershipData } from './structs/MembershipData';
 import { PersonData } from './structs/PersonData';
 import { SepaData } from './structs/SepaData';
@@ -58,6 +59,10 @@ export const setPersonData = (data: PersonData | null): Promise<void> =>
 
 export const getSepaData = (): Promise<SepaData> =>
     getJsonBody(fetch(apiBaseUrl + 'sepa'));
+
+export const getAllMemberData = (): Promise<AllMembersData> =>
+    getJsonBody(fetch(apiBaseUrl + 'members'));
+
 
 export const setSepaData = (data: SepaData | null): Promise<void> =>
     getJsonBody(

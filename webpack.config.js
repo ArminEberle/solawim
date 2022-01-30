@@ -5,11 +5,11 @@ const outpath = path.resolve('/var/www/localhost/wp-content/plugins/solawim/');
 module.exports = {
     entry: {
         solawim: './src/main.ts',
-        // test: './src/test.ts',
+        solawim_manage: './src/manage.ts',
     },
     mode: 'development',
     output: {
-        // filename: '[contenthash].js',
+    // filename: '[contenthash].js',
         filename: '[name].js',
         // chunkFilename: 'cacheme-[contenthash].js',
         path: path.resolve(outpath, 'mime'),
@@ -21,6 +21,14 @@ module.exports = {
             chunks: 'all',
             //     hidePathInfo: true,
             cacheGroups: {
+                defaultVendors: {
+                    test: /[\\/]node_modules[\\/]/,
+                    priority: -10,
+                    reuseExistingChunk: true,
+                    name() {
+                        return 'solawim_libs';
+                    },
+                },
                 solawim: {
                     minChunks: 1,
                     test: /\./,
@@ -40,26 +48,15 @@ module.exports = {
         rules: [
             {
                 test: /\.css$/,
-                use: [
-                    'vue-style-loader',
-                    'css-loader',
-                ],
+                use: ['vue-style-loader', 'css-loader'],
             },
             {
                 test: /\.scss$/,
-                use: [
-                    'vue-style-loader',
-                    'css-loader',
-                    'sass-loader',
-                ],
+                use: ['vue-style-loader', 'css-loader', 'sass-loader'],
             },
             {
                 test: /\.sass$/,
-                use: [
-                    'vue-style-loader',
-                    'css-loader',
-                    'sass-loader?indentedSyntax',
-                ],
+                use: ['vue-style-loader', 'css-loader', 'sass-loader?indentedSyntax'],
             },
             {
                 test: /\.vue$/,
@@ -69,12 +66,8 @@ module.exports = {
                         // Since sass-loader (weirdly) has SCSS as its default parse mode, we map
                         // the "scss" and "sass" values for the lang attribute to the right configs here.
                         // other preprocessors should work out of the box, no loader config like this necessary.
-                        'scss': [
-                            'vue-style-loader',
-                            'css-loader',
-                            'sass-loader',
-                        ],
-                        'sass': [
+                        scss: ['vue-style-loader', 'css-loader', 'sass-loader'],
+                        sass: [
                             'vue-style-loader',
                             'css-loader',
                             'sass-loader?indentedSyntax',
@@ -113,7 +106,7 @@ module.exports = {
     },
     resolve: {
         alias: {
-            'vue$': 'vue/dist/vue.esm.js',
+            vue$: 'vue/dist/vue.esm.js',
         },
         extensions: ['.ts', '.js', '.vue', '.json', '.scss'],
     },
@@ -129,9 +122,7 @@ module.exports = {
     },
     plugins: [
         new (require('clean-webpack-plugin').CleanWebpackPlugin)({
-            cleanAfterEveryBuildPatterns: [
-                '!index.html',
-            ],
+            cleanAfterEveryBuildPatterns: ['!index.html'],
         }),
         new (require('vue-loader').VueLoaderPlugin)(),
         // new (require('html-webpack-plugin'))({
@@ -152,7 +143,7 @@ module.exports = {
             maxChunks: 1,
         }),
     ],
-    devtool: 'eval-source-map',
+    devtool: 'source-map',
 };
 
 if (process.env.NODE_ENV === 'production') {

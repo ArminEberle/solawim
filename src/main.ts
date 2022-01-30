@@ -1,17 +1,11 @@
 import Vue from 'vue';
-// import { BootstrapVue } from 'bootstrap-vue';
-// import { IconsPlugin } from 'bootstrap-vue'
 import { extend } from 'vee-validate';
 
-// Import Bootstrap an BootstrapVue CSS files (order is important)
-// import 'bootstrap/dist/css/bootstrap.css';
-// import 'bootstrap-vue/dist/bootstrap-vue.css';
 import './style.scss';
 import { electronicFormatIBAN, isValidIBAN } from 'ibantools';
 import { ValidationRuleSchema } from 'vee-validate/dist/types/types';
 import { isLoggedIn } from './api';
 
-// Vue.use(BootstrapVue);
 import {
     BForm,
     BFormInvalidFeedback,
@@ -76,9 +70,6 @@ extend('numeric', {
     ...numeric,
     message: 'Hier sind nur Ziffern erlaubt',
 });
-
-// DE95 7601 0085 0916 7418 58
-// DE95760100850916741858
 
 extend('iban', {
     message: 'Das scheint keine gültige IBAN zu sein',

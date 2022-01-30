@@ -237,7 +237,6 @@ export default class MembershipComponent extends Vue {
   }
 
   breadCountChange(value: number): void {
-    console.log('here');
     value = Math.floor(value);
     if(value < 0) {
       value = 0;
