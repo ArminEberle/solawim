@@ -22,7 +22,7 @@
 
     <b-form class="pl-3" @submit.stop.prevent="onSubmit()" @reset.stop.prevent="onReset">
       <div class="row">
-        <b-form-checkbox v-model="formdata.applied">
+        <b-form-checkbox v-model="$store.state.membership.applied">
           &nbsp;<b>Ja ich möchte dabei sein.</b>
         </b-form-checkbox>
       </div>
@@ -47,17 +47,17 @@
       <div class="row">
         <div class="col-2">
           <b-form-select
-            v-model="formdata.orders.bread.count"
+            v-model="$store.state.membership.orders.bread.count"
             :options="orderCountOptions"
-            :disabled="!formdata.applied"
+            :disabled="!$store.state.membership.applied"
           ></b-form-select>
         </div>
         <div class="col text-left">
           Anteil(e) Brot zum
           <b-form-select
-            v-model="formdata.orders.bread.factor"
+            v-model="$store.state.membership.orders.bread.factor"
             :options="factorOptions"
-            :disabled="!formdata.applied"
+            :disabled="!$store.state.membership.applied"
           ></b-form-select>
           Beitrag <b>({{ breadPrice }} EUR / Anteil</b>)
         </div>
@@ -65,17 +65,17 @@
       <div class="row">
         <div class="col-2">
           <b-form-select
-            v-model="formdata.orders.meat.count"
+            v-model="$store.state.membership.orders.meat.count"
             :options="orderCountOptions"
-            :disabled="!formdata.applied"
+            :disabled="!$store.state.membership.applied"
           ></b-form-select>
         </div>
         <div class="col">
           Anteil(e) Milchprodukte / Fleisch zum
           <b-form-select
-            v-model="formdata.orders.meat.factor"
+            v-model="$store.state.membership.orders.meat.factor"
             :options="factorOptions"
-            :disabled="!formdata.applied"
+            :disabled="!$store.state.membership.applied"
           ></b-form-select>
           Beitrag <b>({{ meatPrice }} EUR / Anteil</b>)
         </div>
@@ -96,9 +96,9 @@
       <div class="row">
         <div class="col-12">
           <b-form-select
-            v-model="formdata.pos"
+            v-model="$store.state.membership.pos"
             :options="posOptions"
-            :disabled="!formdata.applied"
+            :disabled="!$store.state.membership.applied"
           ></b-form-select>
         </div>
       </div>
@@ -132,15 +132,18 @@ l
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import { getMembership, getStatic, setMembership } from "../api";
-import { MembershipData } from "../structs/MembershipData";
-import { Pos, StaticData } from "../structs/StaticData";
-import { showToast } from "../utils/showToast";
+import { getStore } from "../api";
 import { getOrderPrice } from '../utils/orderPriceCalculation';
+import { mapState } from "vuex";
 
 @Component({
   components: {
-  }
+  },
+  store: getStore(),
+  computed: mapState([
+    'membership',
+    'staticData',
+  ])
 })
 export default class MembershipComponent extends Vue {
   factorOptions = [
@@ -165,52 +168,12 @@ export default class MembershipComponent extends Vue {
 
   posOptions: { value: string; text: string }[] = [];
 
-  formdata: MembershipData = {
-    applied: false,
-    signed: false,
-    pos: "",
-    orders: {
-      meat: {
-        count: 0,
-        factor: 0,
-      },
-      bread: {
-        count: 0,
-        factor: 0,
-      },
-    },
-  };
-
-  staticdata: StaticData = {
-    userName: "",
-    app: {
-      products: {
-        meat: {
-          price: 0,
-          target: 0,
-        },
-        bread: {
-          price: 0,
-          target: 0,
-        },
-      },
-      pos: {},
-    },
-  };
-
-  get breadPrice() {
-    return getOrderPrice(this.staticdata.app.products.bread.price, this.formdata.orders.bread.factor);
-  }
-
-  get meatPrice() {
-    return getOrderPrice(this.staticdata.app.products.meat.price, this.formdata.orders.meat.factor);
-  }
 
   get sum(): number {
-    return !this.formdata.applied
+    return !this.$store.state.membership.applied
       ? 0
-      : this.formdata.orders.meat.count * this.meatPrice +
-          this.formdata.orders.bread.count * this.breadPrice;
+      : this.$store.state.membership.orders.meat.count * getOrderPrice(this.$store.state.staticData.app.products.meat.price, this.$store.state.membership.orders.meat.factor) +
+          this.$store.state.membership.orders.bread.count * getOrderPrice(this.$store.state.staticData.app.products.bread.price, this.$store.state.membership.orders.bread.factor);
   }
 
   breadCountChange(value: number): void {
@@ -221,62 +184,64 @@ export default class MembershipComponent extends Vue {
     if(value > 10) {
       value = 10;
     }
-    this.formdata.orders.bread.count = value;
+    this.$store.state.membership.orders.bread.count = value;
   }
 
   onSubmit(): void {
-    setMembership(this.formdata)
-      .then((result) => showToast("Die Daten wurden gespeichert."))
-      .catch((e) =>
-        showToast("Es gab ein Problem beim Speichern der Daten am Server " + e)
-      );
+    this.$store.commit('saveMembershipData');
+    // setMembership(this.$store.state.membership)
+    //   .then((result) => showToast("Die Daten wurden gespeichert."))
+    //   .catch((e) =>
+    //     showToast("Es gab ein Problem beim Speichern der Daten am Server " + e)
+    //   );
   }
 
   onReset(): boolean {
     if(!confirm('Wirklich zurücksetzen?')){
       return false;
     };
-    setMembership(null)
-      .then(() => {
-        this.loadFormdataFromBackend();
-        showToast('Die Daten wurden gelöscht');
-      }).catch(e => showToast('Es gab ein Problem beim Löschen der Daten vom Server: '+e));
+    this.$store.commit('saveMembershipData', null);
+    // setMembership(null)
+    //   .then(() => {
+    //     // this.loadFormdataFromBackend();
+    //     showToast('Die Daten wurden gelöscht');
+    //   }).catch(e => showToast('Es gab ein Problem beim Löschen der Daten vom Server: '+e));
     return true;
   }
 
   created(): void {
-    getStatic()
-      .then((staticData) => {
-        this.staticdata = staticData;
-        this.posOptions = Object.entries(staticData.app.pos).map(
-          ([name, pos]) => {
-            return {
-              value: name,
-              text: pos.name + ", " + pos.address,
-            };
-          }
-        );
-      })
-      .catch((e) =>
-        showToast("Es gab ein Problem beim Laden der Daten vom Server " + e)
-      );
-      this.loadFormdataFromBackend();
+    // getStatic()
+    //   .then((staticData) => {
+    //     this.staticdata = staticData;
+    //     this.posOptions = Object.entries(staticData.app.pos).map(
+    //       ([name, pos]) => {
+    //         return {
+    //           value: name,
+    //           text: pos.name + ", " + pos.address,
+    //         };
+    //       }
+    //     );
+    //   })
+    //   .catch((e) =>
+    //     showToast("Es gab ein Problem beim Laden der Daten vom Server " + e)
+    //   );
+    //   this.loadFormdataFromBackend();
   }
 
-  private loadFormdataFromBackend() {
-    getMembership()
-      .then((membershipData) => this.loadFormData(membershipData)      )
-      .catch((e) =>
-        showToast("Es gab ein Problem beim Laden der Daten vom Server " + e)
-      );
-  }
+  // private loadFormdataFromBackend() {
+  //   getMembership()
+  //     .then((membershipData) => this.loadFormData(membershipData)      )
+  //     .catch((e) =>
+  //       showToast("Es gab ein Problem beim Laden der Daten vom Server " + e)
+  //     );
+  // }
 
-  private loadFormData(membershipData: MembershipData) {
-    this.formdata.applied = membershipData.applied;
-        this.formdata.signed = membershipData.signed;
-        this.formdata.pos = membershipData.pos;
-        Object.assign(this.formdata.orders.meat, membershipData.orders.meat);
-        Object.assign(this.formdata.orders.bread, membershipData.orders.bread);
-  }
+  // private loadFormData(membershipData: MembershipData) {
+  //   this.$store.state.membership.applied = membershipData.applied;
+  //       this.$store.state.membership.signed = membershipData.signed;
+  //       this.$store.state.membership.pos = membershipData.pos;
+  //       Object.assign(this.$store.state.membership.orders.meat, membershipData.orders.meat);
+  //       Object.assign(this.$store.state.membership.orders.bread, membershipData.orders.bread);
+  // }
 }
 </script>

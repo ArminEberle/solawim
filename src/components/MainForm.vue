@@ -1,6 +1,6 @@
 <template>
   <div>
-    <!-- <status-form /> -->
+    <status-form />
     <membership-form class="mb-5" />
     <personal-details-form class="mb-5" />
     <sepa-form />

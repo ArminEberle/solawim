@@ -31,10 +31,17 @@ module.exports = {
                 },
                 solawim: {
                     minChunks: 1,
-                    test: /\./,
+                    // test: /\./,
                     priority: -20,
                     reuseExistingChunk: true,
                 },
+                solawim_manage: {
+                    minChunks: 1,
+                    // test: /\./,
+                    priority: -20,
+                    reuseExistingChunk: true,
+                },
+
                 // lib: {
                 //     test: /[\\/]node_modules[\\/]/,
                 //     priority: -10,
@@ -142,6 +149,10 @@ module.exports = {
         new webpack.optimize.LimitChunkCountPlugin({
             maxChunks: 1,
         }),
+        // new (require('webpack-bundle-analyzer').BundleAnalyzerPlugin)({
+        //     analyzerMode: 'static',
+        //     reportFilename: '.build-tmp/analyze.html',
+        // }),
     ],
     devtool: 'source-map',
 };

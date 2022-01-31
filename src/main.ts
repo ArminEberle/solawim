@@ -4,7 +4,8 @@ import { extend } from 'vee-validate';
 import './style.scss';
 import { electronicFormatIBAN, isValidIBAN } from 'ibantools';
 import { ValidationRuleSchema } from 'vee-validate/dist/types/types';
-import { isLoggedIn } from './api';
+import { getStore, isLoggedIn } from './api';
+import Vuex from 'vuex';
 
 import {
     BForm,
@@ -36,7 +37,7 @@ Vue.component('BFormSelect', BFormSelect);
 Vue.component('BAlert', BAlert);
 Vue.component('ValidationProvider', ValidationProvider);
 Vue.component('ValidationObserver', ValidationObserver);
-
+Vue.use(Vuex);
 
 import {
     required,
@@ -106,9 +107,12 @@ async function main() {
     }
 
     if (document.querySelector('#solawim_membership')) {
+        const store = getStore();
+        store.dispatch('initialize');
         import('./components/MainForm.vue').then(form => {
             new Vue({
                 el: '#solawim_membership',
+                store,
                 render: (h) => h(form.default),
             });
         });

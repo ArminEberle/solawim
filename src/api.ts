@@ -3,6 +3,7 @@ import { MembershipData } from './structs/MembershipData';
 import { PersonData } from './structs/PersonData';
 import { SepaData } from './structs/SepaData';
 import { StaticData } from './structs/StaticData';
+import Vuex from 'vuex';
 
 const apiBaseUrl = '/wp-content/plugins/solawim/api/';
 
@@ -88,4 +89,134 @@ export const isLoggedIn = async(): Promise<boolean> => {
         return true;
     }
     return false;
+};
+
+type GlobalState = {
+    membership: MembershipData;
+    personal: PersonData;
+    sepa: SepaData;
+    staticData: StaticData;
+    currentState: string | null;
+    initialized: boolean;
+};
+
+const initialState: GlobalState = {
+    currentState: 'Lade Daten',
+    membership: {
+        applied: false,
+        orders: {
+            bread: {
+                count: 0,
+                factor: 0,
+            },
+            meat: {
+                count: 0,
+                factor: 0,
+            },
+        },
+        pos: 'hutzelberghof',
+        signed: false,
+        lastModified: undefined,
+    },
+    personal: {
+        firstname: '',
+        lastname: '',
+        street: '',
+        zip: 0,
+        city: '',
+        phone: '',
+    },
+    sepa: {
+        name: '',
+        street: '',
+        zip: 0,
+        city: '',
+        iban: '',
+        bic: '',
+        bank: '',
+    },
+    staticData: {
+        app: {
+            pos: {},
+            products: {
+                bread: {
+                    price: 0,
+                    target: 0,
+                },
+                meat: {
+                    price: 0,
+                    target: 0,
+                },
+            },
+        },
+        userName: '',
+    },
+    initialized: false,
+};
+
+let store: any;
+
+export const getStore = () => {
+    if (!store) {
+        store = new Vuex.Store({
+            state: initialState,
+            mutations: {
+                staticData(state: GlobalState, staticData: StaticData) {
+                    state.staticData = staticData;
+                },
+                membership(state: GlobalState, membership: MembershipData) {
+                    state.membership = membership;
+                },
+                person(state: GlobalState, personData: PersonData) {
+                    state.personal = personData;
+                },
+                sepa(state: GlobalState, sepaData: SepaData) {
+                    state.sepa = sepaData;
+                },
+                currentState(state: GlobalState, currentState: string) {
+                    state.currentState = currentState;
+                },
+            },
+            actions: {
+                initialize({ commit }) {
+                    getStatic()
+                        .then(result => commit('staticData', result))
+                        .catch(e => commit('currentState', e));
+                    getMembership()
+                        .then(result => commit('membership', result))
+                        .catch(e => commit('currentState', e));
+                    getPersonData()
+                        .then(result => commit('person', result))
+                        .catch(e => commit('currentState', e));
+                    getSepaData()
+                        .then(result => commit('sepa', result))
+                        .catch(e => commit('currentState', e));
+                },
+            },
+            getters: {
+                productPrice: (state: GlobalState) => (product: ('meat' | 'bread'), factor: number) => {
+                    const basePrice = state.staticData.app.products[product].price;
+                    if (factor === 0) {
+                        return basePrice;
+                    }
+                    if (factor < 0) {
+                        return basePrice - Math.floor(basePrice * 0.25);
+                    }
+                    return basePrice + Math.floor(basePrice * 0.25);
+                },
+                productSum: (state: GlobalState) => (product: ('meat' | 'bread')) => {
+                    const factor = state.membership.orders[product].factor;
+                    const basePrice = state.staticData.app.products[product].price;
+                    if (factor === 0) {
+                        return basePrice;
+                    }
+                    if (factor < 0) {
+                        return basePrice - Math.floor(basePrice * 0.25);
+                    }
+                    return basePrice + Math.floor(basePrice * 0.25);
+                },
+            },
+        });
+    }
+    return store;
 };
