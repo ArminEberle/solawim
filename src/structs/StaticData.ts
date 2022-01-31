@@ -1,5 +1,6 @@
 export type Product = {
     price: number;
+    // how many orders we want to have
     target: number;
 };
 

@@ -17,77 +17,81 @@ section.solawim {
   color: $color-light-green;
 }
 
-.solawim select {
-  background-color: $color-white;
-  color: $color-light-green;
-  padding: 3pt;
-  margin-left: 1pt;
-  margin-right: 1pt;
-  border-radius: 4px;
-  border: solid 1px $color-light-green;
-}
-
-a, .solawim a {
-  color: $color-full-green !important;
-}
-
-.solawim h3 {
-  margin: 4pt;
-}
-
-.form-control {
-  border: solid 1px $color-light-green;
-  color: $color-full-green;
-}
-
-.solawim div.row {
-  margin-top: $space-1;
-  margin-bottom: $space-1;
-}
-
-.solawim div.container {
-  padding-top: $space-1;
-  padding-bottom: $space-1;
-}
-
-.solawim .alert {
-  background-color: $color-light-green;
-  border-color: $color-light-green;
-  color: $color-white;
-}
-
-.solawim ::selection {
-  background-color: $color-light-green !important;
-}
-
-.solawim input[type="checkbox"] {
-  background-color: $color-light-green !important;
-}
-
-.solawim form {
-  select:disabled, input:disabled, button:disabled {
-  color: #DDD;
+.solawim {
+  select {
+    background-color: $color-white;
+    color: $color-light-green;
+    padding: 3pt;
+    margin-left: 1pt;
+    margin-right: 1pt;
+    border-radius: 4px;
+    border: solid 1px $color-light-green;
+  }
+  a {
+    color: $color-full-green !important;
+  }
+  h3 {
+    margin: 4pt;
+  }
+  .form-control {
+    border: solid 1px $color-light-green;
+    color: $color-full-green;
+  }
+  div.row {
+    margin-top: $space-1;
+    margin-bottom: $space-1;
+  }
+  div.container {
+    padding-top: $space-1;
+    padding-bottom: $space-1;
+  }
+  .alert {
+    background-color: $color-light-green;
+    border-color: $color-light-green;
+    color: $color-white;
+  }
+  ::selection {
+    background-color: $color-light-green !important;
+  }
+  input[type="checkbox"] {
+    background-color: $color-light-green !important;
+  }
+  form {
+    select:disabled, input:disabled, button:disabled {
+    color: #DDD;
+    }
+  }
+  button, .btn {
+    transition: all .3s;
+    text-decoration: none;
+    color: $color-light-green;
+    background-color: transparent;
+    border: solid 1px $color-light-green;
+    border-radius: 4px 4px 4px 4px;
+    // font-size: 14px;
+    font-family: 'DM Sans',sans-serif;
+    padding: $space-1 $space-2 $space-1 $space-2 ;
+    // padding: $base-space;
+    &:hover {
+      color: $color-white !important;
+      background-color: $color-full-green;
+      border-color: $color-full-green;
+    }
+  }
+  .b-form-spinbutton button {
+    width: 2em;
+  }
+  .twl {
+    padding-top: 1rem;
+    label {
+      position: absolute;
+      top: 0.1rem;
+      left: 0.1rem;
+      font-size: 0.6rem;
+      font-weight: bolder;
+    }
   }
 }
 
-.btn, .solawim button {
-  transition: all .3s;
-  text-decoration: none;
-  color: $color-light-green;
-  background-color: transparent;
-  border: solid 1px $color-light-green;
-  border-radius: 4px 4px 4px 4px;
-  // font-size: 14px;
-  font-family: 'DM Sans',sans-serif;
-  padding: $space-1 $space-2 $space-1 $space-2 ;
-  // padding: $base-space;
-  &:hover {
-    color: $color-white !important;
-    background-color: $color-full-green;
-    border-color: $color-full-green;
-  }
-}
 
-.b-form-spinbutton button {
-  width: 2em;
-}
+

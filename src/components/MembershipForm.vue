@@ -136,6 +136,7 @@ import { getMembership, getStatic, setMembership } from "../api";
 import { MembershipData } from "../structs/MembershipData";
 import { Pos, StaticData } from "../structs/StaticData";
 import { showToast } from "../utils/showToast";
+import { getOrderPrice } from '../utils/orderPriceCalculation';
 
 @Component({
   components: {
@@ -198,35 +199,11 @@ export default class MembershipComponent extends Vue {
   };
 
   get breadPrice() {
-    if (this.formdata.orders.bread.factor === 0) {
-      return this.staticdata.app.products.bread.price;
-    }
-    if (this.formdata.orders.bread.factor < 0) {
-      return (
-        this.staticdata.app.products.bread.price -
-        Math.floor(this.staticdata.app.products.bread.price * 0.25)
-      );
-    }
-    return (
-      this.staticdata.app.products.bread.price +
-      Math.floor(this.staticdata.app.products.bread.price * 0.25)
-    );
+    return getOrderPrice(this.staticdata.app.products.bread.price, this.formdata.orders.bread.factor);
   }
 
   get meatPrice() {
-    if (this.formdata.orders.meat.factor === 0) {
-      return this.staticdata.app.products.meat.price;
-    }
-    if (this.formdata.orders.meat.factor < 0) {
-      return (
-        this.staticdata.app.products.meat.price -
-        Math.floor(this.staticdata.app.products.meat.price * 0.25)
-      );
-    }
-    return (
-      this.staticdata.app.products.meat.price +
-      Math.floor(this.staticdata.app.products.meat.price * 0.25)
-    );
+    return getOrderPrice(this.staticdata.app.products.meat.price, this.formdata.orders.meat.factor);
   }
 
   get sum(): number {
