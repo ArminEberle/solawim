@@ -268,14 +268,11 @@ $app->post('/membership', function (Request $request, Response $response, array 
     }
 
     foreach ($content->orders as $name => $order) {
-        if ($order->count < 0) {
-            return reportError("The count of $name must be at least 0", $response, 404);
-        }
-        if ($order->count > 10) {
-            return reportError("The count of $name must be 10 or less", $response, 404);
+        if (!in_array($order->count, [0, 0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], true)) {
+            return reportError("The count of $name must be 0, 0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9 or 10", $response, 404);
         }
         if (!in_array($order->factor, [-1, 0, 1], true)) {
-            return reportError("The factor of $name must -1, 0 or 1", $response, 404);
+            return reportError("The factor of $name must be -1, 0 or 1", $response, 404);
         }
     }
 

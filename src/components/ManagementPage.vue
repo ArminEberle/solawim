@@ -262,22 +262,30 @@ export default class ManagementPage extends Vue {
       }
       const bread = member.membership.orders.bread;
       if (bread.count > 0) {
+        let count = bread.count;
+        if(count === 0.5) {
+          count = 1;
+        }
         if (bread.factor < 0) {
-          result.breadLow += bread.count;
+          result.breadLow += count;
         } else if (bread.factor === 0) {
-          result.breadNormal += bread.count;
+          result.breadNormal += count;
         } else {
-          result.breadHigh += bread.count;
+          result.breadHigh += count;
         }
       }
       const meat = member.membership.orders.meat;
       if (meat.count > 0) {
+        let count = meat.count;
+        if(count === 0.5) {
+          count = 1;
+        }
         if (meat.factor < 0) {
-          result.meatLow += meat.count;
+          result.meatLow += count;
         } else if (meat.factor === 0) {
-          result.meatNormal += meat.count;
+          result.meatNormal += count;
         } else {
-          result.meatHigh += meat.count;
+          result.meatHigh += count;
         }
       }
     }

@@ -55,7 +55,7 @@
       ],
       "properties": {
         "count": {
-          "type": "integer"
+          "type": "number"
         },
         "factor": {
           "type": "integer"

@@ -151,6 +151,7 @@ export default class MembershipComponent extends Vue {
 
   orderCountOptions = [
     {value: 0, text: "keine"},
+    {value: 0.5, text: "halber"},
     {value: 1, text: "1"},
     {value: 2, text: "2"},
     {value: 3, text: "3"},
@@ -207,10 +208,18 @@ export default class MembershipComponent extends Vue {
   }
 
   get sum(): number {
+    let meatCount  = this.formdata.orders.meat.count;
+    if(meatCount === 0.5) {
+      meatCount = 1;
+    }
+    let breadCount = this.formdata.orders.bread.count;
+    if(breadCount === 0.5) {
+      breadCount = 1;
+    }
     return !this.formdata.applied
       ? 0
-      : this.formdata.orders.meat.count * this.meatPrice +
-          this.formdata.orders.bread.count * this.breadPrice;
+      : meatCount * this.meatPrice +
+          breadCount * this.breadPrice;
   }
 
   breadCountChange(value: number): void {
