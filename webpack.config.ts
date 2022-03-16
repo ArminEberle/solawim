@@ -1,8 +1,10 @@
-var path = require('path');
-var webpack = require('webpack');
+import { Configuration } from 'webpack';
+
+const path = require('path');
+const webpack = require('webpack');
 const outpath = path.resolve('/var/www/localhost/wp-content/plugins/solawim/');
 // const outpath = path.resolve(__dirname, './dist');
-module.exports = {
+const config = {
     entry: {
         solawim: './src/main.ts',
         solawim_manage: './src/manage.ts',
@@ -10,7 +12,8 @@ module.exports = {
     mode: 'development',
     output: {
     // filename: '[contenthash].js',
-        filename: '[name].js',
+        // filename: '[name].js',
+        filename: '[name].[contenthash].js',
         // chunkFilename: 'cacheme-[contenthash].js',
         path: path.resolve(outpath, 'mime'),
         // this comment just as a reminder - in other types of devtools, this (or something similar) is required
@@ -19,15 +22,12 @@ module.exports = {
     optimization: {
         splitChunks: {
             chunks: 'all',
-            //     hidePathInfo: true,
             cacheGroups: {
                 defaultVendors: {
                     test: /[\\/]node_modules[\\/]/,
                     priority: -10,
                     reuseExistingChunk: true,
-                    name() {
-                        return 'solawim_libs';
-                    },
+                    name: 'solawim_libs',
                 },
                 solawim: {
                     minChunks: 1,
@@ -35,12 +35,6 @@ module.exports = {
                     priority: -20,
                     reuseExistingChunk: true,
                 },
-                // lib: {
-                //     test: /[\\/]node_modules[\\/]/,
-                //     priority: -10,
-                //     reuseExistingChunk: true,
-                //     name: 'libs',
-                // },
             },
         },
     },
@@ -144,12 +138,12 @@ module.exports = {
         }),
     ],
     devtool: 'source-map',
-};
+} as Configuration;
 
 if (process.env.NODE_ENV === 'production') {
-    // module.exports.devtool = '#source-map';
+    // config.devtool = '#source-map';
     // http://vue-loader.vuejs.org/en/workflow/production.html
-    module.exports.plugins = (module.exports.plugins || []).concat([
+    config.plugins = (config.plugins || []).concat([
         new webpack.DefinePlugin({
             'process.env': {
                 NODE_ENV: '"production"',
@@ -159,7 +153,11 @@ if (process.env.NODE_ENV === 'production') {
             minimize: true,
         }),
     ]);
-    module.exports.optimization.minimize = true;
-    module.exports.mode = 'production';
-    module.exports.devtool = false;
+    if (config.optimization) {
+        config.optimization.minimize = true;
+    }
+    config.mode = 'production';
+    config.devtool = false;
 }
+
+export default config;
