@@ -99,8 +99,14 @@
           <label>Username</label>{{ member.user_nicename }}
         </div>
         <div class="col-6 twl">
-          <label>Email</label
-          ><a :href="'mailto:' + member.user_email">{{ member.user_email }}</a>
+          <label>Email</label>
+          <a :href="'mailto:' + member.user_email">{{ member.user_email }}</a>
+        </div>
+        <div class="col-2 twl border user-select-none cursor-pointer" v-on:click="toggleMemberActive(member.id)">
+          <label for="activeMembership">Aktivität</label>
+          <!-- <input type="checkbox" id="activeMembership" v-model="member.activeMembership" /> -->
+          <template v-if="member.membership.activeMembership" >Aktiv</template>
+          <template v-else>Passiv</template>
         </div>
       </div>
       <div class="row" v-if="member.membership">
@@ -176,15 +182,17 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import { getAllMemberData, getStatic } from "../api";
+import { getAllMemberData, getStatic, setMembershipActive } from "../api";
 import { AllMembersData } from "../structs/AllMembersData";
 import { OrderType } from "../structs/MembershipData";
 import { showToast } from "../utils/showToast";
 import { getFactorName, getOrderPrice } from "../utils/orderPriceCalculation";
-import { Pos, StaticData } from "../structs/StaticData";
+import { StaticData } from "../structs/StaticData";
+import { cloneDeep } from 'lodash';
 
 @Component({
-  components: {},
+  components: {
+  },
 })
 export default class ManagementPage extends Vue {
   membersData: AllMembersData = [];
@@ -237,6 +245,22 @@ export default class ManagementPage extends Vue {
       order.count *
       getOrderPrice(this.staticdata.app.products[kind].price, order.factor)
     );
+  }
+
+  toggleMemberActive(memberId: string) {
+    for(let i = 0; i < this.membersData.length; i++) {
+      const member = this.membersData[i];
+      if(member.id !== memberId) {
+        continue;
+      }
+      if(member.membership) {
+        const newActiveState = !member.membership?.activeMembership;
+        member.membership.activeMembership = newActiveState;
+        this.$set(this.membersData, i, cloneDeep(member));
+        setMembershipActive(member.id, newActiveState);
+        return;
+      }
+    }
   }
 
   get counts() {

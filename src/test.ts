@@ -51,6 +51,7 @@ async function test() {
     const count = Math.floor(Math.random() * 10);
 
     const myMembership: MembershipData = {
+        activeMembership: false,
         applied: true,
         signed: false,
         lastModified: 'now',

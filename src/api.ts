@@ -42,6 +42,21 @@ export const setMembership = (data: MembershipData | null): Promise<void> =>
         })
     );
 
+export const setMembershipActive = (targetUserId: string, activeMembership: boolean): Promise<void> =>
+    getJsonBody(
+        fetch(apiBaseUrl + 'membershipactive', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                targetUserId,
+                activeMembership,
+            }),
+        })
+    );
+
 export const getPersonData = (): Promise<PersonData> =>
     getJsonBody(fetch(apiBaseUrl + 'personal'));
 

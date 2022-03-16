@@ -5,6 +5,7 @@ export type OrderType = {
 
 export type MembershipData = {
     lastModified?: string;
+    activeMembership: boolean;
     applied: boolean;
     signed: boolean;
     orders: {

@@ -261,6 +261,17 @@ $app->post('/membership', function (Request $request, Response $response, array 
 
     $content = json_decode($contentString, false);
 
+    // we cannot change this activeMembership state with this service
+    // thus we set the previous or false as the value up front
+    $previousVersion = getMembershipData($userId);
+    if (!is_null($previousVersion)) {
+        $previousActiveMembership = $previousVersion->activeMembership;
+        if (is_null($previousActiveMembership)) {
+            $previousActiveMembership = false;
+        }
+        $content->activeMembership = $previousActiveMembership;
+    }
+
     $validateResult = validateJson($content, 'membership-schema.json');
 
     if (!is_null($validateResult)) {
@@ -281,6 +292,28 @@ $app->post('/membership', function (Request $request, Response $response, array 
     $response->getBody()->write(json_encode($result));
     return $response;
 });
+
+$app->post('/membershipactive', function (Request $request, Response $response, array $args) {
+    global $membershipTable;
+    $checkResult = checkUserIsVereinsverwaltung($request, $response);
+    if (!is_null($checkResult)) {
+        return $checkResult;
+    }
+    $contentString = $request->getBody()->getContents();
+    $content = json_decode($contentString, false);
+    $targetUserId = $content->targetUserId;
+    $activeMembership = $content->activeMembership;
+
+    $membershipData = getMembershipData($targetUserId);
+    if (!is_null($membershipData)) {
+        $membershipData->activeMembership = $activeMembership;
+        $result = setUserData($membershipTable, $membershipData, $targetUserId);
+    }
+
+    $response->getBody()->write(json_encode($result));
+    return $response;
+});
+
 
 $app->get('/personal', function (Request $request, Response $response, array $args) {
     $userId = getUserId();
@@ -399,17 +432,20 @@ $app->get('/loggedin', function (Request $request, Response $response, array $ar
     return $response->withStatus(200);
 });
 
-$app->get('/members', function (Request $request, Response $response, array $args) {
+function checkUserIsVereinsverwaltung(Request $request, Response $response)
+{
     global $wp_roles;
     $current_user = wp_get_current_user();
     if (!in_array('vereinsverwaltung', $current_user->roles)) {
         return reportError('Dir fehlt eine Rolle um hier fortzufahren', $response, 401);
     }
-    // var_dump($current_user->roles);
-    // var_dump($wp_roles);
-    $userId = getUserId();
-    if (!($userId > 0)) {
-        return reportError('Please login before proceeding', $response, 401);
+    return null;
+}
+
+$app->get('/members', function (Request $request, Response $response, array $args) {
+    $checkResult = checkUserIsVereinsverwaltung($request, $response);
+    if (!is_null($checkResult)) {
+        return $checkResult;
     }
     $response->getBody()->write(json_encode(getAllMemberData()));
     return $response->withStatus(200);

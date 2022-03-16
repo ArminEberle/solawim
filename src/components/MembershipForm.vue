@@ -127,6 +127,10 @@
         <b-button type="reset" variant="secondary" class="ml-1">Zurücksetzen</b-button>
       </div>
     </b-form>
+    Du wirst als <b>{{activeStateLabel}}</b> Mitglied geführt.
+    <template v-if="!this.formdata.activeMembership">
+      Wenn du dich aktiv an der Hofarbeit, Gremien und/oder Aktionen beteiligen willst, melde Dich bei uns.
+    </template>
   </section>
 </template>
 l
@@ -194,6 +198,7 @@ export default class MembershipComponent extends Vue {
 
   formdata: MembershipData = {
     applied: false,
+    activeMembership: false,
     signed: false,
     pos: "",
     orders: {
@@ -253,6 +258,10 @@ export default class MembershipComponent extends Vue {
           breadCount * this.breadPrice;
   }
 
+  get activeStateLabel(): string {
+    return this.formdata.activeMembership ? 'aktives' : 'passives';
+  }
+
   onSubmit(): void {
     setMembership(this.formdata)
       .then((result) => showToast("Die Daten wurden gespeichert."))
@@ -302,10 +311,11 @@ export default class MembershipComponent extends Vue {
 
   private loadFormData(membershipData: MembershipData) {
     this.formdata.applied = membershipData.applied;
-        this.formdata.signed = membershipData.signed;
-        this.formdata.pos = membershipData.pos;
-        Object.assign(this.formdata.orders.meat, membershipData.orders.meat);
-        Object.assign(this.formdata.orders.bread, membershipData.orders.bread);
+    this.formdata.signed = membershipData.signed;
+    this.formdata.pos = membershipData.pos;
+    this.formdata.activeMembership = membershipData.activeMembership;
+    Object.assign(this.formdata.orders.meat, membershipData.orders.meat);
+    Object.assign(this.formdata.orders.bread, membershipData.orders.bread);
   }
 }
 </script>

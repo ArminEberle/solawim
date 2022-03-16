@@ -26,6 +26,11 @@
       },
       "additionalProperties": false
     },
+    "activeMembership": {
+      "id": "#/properties/activeMembership",
+      "type": "boolean",
+      "default": false
+    },
     "signed": {
       "id": "#/properties/signed",
       "type": "boolean",
