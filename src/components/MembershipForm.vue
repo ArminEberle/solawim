@@ -48,7 +48,7 @@
         <div class="col-2">
           <b-form-select
             v-model="formdata.orders.bread.count"
-            :options="orderCountOptions"
+            :options="breadOrderCountOptions"
             :disabled="!formdata.applied"
           ></b-form-select>
         </div>
@@ -59,25 +59,26 @@
             :options="factorOptions"
             :disabled="!formdata.applied"
           ></b-form-select>
-          Beitrag <b>({{ breadPrice }} EUR / Anteil</b>)
+          Beitrag <b>({{ breadPrice }} EUR / ganzer Anteil</b>)
         </div>
       </div>
       <div class="row">
         <div class="col-2">
           <b-form-select
             v-model="formdata.orders.meat.count"
-            :options="orderCountOptions"
+            :options="meatOrderCountOptions"
             :disabled="!formdata.applied"
+            @change="meatCountChanged"
           ></b-form-select>
         </div>
         <div class="col">
           Anteil(e) Milchprodukte / Fleisch zum
           <b-form-select
             v-model="formdata.orders.meat.factor"
-            :options="factorOptions"
+            :options="meatFactorOptions"
             :disabled="!formdata.applied"
           ></b-form-select>
-          Beitrag <b>({{ meatPrice }} EUR / Anteil</b>)
+          Beitrag <b>({{ meatPrice }} EUR / ganzer Anteil</b>)
         </div>
       </div>
       <div class="row">
@@ -134,14 +135,18 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import { getMembership, getStatic, setMembership } from "../api";
 import { MembershipData } from "../structs/MembershipData";
-import { Pos, StaticData } from "../structs/StaticData";
+import { StaticData } from "../structs/StaticData";
 import { showToast } from "../utils/showToast";
 import { getOrderPrice } from '../utils/orderPriceCalculation';
 
 @Component({
   components: {
+  },
+  watch: {
+
   }
 })
+
 export default class MembershipComponent extends Vue {
   factorOptions = [
     { value: -1, text: "reduzierten" },
@@ -149,7 +154,14 @@ export default class MembershipComponent extends Vue {
     { value: 1, text: "solidarischen" },
   ];
 
-  orderCountOptions = [
+  noReduceFactorOptions = [
+    { value: 0, text: "normalen" },
+    { value: 1, text: "solidarischen" },
+  ];
+
+  meatFactorOptions = this.factorOptions;
+
+  meatOrderCountOptions = [
     {value: 0, text: "keine"},
     {value: 0.5, text: "halber"},
     {value: 1, text: "1"},
@@ -162,7 +174,21 @@ export default class MembershipComponent extends Vue {
     {value: 8, text: "8"},
     {value: 9, text: "9"},
     {value: 10, text: "10"},
-  ]
+  ];
+
+  breadOrderCountOptions = [
+    {value: 0, text: "keine"},
+    {value: 1, text: "1"},
+    {value: 2, text: "2"},
+    {value: 3, text: "3"},
+    {value: 4, text: "4"},
+    {value: 5, text: "5"},
+    {value: 6, text: "6"},
+    {value: 7, text: "7"},
+    {value: 8, text: "8"},
+    {value: 9, text: "9"},
+    {value: 10, text: "10"},
+  ];
 
   posOptions: { value: string; text: string }[] = [];
 
@@ -199,6 +225,17 @@ export default class MembershipComponent extends Vue {
     },
   };
 
+  meatCountChanged() {
+    if(this.formdata.orders.meat.count === 0.5) {
+      if(this.formdata.orders.meat.factor < 0) {
+        this.formdata.orders.meat.factor = 0;
+      }
+      this.meatFactorOptions = this.noReduceFactorOptions;
+    } else {
+      this.meatFactorOptions = this.factorOptions;
+    }
+  }
+
   get breadPrice() {
     return getOrderPrice(this.staticdata.app.products.bread.price, this.formdata.orders.bread.factor);
   }
@@ -209,28 +246,11 @@ export default class MembershipComponent extends Vue {
 
   get sum(): number {
     let meatCount  = this.formdata.orders.meat.count;
-    if(meatCount === 0.5) {
-      meatCount = 1;
-    }
     let breadCount = this.formdata.orders.bread.count;
-    if(breadCount === 0.5) {
-      breadCount = 1;
-    }
     return !this.formdata.applied
       ? 0
       : meatCount * this.meatPrice +
           breadCount * this.breadPrice;
-  }
-
-  breadCountChange(value: number): void {
-    value = Math.floor(value);
-    if(value < 0) {
-      value = 0;
-    }
-    if(value > 10) {
-      value = 10;
-    }
-    this.formdata.orders.bread.count = value;
   }
 
   onSubmit(): void {

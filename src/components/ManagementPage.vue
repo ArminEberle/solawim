@@ -263,9 +263,6 @@ export default class ManagementPage extends Vue {
       const bread = member.membership.orders.bread;
       if (bread.count > 0) {
         let count = bread.count;
-        if(count === 0.5) {
-          count = 1;
-        }
         if (bread.factor < 0) {
           result.breadLow += count;
         } else if (bread.factor === 0) {
@@ -277,9 +274,6 @@ export default class ManagementPage extends Vue {
       const meat = member.membership.orders.meat;
       if (meat.count > 0) {
         let count = meat.count;
-        if(count === 0.5) {
-          count = 1;
-        }
         if (meat.factor < 0) {
           result.meatLow += count;
         } else if (meat.factor === 0) {
