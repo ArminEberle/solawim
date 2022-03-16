@@ -1,3 +1,4 @@
+import { cloneDeep } from 'lodash';
 import { Configuration } from 'webpack';
 
 const path = require('path');
@@ -160,4 +161,19 @@ if (process.env.NODE_ENV === 'production') {
     config.devtool = false;
 }
 
-export default config;
+export const devConfig = config;
+export const prodConfig = Object.assign(cloneDeep(config), {
+    mode: 'production',
+    devtool: false,
+    plugins: (cloneDeep(config.plugins ?? []))
+        .concat([
+            new webpack.DefinePlugin({
+                'process.env': {
+                    NODE_ENV: '"production"',
+                },
+            }),
+            new webpack.LoaderOptionsPlugin({
+                minimize: true,
+            }),
+        ]),
+});

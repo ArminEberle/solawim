@@ -104,7 +104,6 @@
         </div>
         <div class="col-2 twl border user-select-none cursor-pointer" v-on:click="toggleMemberActive(member.id)">
           <label for="activeMembership">Aktivität</label>
-          <!-- <input type="checkbox" id="activeMembership" v-model="member.activeMembership" /> -->
           <template v-if="member.membership.activeMembership" >Aktiv</template>
           <template v-else>Passiv</template>
         </div>
@@ -221,9 +220,29 @@ export default class ManagementPage extends Vue {
         getAllMemberData()
           .then((data) => {
             for (const row of data) {
+              if(!row.membership) {
+                row.membership = {
+                  applied: false,
+                  activeMembership: false,
+                  signed: false,
+                  pos: '',
+                  orders: {
+                    bread: {
+                      count: 0,
+                      factor: 0,
+                    },
+                    meat: {
+                      count: 0,
+                      factor: 0,
+                    }
+                  }
+                }
+              }
+              if(!row.membership.activeMembership) {
+                row.membership.activeMembership = false;
+              }
               this.membersData.push(row);
             }
-            // this.membersData = data;
           })
           .catch((e) => {
             showToast(
