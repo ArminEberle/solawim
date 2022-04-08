@@ -279,8 +279,8 @@ $app->post('/membership', function (Request $request, Response $response, array 
     }
 
     foreach ($content->orders as $name => $order) {
-        if (!in_array($order->count, [0, 0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], true)) {
-            return reportError("The count of $name must be 0, 0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9 or 10", $response, 404);
+        if (!in_array($order->count, [0, 0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15], true)) {
+            return reportError("The count of $name must be 0, 0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15", $response, 404);
         }
         if (!in_array($order->factor, [-1, 0, 1], true)) {
             return reportError("The factor of $name must be -1, 0 or 1", $response, 404);

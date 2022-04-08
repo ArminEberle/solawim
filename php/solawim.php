@@ -3,7 +3,7 @@
 * Plugin Name: solawim
 * Plugin URI: https://www.yourwebsiteurl.com/
 * Description: This is the very first plugin I ever created.
-* Version: 1.0
+* Version: 1.0-versionqualifier
 * Author: Armin Groll
 * Author URI: http://yourwebsiteurl.com/
 **/

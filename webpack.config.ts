@@ -177,3 +177,14 @@ export const prodConfig = Object.assign(cloneDeep(config), {
             }),
         ]),
 });
+
+let toExport = prodConfig;
+
+if (process.env.NODE_ENV === 'development') {
+    console.log('Building DEV');
+    toExport = devConfig as any;
+} else {
+    console.log('Building PROD');
+}
+
+export default toExport;

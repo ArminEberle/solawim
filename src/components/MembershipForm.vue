@@ -178,6 +178,11 @@ export default class MembershipComponent extends Vue {
     {value: 8, text: "8"},
     {value: 9, text: "9"},
     {value: 10, text: "10"},
+    {value: 11, text: "11"},
+    {value: 12, text: "12"},
+    {value: 13, text: "13"},
+    {value: 14, text: "14"},
+    {value: 15, text: "15"},
   ];
 
   breadOrderCountOptions = [
@@ -192,6 +197,11 @@ export default class MembershipComponent extends Vue {
     {value: 8, text: "8"},
     {value: 9, text: "9"},
     {value: 10, text: "10"},
+    {value: 11, text: "11"},
+    {value: 12, text: "12"},
+    {value: 13, text: "13"},
+    {value: 14, text: "14"},
+    {value: 15, text: "15"},
   ];
 
   posOptions: { value: string; text: string }[] = [];

@@ -7,9 +7,8 @@
   "private": true,
   "scripts": {
     "eslint": "eslint --ext .js,.vue,.ts src",
-    "dev": "cross-env NODE_ENV=development webpack --watch",
-    "devLikeProd": "cross-env NODE_ENV=production webpack --watch",
-    "build": "cross-env NODE_ENV=production webpack --progress",
+    "dev": "gulp buildDev",
+    "build": "gulp buildProd",
     "buildFully": "yarn clean && yarn build",
     "buildDeploy": "yarn clean && yarn build",
     "clean": "rm -rf dist .build-tmp"
