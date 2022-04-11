@@ -45,38 +45,38 @@
         </p>
       </div>
       <div class="row">
-        <div class="col-2">
+        <div class="col-12 d-flex">
           <b-form-select
             v-model="formdata.orders.bread.count"
             :options="breadOrderCountOptions"
             :disabled="!formdata.applied"
+            class="mr-3"
           ></b-form-select>
-        </div>
-        <div class="col text-left">
           Anteil(e) Brot zum
           <b-form-select
             v-model="formdata.orders.bread.factor"
             :options="factorOptions"
             :disabled="!formdata.applied"
+            class="mx-3"
           ></b-form-select>
           Beitrag <b>({{ breadPrice }} EUR / ganzer Anteil</b>)
         </div>
       </div>
       <div class="row">
-        <div class="col-2">
+        <div class="col-12 d-flex">
           <b-form-select
             v-model="formdata.orders.meat.count"
             :options="meatOrderCountOptions"
             :disabled="!formdata.applied"
             @change="meatCountChanged"
+            class="mr-3"
           ></b-form-select>
-        </div>
-        <div class="col">
           Anteil(e) Milchprodukte / Fleisch zum
           <b-form-select
             v-model="formdata.orders.meat.factor"
             :options="meatFactorOptions"
             :disabled="!formdata.applied"
+            class="mx-3"
           ></b-form-select>
           Beitrag <b>({{ meatPrice }} EUR / ganzer Anteil</b>)
         </div>

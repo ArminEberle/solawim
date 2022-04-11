@@ -13,8 +13,8 @@ const config = {
     mode: 'development',
     output: {
     // filename: '[contenthash].js',
-        // filename: '[name].js',
-        filename: '[name].[contenthash].js',
+        filename: '[name].js',
+        // filename: '[name].[contenthash].js',
         // chunkFilename: 'cacheme-[contenthash].js',
         path: path.resolve(outpath, 'mime'),
         // this comment just as a reminder - in other types of devtools, this (or something similar) is required
@@ -177,6 +177,7 @@ export const prodConfig = Object.assign(cloneDeep(config), {
             }),
         ]),
 });
+(prodConfig as any).output.filename = '[name].[contenthash].js';
 
 let toExport = prodConfig;
 
