@@ -1,0 +1,7 @@
+/** variables */
+:root {
+    --default-dist: 1rem;
+    --vertical-margin: var(--default-dist); 
+    --color-bold: #536942;
+    --color-white: #FFF;
+}

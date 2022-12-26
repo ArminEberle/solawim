@@ -1,0 +1,36 @@
+/* layout */
+.dfh {
+    display: flex;
+    gap: 2rem;
+}
+
+.dfv {
+    margin-top: var(--vertical-margin);
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+@each $type in start, end, center, between, around, evenly {
+    .jc-$(type) {
+        justify-content: $(type);
+    }
+}
+
+article {
+    padding-right: var(--default-dist);
+    padding-left: var(--default-dist);
+}
+
+@media screen and (min-width: calc(740px + 2rem)) {
+    article {
+        padding: unset;
+        display: grid;
+        grid-template-columns: 1fr 740px 1fr;
+    }
+    
+    article > * {
+        grid-column: 2;
+    }
+}

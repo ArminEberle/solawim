@@ -1,0 +1,59 @@
+{
+	"compilerOptions": {
+		"target": "ES2019",
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"lib": [
+			"ES2019",
+			"DOM"
+		],
+		"types": [
+			"jake"
+		],
+
+		"rootDir": ".",
+        "baseUrl": "./",
+		"outDir": ".build-tmp/tsc",
+
+		"strict": true,
+		"alwaysStrict": true,
+		"strictFunctionTypes": true,
+		"strictNullChecks": true,
+		"strictPropertyInitialization": true,
+
+		"forceConsistentCasingInFileNames": true,
+		"noImplicitAny": true,
+		"noImplicitReturns": true,
+		"noImplicitThis": true,
+		"noFallthroughCasesInSwitch": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"downlevelIteration": true,
+		"declaration": true,
+		"allowJs": true,
+		"checkJs": false,
+		"resolveJsonModule": true,
+
+		"jsx": "react",
+
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"pretty": true
+	},
+	"include": [
+        "src/**/*",
+        "*.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        ".build-tmp"
+    ],
+	"ts-node": {
+        "require": [
+            "tsconfig-paths/register"
+        ]
+    }
+}
