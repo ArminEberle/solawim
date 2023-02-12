@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import MembersPage from 'src/members/pages/MembersPage';
+import { MemberSelfManagementPage } from 'src/members/pages/MemberSelfManagementPage';
 
-const root = ReactDOM.createRoot(document.getElementsByTagName('body')[0] as Element);
-root.render(<MembersPage />);
+const root = ReactDOM.createRoot(document.getElementById('solawim_membership') as Element);
+root.render(<MemberSelfManagementPage />);

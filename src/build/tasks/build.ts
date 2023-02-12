@@ -11,8 +11,8 @@ export default {
             import('src/build/config/vite.build.config'),
         ]);
         const config = await vite.defineConfig(buildConfig.default) as UserConfig;
-        console.log(config);
         await vite.build(config);
     },
     desc: 'This my description',
+    // dependencies: ['generateJsonSchema'],
 } as Task;

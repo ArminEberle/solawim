@@ -3,5 +3,8 @@
     --default-dist: 1rem;
     --vertical-margin: var(--default-dist); 
     --color-bold: #536942;
+    --color-bold-light: #93A982;
     --color-white: #FFF;
+    --color-form-background: #F2F2F2;
+    --color-background: #F6F8F5;
 }

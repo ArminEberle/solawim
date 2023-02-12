@@ -12,13 +12,4 @@ export default {
     },
     plugins: [
     ],
-    // optimizeDeps: {
-    //     esbuildOptions: {
-    //         define: {
-    //             // global: 'globalThis',
-    //         },
-    //         plugins: [
-    //         ],
-    //     },
-    // },
 } as UserConfig;

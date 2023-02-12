@@ -9,7 +9,7 @@ button.btn {
     font-weight: bold;
     transition: all .3s;
     text-decoration: none;
-    border: solid 1px var(--color-bold);
+    border: solid 3px var(--color-bold);
     border-radius: 4px 4px 4px 4px;
     padding: 0.5rem 0.5rem;
     line-height: 1.7;
@@ -18,7 +18,13 @@ button.btn {
     color: var(--color-bold);
 }
 
-button.btn:hover {
+button.btn:disabled {
+    border: solid 1px var(--color-bold-light);
+    color: var(--color-bold-light);
+}
+
+button.btn:hover:not(:disabled), button.btn:focus:not(:disabled) {
     background-color: var(--color-bold);
+    border: solid 3px black;
     color: var(--color-white);
 }

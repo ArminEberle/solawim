@@ -1,6 +1,6 @@
 import React from 'react';
-import { JustifyContentProp } from 'src/layout/types/JustifyContentProp';
-import Vertical from 'src/layout/Vertical';
+import type { JustifyContentProp } from 'src/layout/types/JustifyContentProp';
+import { Vertical } from 'src/layout/Vertical';
 
-export default (props: React.PropsWithChildren & JustifyContentProp) =>
-    <article><Vertical jc={props.jc}>{props.children}</Vertical></article>;
+export const Page = (props: React.PropsWithChildren & JustifyContentProp) =>
+    <div><Vertical jc={props.jc}>{props.children}</Vertical></div>;

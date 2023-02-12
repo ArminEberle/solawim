@@ -1,15 +1,17 @@
 import React from 'react';
-import Button from 'src/atoms/Button';
-import { ButtonStyleProp } from 'src/atoms/types/ButtonStyleProp';
-import { HrefProp } from 'src/atoms/types/HrefProp';
+import { Button } from 'src/atoms/Button';
+import type { ButtonStyleProp } from 'src/atoms/types/ButtonStyleProp';
+import type { HrefProp } from 'src/atoms/types/HrefProp';
+import type { TabIndexProp } from 'src/atoms/types/TabIndexProp';
 
-export default (props: React.PropsWithChildren 
-    & ButtonStyleProp
-    & HrefProp
+export type ButtonLinkOptions = React.PropsWithChildren & ButtonStyleProp & HrefProp & TabIndexProp;
+
+export const ButtonLink = (options: ButtonLinkOptions
 ) =>
-<Button 
-    style={props.style} 
-    onClick={() => window.location.href = props.href}
->
-    {props.children}
-</Button>
+    <Button
+        style={options.style}
+        onClick={() => window.location.href = options.href}
+        tabIndex={options.tabIndex}
+    >
+        {options.children}
+    </Button>;

@@ -1,0 +1,9 @@
+.checkbox {
+  display: flex;
+  justify-content: flex-start;
+}
+.checkbox > .i {
+    transform: scale(1.5);
+    margin-right: 0.5rem;
+    flex-grow: 0;
+}

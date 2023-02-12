@@ -6,14 +6,6 @@ export default {
     server: {
         port: 8080,
         open: true,
-        // proxy: {
-        //     '/master-data': 'http://localhost:3004',
-        //     '/authenticate': 'http://localhost:3004',
-        //     '/analytics': {
-        //         target: 'http://localhost:3001',
-        //         ws: true,
-        //     },
-        // },
     },
     clearScreen: true,
 } as UserConfig;

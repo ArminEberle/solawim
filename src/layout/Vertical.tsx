@@ -1,5 +1,5 @@
 import React from 'react';
-import { JustifyContentProp } from 'src/layout/types/JustifyContentProp';
+import type { JustifyContentProp } from 'src/layout/types/JustifyContentProp';
 
-export default (props: React.PropsWithChildren & JustifyContentProp) =>
-    <div className={'dfv jc-'+(props.jc ?? 'start')}>{props.children}</div>;
+export const Vertical = (props: React.PropsWithChildren & JustifyContentProp) =>
+    <div className={'dfv jc-' + (props.jc ?? 'start')}>{props.children}</div>;
