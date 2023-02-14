@@ -1,4 +1,6 @@
-const OFF = 0, WARN = 1, ERROR = 2;
+const OFF = 0,
+    WARN = 1,
+    ERROR = 2;
 
 module.exports = {
     root: true,
@@ -9,9 +11,9 @@ module.exports = {
         '**/.build-tmp/**',
         'depot/**/*',
         'src/pqs-communication/structs',
-        'src/build/.eslintrc.js'
+        'src/build/.eslintrc.js',
     ],
-    parser: '@typescript-eslint/parser',  // Specifies the ESLint parser
+    parser: '@typescript-eslint/parser', // Specifies the ESLint parser
     // plugins: {
     //     '@typescript-eslint': (require('@typescript-eslint/eslint-plugin')) as any,
     //     'unused-imports': (require('eslint-plugin-unused-imports')) as any,
@@ -26,17 +28,22 @@ module.exports = {
         'simple-import-sort',
         'regex',
     ],
-    extends: ['plugin:@typescript-eslint/recommended',  // Uses the recommended rules from
+    extends: [
+        'plugin:react-hooks/recommended',
+        'plugin:@typescript-eslint/recommended', 
+        'prettier/react',
+        'prettier/standard',
+        // Uses the recommended rules from
         // the
         // @typescript-eslint/eslint-plugin
     ],
     parserOptions: {
-        ecmaVersion: 2015,  // Allows for the parsing of modern ECMAScript features
-        sourceType: 'module',  // Allows for the use of imports
+        ecmaVersion: 2015, // Allows for the parsing of modern ECMAScript features
+        sourceType: 'module', // Allows for the use of imports
         project: ['./tsconfig.json'],
     },
     env: {
-        browser: true, node: true
+        browser: true, node: true,
     },
     rules: {
         // Place to specify ESLint rules. Can be used to overwrite rules
@@ -54,12 +61,12 @@ module.exports = {
         '@typescript-eslint/ban-types': [ERROR],
         '@typescript-eslint/consistent-type-imports': [ERROR],
         'for-direction': [ERROR],
-        'max-statements': [ WARN, {
+        'max-statements': [WARN, {
             max: 100,
         }],
-        'max-depth': [ WARN ],
+        'max-depth': [WARN],
         'no-nested-ternary': [ERROR],
-        'no-mixed-operators': [ WARN ],
+        'no-mixed-operators': [WARN],
         'require-await': [ERROR],
         'no-return-await': [ERROR],
         '@typescript-eslint/no-misused-promises': [
@@ -67,7 +74,7 @@ module.exports = {
             {
                 checksConditionals: true,
                 checksVoidReturn: false,
-            }
+            },
         ],
         '@typescript-eslint/await-thenable': [ERROR],
         '@typescript-eslint/no-floating-promises': [WARN],
@@ -119,7 +126,7 @@ module.exports = {
         // from sql databases which are usually not  camel cased.
         '@typescript-eslint/camelcase': [OFF],
         '@typescript-eslint/member-ordering': [WARN, {
-            'default': ['field', 'constructor', 'method']
+            'default': ['field', 'constructor', 'method'],
         }], // Only FIXME and XXX are forbidden. TODO is still allowed
         '@typescript-eslint/interface-name-prefix': [OFF],
         '@typescript-eslint/naming-convention': [ERROR,
@@ -148,9 +155,9 @@ module.exports = {
             },
         ],
         'no-warning-comments': [ERROR, { 'terms': ['fixme', 'xxx'], 'location': 'start' }],
-        'max-len': [ERROR, 200, { "ignoreTemplateLiterals": true }],
+        'max-len': [ERROR, 200, { 'ignoreTemplateLiterals': true }],
         '@typescript-eslint/semi': [ERROR],
-        '@typescript-eslint/comma-dangle': [ERROR, 'always-multiline'],
+        '@typescript-eslint/comma-dangle': [ERROR, 'always'],
         '@typescript-eslint/comma-spacing': [ERROR],
         'comma-style': [ERROR],
         'no-trailing-spaces': [ERROR],
@@ -193,33 +200,33 @@ module.exports = {
         'space-before-blocks': [ERROR],
         'space-before-function-paren': [ERROR, 'never'],
         'space-in-parens': [ERROR, 'never'],
-        "space-infix-ops": OFF,
-        "@typescript-eslint/space-infix-ops": [WARN],
+        'space-infix-ops': OFF,
+        '@typescript-eslint/space-infix-ops': [WARN],
         'unicode-bom': [ERROR],
         'wrap-regex': [ERROR],
         // 'sort-imports': [ERROR, {ignoreCase: true}],
         'no-unused-vars': 'off',
-        "regex/invalid": [
-            "error", [
+        'regex/invalid': [
+            'error', [
                 {
                     // prevent loading lodash completely
-                    regex: "from 'lodash';",
-                    message: "Please only import from lodash with direct imports, e.g. `import exists from 'lodash/exists';`"
-                }
-            ]
+                    regex: 'from \'lodash\';',
+                    message: 'Please only import from lodash with direct imports, e.g. `import exists from \'lodash/exists\';`',
+                },
+            ],
         ],
         'unused-imports/no-unused-imports': 'error',
         'unused-imports/no-unused-vars': [
             'warn',
-            { 'vars': 'all', 'varsIgnorePattern': '^_', 'args': 'after-used', 'argsIgnorePattern': '^_' }
+            { 'vars': 'all', 'varsIgnorePattern': '^_', 'args': 'after-used', 'argsIgnorePattern': '^_' },
         ],
-        "no-relative-import-paths/no-relative-import-paths": [
+        'no-relative-import-paths/no-relative-import-paths': [
             ERROR,
             {
-                "allowSameFolder": false,
-            }
+                'allowSameFolder': false,
+            },
         ],
-        "simple-import-sort/imports": "error",
-        "simple-import-sort/exports": "error",
-    }
+        'simple-import-sort/imports': 'error',
+        'simple-import-sort/exports': 'error',
+    },
 };

@@ -1,4 +1,3 @@
-
 import 'src/css/form.css';
 
 import { electronicFormatIBAN } from 'ibantools';
@@ -18,7 +17,10 @@ import { Horizontal } from 'src/layout/Horizontal';
 import { Page } from 'src/layout/Page';
 import { Vertical } from 'src/layout/Vertical';
 import {
-    MemberSelfManagementPageConditions, MemberSelfManagementPageInto, MemberSelfManagementPagePassiveHint, MemberSelfManagementPageYesIWant
+    MemberSelfManagementPageConditions,
+    MemberSelfManagementPageInto,
+    MemberSelfManagementPagePassiveHint,
+    MemberSelfManagementPageYesIWant,
 } from 'src/members/pages/MemberSelfManagementPageText';
 import type { MemberData } from 'src/members/types/MemberData';
 import { emptyMemberData } from 'src/members/types/MemberData';
@@ -88,16 +90,16 @@ export const MemberSelfManagementPage = (props: React.PropsWithChildren) => {
             solidar: data.brotSolidar,
             price: prices.brot,
         })
-            + calculatePositionSum({
-                amount: data.fleischMenge,
-                solidar: data.fleischSolidar,
-                price: prices.fleisch,
-            })
-            + calculatePositionSum({
-                amount: data.veggieMenge,
-                solidar: data.veggieSolidar,
-                price: prices.veggie,
-            });
+        + calculatePositionSum({
+            amount: data.fleischMenge,
+            solidar: data.fleischSolidar,
+            price: prices.fleisch,
+        })
+        + calculatePositionSum({
+            amount: data.veggieMenge,
+            solidar: data.veggieSolidar,
+            price: prices.veggie,
+        });
 
     const isDirty = !isEqual(formDataState, serverState);
     globalDirty = isDirty;
@@ -111,22 +113,22 @@ export const MemberSelfManagementPage = (props: React.PropsWithChildren) => {
                     <MemberSelfManagementPageYesIWant />
                     <MemberSelfManagementPageConditions />
                     <MemberSelfManagementPagePassiveHint />
-                    <br/>
+                    <br />
 
                     {isDirty && <Alert>Bitte speichern (ganz unten) nicht vergessen</Alert>}
-                    {!isDirty && <div><p className="alert">Diese Daten haben wir momentan von Dir gespeichert:</p><br/></div>}
+                    {!isDirty && <div><p className="alert">Diese Daten haben wir momentan von Dir gespeichert:</p><br /></div>}
 
                     <form className="pure-form" onSubmit={handleSubmit}>
                         <Horizontal jc="space-between">
                             <Checkbox {...register('member')}>
-                            Ja ich möchte dabei sein in der Saison April 2023 / März 2024
+                                Ja ich möchte dabei sein in der Saison April 2023 / März 2024
                             </Checkbox>
                             <Checkbox {...register('member')} negate={true}>
-                            Nein, ich bin nicht dabei.
+                                Nein, ich bin nicht dabei.
                             </Checkbox>
                         </Horizontal>
 
-                        <br/>
+                        <br />
 
                         <h3>Deine Anteile</h3>
 
@@ -151,7 +153,7 @@ export const MemberSelfManagementPage = (props: React.PropsWithChildren) => {
                                 flexGrow: 1,
                             }}>
                                 <small >
-                        ({calculatePositionPrice({
+                                    ({calculatePositionPrice({
                                         price: prices.brot,
                                         solidar: formDataState.brotSolidar,
                                     })} EUR / pro Anteil)
@@ -193,7 +195,7 @@ export const MemberSelfManagementPage = (props: React.PropsWithChildren) => {
                                 flexGrow: 1,
                             }}>
                                 <small >
-                        ({calculatePositionPrice({
+                                    ({calculatePositionPrice({
                                         price: prices.fleisch,
                                         solidar: formDataState.fleischSolidar,
                                     })} EUR / pro Anteil)
@@ -234,7 +236,7 @@ export const MemberSelfManagementPage = (props: React.PropsWithChildren) => {
                                 flexGrow: 1,
                             }}>
                                 <small >
-                        ({calculatePositionPrice({
+                                    ({calculatePositionPrice({
                                         price: prices.veggie,
                                         solidar: formDataState.veggieSolidar,
                                     })} EUR / pro Anteil)
@@ -253,16 +255,16 @@ export const MemberSelfManagementPage = (props: React.PropsWithChildren) => {
                                 style={{ fontWeight: 'bold', textAlign: 'end', paddingRight: '1em' }}
                             />
                         </Horizontal>
-                        <br/>
+                        <br />
                         {calculateTotalSum(formDataState) > 0
-                && <p className="alert">
-                    In Summe werde ich dann ab April 2023 bis einschließlich März 2024 zum Anfang jeden
-                    Monats <b>{calculateTotalSum(formDataState)},-&nbsp;EUR</b> bezahlen.
-                </p>
+                            && <p className="alert">
+                                In Summe werde ich dann ab April 2023 bis einschließlich März 2024 zum Anfang jeden
+                                Monats <b>{calculateTotalSum(formDataState)},-&nbsp;EUR</b> bezahlen.
+                            </p>
                         }
-                        <br/>
+                        <br />
                         <p>
-                Abholen möchte ich die Anteile dann wöchentlich im Abholraum:
+                            Abholen möchte ich die Anteile dann wöchentlich im Abholraum:
                         </p>
                         <Select
                             options={abholraumOptions}
@@ -396,7 +398,7 @@ export const MemberSelfManagementPage = (props: React.PropsWithChildren) => {
                                 />
                             </Horizontal>
                         </Vertical>
-                        <br/>
+                        <br />
                         <Horizontal jc="flex-end">
                             <Button style="primary" type="submit" disabled={!isDirty} tabIndex={0}>
                                 Speichern{!isDirty && <small> (Es gibt nichts zu speichern)</small>}

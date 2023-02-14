@@ -131,35 +131,24 @@ function clearUserData(string $tablename, string $accountId)
 function getAllMemberData()
 {
     ensureDBInitialized();
+    global $membershipTable;
     global $wpdb;
     $results = $wpdb->get_results(
         $wpdb->prepare("
-        SELECT 	u.id,
-              u.user_nicename,
-              u.user_email,
-              m.content as membership,
-              p.content as person,
-              s.content as sepa
-        FROM 	{$wpdb->prefix}users u
-              left join {$wpdb->prefix}solawim_membership m on u.ID = m.user_id
-              left join {$wpdb->prefix}solawim_person p on u.ID = p.user_id
-              left join {$wpdb->prefix}solawim_sepa s on u.ID = s.user_id
-        where m.content is not null
-              or p.content is not null
-              or s.content is not null
-        order by u.user_nicename
+        SELECT  u.id,
+                u.user_nicename,
+                u.user_email,
+                m.content as membership
+        FROM    {$wpdb->prefix}users u
+                LEFT JOIN {$membershipTable} m on u.ID = m.user_id
+        WHERE   m.content IS NOT NULL
+        ORDER BY u.user_nicename
         "),
         ARRAY_A
     );
     foreach ($results as &$row) {
         if (!is_null($row["membership"])) {
             $row["membership"] = json_decode($row["membership"]);
-        }
-        if (!is_null($row["person"])) {
-            $row["person"] = json_decode($row["person"]);
-        }
-        if (!is_null($row["sepa"])) {
-            $row["sepa"] = json_decode($row["sepa"]);
         }
     }
     return $results;

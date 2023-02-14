@@ -1,12 +1,8 @@
-import { MembershipData } from './MembershipData';
-import { PersonData } from './PersonData';
-import { SepaData } from './SepaData';
+import { MemberData } from 'src/members/types/MemberData';
 
 export type AllMembersData = {
     id: string;
     user_nicename: string;
     user_email: string;
-    membership?: MembershipData;
-    person?: PersonData;
-    sepa?: SepaData;
+    membership?: MemberData;
 }[];
