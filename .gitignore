@@ -2,3 +2,4 @@ node_modules
 lib
 .history
 .build-tmp
+yarn-error.log

@@ -17,13 +17,13 @@ import { SolidaritaetSelect } from 'src/atoms/SolidaritaetSelect';
 import { Horizontal } from 'src/layout/Horizontal';
 import { Page } from 'src/layout/Page';
 import { Vertical } from 'src/layout/Vertical';
-import { calculatePositionPrice } from 'src/members/pages/calculatePositionPrice';
-import { calculatePositionSum } from 'src/members/pages/calculatePositionSum';
 import {
     MemberSelfManagementPageConditions, MemberSelfManagementPageInto, MemberSelfManagementPagePassiveHint, MemberSelfManagementPageYesIWant
 } from 'src/members/pages/MemberSelfManagementPageText';
 import type { MemberData } from 'src/members/types/MemberData';
 import { emptyMemberData } from 'src/members/types/MemberData';
+import { calculatePositionPrice } from 'src/members/utils/calculatePositionPrice';
+import { calculatePositionSum } from 'src/members/utils/calculatePositionSum';
 import { LoggedInScope } from 'src/members/utils/LoggedInScope';
 import { formMe } from 'src/utils/forms';
 import { prices } from 'src/utils/prices';

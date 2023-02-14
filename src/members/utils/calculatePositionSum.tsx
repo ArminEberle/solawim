@@ -1,4 +1,4 @@
-import { calculatePositionPrice } from 'src/members/pages/calculatePositionPrice';
+import { calculatePositionPrice } from 'src/members/utils/calculatePositionPrice';
 
 export type CalculatePositionSumParams = {
     amount: string | number;

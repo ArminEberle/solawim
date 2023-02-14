@@ -20,6 +20,7 @@
     "gatsby-cli": "^5.3.1",
     "glob": "^8.0.3",
     "ibantools": "^4.2.2",
+    "lodash.clonedeep": "^4.5.0",
     "lodash.isequal": "^4.5.0",
     "postcss": "^8.4.20",
     "postcss-each": "^1.1.0",

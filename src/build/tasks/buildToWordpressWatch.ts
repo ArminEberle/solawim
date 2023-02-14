@@ -1,3 +1,4 @@
+import cloneDeep from 'lodash.clonedeep';
 import { localWebServerPath } from 'src/build/config/buildConfig';
 import type { UserConfig } from 'vite';
 
@@ -12,22 +13,39 @@ export default {
         ]);
         const buildConfig = buildConfigModule.default;
         if (buildConfig.build) {
-            buildConfig.build.outDir = localWebServerPath;
+            buildConfig.build.outDir = localWebServerPath + '/member';
             buildConfig.build.emptyOutDir = false;
             buildConfig.build.watch = {};
             buildConfig.build.minify = false;
             if (buildConfig.build.rollupOptions) {
+                // buildConfig.build.rollupOptions.input = [
+
+                // ];
+                buildConfig.build.rollupOptions.input
+                    = 'src/members/entrypoints/solawim_member.tsx';
+
                 buildConfig.build.rollupOptions.output = {
                     sourcemap: true,
-                    assetFileNames: 'mime/[name].[ext]',
-                    entryFileNames: 'mime/[name].js',
-                    chunkFileNames: 'mime/[name].js',
+                    assetFileNames: '[name].[ext]',
+                    entryFileNames: '[name].js',
+                    chunkFileNames: '[name].js',
                 };
             }
         }
-        const config = await vite.defineConfig(buildConfig) as UserConfig;
 
-        await vite.build(config);
+        const memberConfig = await vite.defineConfig(cloneDeep(buildConfig)) as UserConfig;
+
+        if (buildConfig.build?.rollupOptions) {
+            buildConfig.build.outDir = localWebServerPath + '/manage';
+            buildConfig.build.rollupOptions.input = 'src/members/entrypoints/solawim_manage.tsx';
+        }
+        const manageConfig = await vite.defineConfig(cloneDeep(buildConfig)) as UserConfig;
+
+        await Promise.all([
+            vite.build(memberConfig),
+            vite.build(manageConfig),
+        ]);
+        // await vite.build(config);
     },
     desc: '',
 };

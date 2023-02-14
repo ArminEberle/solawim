@@ -1,3 +1,5 @@
+import 'src/css/index.css';
+
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { MemberSelfManagementPage } from 'src/members/pages/MemberSelfManagementPage';
