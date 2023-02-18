@@ -2,7 +2,7 @@ import React from 'react';
 import { ButtonLink } from 'src/atoms/ButtonLink';
 import { Page } from 'src/layout/Page';
 
-export const LoginPage = (props: React.PropsWithChildren) => {
+export const LoginPage = () => {
     return <Page>
         <h3>
       Du willst Mitglied werden?

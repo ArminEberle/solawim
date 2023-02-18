@@ -16,7 +16,7 @@ export type FormMeOptions<T> = {
     onSubmit?: (data: T, setState: (data: T) => void) => unknown;
 };
 
-export type FormMeReturn<T> = {
+export type FormMeReturn<T extends Record<string, unknown>> = {
     register: <K extends keyof T>(propName: K,
         valueTransformer?: ((value: T[K]) => T[K])) =>
     {
@@ -30,12 +30,11 @@ export type FormMeReturn<T> = {
     setState: React.Dispatch<React.SetStateAction<T>>,
 };
 
-export const formMe = <T>(options: FormMeOptions<T>): FormMeReturn<T> => {
+export const formMe = <T extends Record<string, unknown>>(options: FormMeOptions<T>): FormMeReturn<T> => {
     const [stateData, setStateData] = useState(options.data);
 
     return {
-        register: <K extends keyof T>(propName: K,
-            valueTransformer?: ((value: T[K]) => T[K])) => {
+        register: <K extends keyof T>(propName: K, valueTransformer?: ((value: T[K]) => T[K])) => {
             return {
                 value: stateData[propName],
                 onChange: (event: ChangeEvent<HTMLInputElement>) => {
@@ -53,7 +52,7 @@ export const formMe = <T>(options: FormMeOptions<T>): FormMeReturn<T> => {
                     newState[propName] = newValue as any;
                     setStateData(newState);
                 },
-                name: propName,
+                name: propName as string,
             };
         },
         handleSubmit: (event: FormEvent) => {

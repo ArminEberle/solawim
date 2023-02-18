@@ -1,6 +1,5 @@
 import React, { CSSProperties } from 'react';
 import { Output } from 'src/atoms/Output';
-import { Output } from 'src/atoms/Output';
 import { Horizontal } from 'src/layout/Horizontal';
 import { Vertical } from 'src/layout/Vertical';
 import { SumState } from 'src/members/pages/emptySumState';
@@ -20,8 +19,12 @@ export function VereinsverwaltungSums(props: { sumState: SumState; }) {
         <Vertical>
             <b>Insgesamt</b>
             <Horizontal style={{gap: 0}}>
-                <Output style={{ fontSize: '1.3em', fontWeight: 'bolder', textDecoration: 'underline' }} label="Anzahl konsumierende Accounts" value={String(props.sumState.members)} />
-                <Output style={{ fontSize: '1.3em', fontWeight: 'bolder', textDecoration: 'underline' }} label="Totale Summe (EUR)" value={String(props.sumState.totalSum)} />
+                <Output style={{ fontSize: '1.3em', fontWeight: 'bolder' }} label="Anzahl konsumierende Accounts" value={String(props.sumState.members)} />
+                <Output style={{ 
+                    fontSize: '1.3em', 
+                    fontWeight: 'bolder', 
+                    textDecoration: 'underline',
+                }} label="Totale Summe (EUR)" value={String(props.sumState.totalSum)} />
             </Horizontal>
             <b>Brot</b>
             <Horizontal style={{gap: 0}}>

@@ -3,6 +3,7 @@ import type { Task } from 'src/build/types/Task';
 
 export default {
     action: (name: string) => {
+        console.log(name);
         execSync('yarn vite serve .build-tmp/site --open index.html', {
             stdio: 'inherit',
         });

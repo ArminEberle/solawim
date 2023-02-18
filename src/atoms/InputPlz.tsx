@@ -11,7 +11,7 @@ export type InputPlzProps = {
     onChange?: ChangeEventHandler<HTMLInputElement>
 };
 
-const cleanInputString = (input: string) => input.replaceAll(/([^0-9])+/g, '').substring(0, 5);
+const cleanInputString = (input: string) => input.replace(/([^0-9])+/g, '').substring(0, 5);
 
 export const InputPlz = (options: InputPlzProps) => {
     const [value, setValue] = useState(options.value);

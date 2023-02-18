@@ -7,7 +7,7 @@ import { emptyMemberData } from 'src/members/types/MemberData';
 
 export const getMyData = async(): Promise<MemberData> => {
     if (isDeveloping) {
-        return new Promise((resolve, fail) => {
+        return new Promise((resolve) => {
             setTimeout(() => {
                 resolve({
                     ...emptyMemberData(),

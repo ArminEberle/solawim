@@ -2,7 +2,7 @@ import type { Task } from 'src/build/types/Task';
 import type { UserConfig } from 'vite';
 
 export default {
-    action: async(name: string) => {
+    action: async() => {
         const [
             vite,
             devConfig,

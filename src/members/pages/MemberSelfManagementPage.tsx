@@ -4,7 +4,7 @@ import { electronicFormatIBAN } from 'ibantools';
 import isEqual from 'lodash.isequal';
 import React, { useState } from 'react';
 import { getMyData } from 'src/api/getMyData';
-import { setMyData } from 'src/api/setMyData';
+import { setMyData as uploadMyData } from 'src/api/setMyData';
 import { Alert } from 'src/atoms/Alert';
 import { Button } from 'src/atoms/Button';
 import { Checkbox } from 'src/atoms/Checkbox';
@@ -42,9 +42,10 @@ window.addEventListener('beforeunload', (event) => {
         event.preventDefault();
         return event.returnValue = '';
     }
+    return null;
 });
 
-export const MemberSelfManagementPage = (props: React.PropsWithChildren) => {
+export const MemberSelfManagementPage = () => {
     const [serverState, setServerState] = useState(emptyMemberData());
     const [reloadState, setReloadState] = useState(true);
 
@@ -56,7 +57,8 @@ export const MemberSelfManagementPage = (props: React.PropsWithChildren) => {
     } = formMe({
         data: emptyMemberData(),
         onSubmit: async(data, setData) => {
-            const result = await setMyData(data);
+            await uploadMyData(data);
+            setData(data);
             setReloadState(true);
         },
     });

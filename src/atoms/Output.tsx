@@ -1,6 +1,4 @@
 import React, { CSSProperties } from "react";
-import { ReactNode } from "react";
-import { Vertical } from "src/layout/Vertical";
 import './Output.css';
 
 export type OutputProps = {

@@ -4,7 +4,7 @@ import { copyFolderRecursive } from 'src/utils/copyFiles';
 
 export default {
     action: () => {
-        return new Promise(async(resolve) => {
+        return new Promise(async() => {
             await copyFolderRecursive('php', localWebServerPath);
             const watcher = chokidar.watch('php', {
                 persistent: true,

@@ -11,4 +11,5 @@ export function useLoggedIn() {
             setLoggedIn(true);
         }
     });
+    return false;
 }
