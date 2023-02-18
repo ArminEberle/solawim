@@ -1,6 +1,17 @@
 .output-wrapper {
     border: 1pt solid black;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0.5rem;
+    gap: 0.25rem;
+}
+.output-label {
+    text-align: left;
+    color: #5d5d5d;
+    font-size: 12px;
 }
 .output-content {
-    text-align: 'end';
+    text-align: right;
 }

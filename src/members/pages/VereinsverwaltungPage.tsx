@@ -43,12 +43,15 @@ export const VereinsverwaltungPage = () => {
                 <CollapsibleSection title='Übersicht'>
                     <VereinsverwaltungSums sumState={overallSumState.total} />
                 </CollapsibleSection>
+                <br/>
                 <CollapsibleSection title='Übersicht nach Abholraum' collapsed={true}>
                     {abholraumOptions.map(option => <>
+                        <br/>
                         <h3>{option.display}</h3>
                         <VereinsverwaltungSums sumState={overallSumState[option.value]} />
                     </>)}
                 </CollapsibleSection>
+                <br/>
                 <CollapsibleSection title='Mitglieder' collapsed={true}>
                             <Vertical>
 {

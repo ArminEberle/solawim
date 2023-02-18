@@ -1,7 +1,7 @@
 import React, { CSSProperties, ReactNode } from 'react';
 import type { JustifyContentProp } from 'src/layout/types/JustifyContentProp';
 
-type VerticalProps = {
+export type VerticalProps = {
     style?: CSSProperties;
     children?: ReactNode | undefined;
 } & JustifyContentProp;

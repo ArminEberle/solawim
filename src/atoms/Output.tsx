@@ -10,8 +10,8 @@ export type OutputProps = {
     // children?: ReactNode | undefined;
 }
 export const Output = (props: OutputProps) => {
-    <div className="output-wrapper" style={props.style}>
-        <div className="control-label">{props.label}</div>
+    return <div className="output-wrapper" style={props.style}>
+        <div className="output-label">{props.label}</div>
         <div className="output-content">{props.value}</div>
-    </div>
+    </div>;
 }
