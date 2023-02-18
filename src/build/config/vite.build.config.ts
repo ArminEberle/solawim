@@ -11,6 +11,9 @@ export default {
         rollupOptions: {
             output: {
                 sourcemap: true,
+                assetFileNames: '[name]-[hash].[ext]',
+                entryFileNames: '[name]-[hash].js',
+                chunkFileNames: '[name]-[hash].js',
             },
             input: glob.sync(path.resolve(process.cwd(), 'content', '*.html')),
         },

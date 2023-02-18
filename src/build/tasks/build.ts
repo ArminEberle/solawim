@@ -1,6 +1,8 @@
 import type { Task } from 'src/build/types/Task';
 import type { UserConfig } from 'vite';
 import cloneDeep from 'lodash.clonedeep';
+import { viteOutPath } from 'src/build/config/buildConfig';
+import path from 'path';
 
 export default {
     action: async () => {
@@ -11,6 +13,8 @@ export default {
             import('vite'),
             import('src/build/config/vite.build.config'),
         ]);
+
+        console.log('Excuting build');
         const buildConfig = buildConfigModule.default;
         
         const memberConfigPlain = cloneDeep(buildConfig);
@@ -20,7 +24,8 @@ export default {
         memberConfigPlain.build.emptyOutDir = false;
         memberConfigPlain.build.rollupOptions.input
         = 'src/members/entrypoints/solawim_member.tsx';
-        const memberConfig = await vite.defineConfig(cloneDeep(buildConfig)) as UserConfig;
+        memberConfigPlain.build.outDir = path.resolve(viteOutPath + '/member');
+        const memberConfig = await vite.defineConfig(memberConfigPlain) as UserConfig;
         
         const manageConfigPlain = cloneDeep(buildConfig);
         if(!manageConfigPlain.build || !manageConfigPlain.build.rollupOptions) {
@@ -28,9 +33,10 @@ export default {
         }
         manageConfigPlain.build.emptyOutDir = false;
         manageConfigPlain.build.rollupOptions.input
-            = 'src/members/entrypoints/solawim_manage.tsx';
-        const manageConfig = await vite.defineConfig(cloneDeep(buildConfig)) as UserConfig;
-
+        = 'src/members/entrypoints/solawim_manage.tsx';
+        manageConfigPlain.build.outDir = path.resolve(viteOutPath + '/manage');
+        const manageConfig = await vite.defineConfig(manageConfigPlain) as UserConfig;
+        
         await Promise.all([
             vite.build(memberConfig),
             vite.build(manageConfig),

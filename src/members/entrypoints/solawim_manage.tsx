@@ -9,7 +9,7 @@ import { has } from 'src/utils/has';
  */
 const targetElement = document.getElementById('solawim_manage') as Element;
 if (!has(targetElement)) {
-    alert('Konnte den Zielort nicht finden');
+    alert('Die Seite scheint kaputt zu sein.');
 }
 const root = ReactDOM.createRoot(targetElement);
 root.render(<VereinsverwaltungPage />);

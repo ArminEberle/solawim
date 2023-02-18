@@ -76,6 +76,7 @@ export const VereinsverwaltungPage = () => {
             <Select
                     options={abholraumOptions}
                     disabled={!memberRow.membership?.member}
+                    value={memberRow.membership?.abholraum}
                 />
         </form>
         </>
