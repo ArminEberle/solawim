@@ -2,7 +2,7 @@ import path from 'path';
 import type { UserConfig } from 'vite';
 
 export default {
-    appType: 'mpa',
+    appType: 'spa',
     base: '/',
     root: 'content',
     resolve: {

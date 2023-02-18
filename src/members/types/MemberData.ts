@@ -39,6 +39,8 @@ type ZeroAndHalfTo30 = '0' | '0.5' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '
 
 type Solidar = '-2' | '-1' | '0' | '1' | '2';
 
+export type Abholraum = 'hutzelberghof' | 'witzenhausen' | 'gertenbach';
+
 export type MemberData = {
     member: boolean;
     active: boolean;
@@ -50,7 +52,7 @@ export type MemberData = {
     veggieMenge: ZeroTo30,
     veggieSolidar: Solidar,
 
-    abholraum: 'hutzelberghof' | 'witzenhausen' | 'gertenbach',
+    abholraum: Abholraum,
 
     firstname: string,
     lastname: string,

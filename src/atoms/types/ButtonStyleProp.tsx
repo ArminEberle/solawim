@@ -1,3 +1,3 @@
 export type ButtonStyleProp = {
-    style: 'primary' | 'secondary';
+    buttonType?: 'primary' | 'secondary';
 };

@@ -5,9 +5,9 @@ import type { FormInputBaseProps } from 'src/atoms/types/FormInputBaseProps';
 import type { LayoutExtraProps } from 'src/atoms/types/LayoutExtraProps';
 import { layoutExtraProps } from 'src/utils/layoutExtraProps';
 
-export type SelectOption = {
+export type SelectOption<T extends string | number = string | number> = {
     display?: string;
-    value: string | number;
+    value: T;
 };
 
 export type SelectOptions = FormInputBaseProps<HTMLSelectElement> & {

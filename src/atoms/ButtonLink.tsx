@@ -9,7 +9,7 @@ export type ButtonLinkOptions = React.PropsWithChildren & ButtonStyleProp & Href
 export const ButtonLink = (options: ButtonLinkOptions
 ) =>
     <Button
-        style={options.style}
+        buttonType={options.buttonType}
         onClick={() => window.location.href = options.href}
         tabIndex={options.tabIndex}
     >

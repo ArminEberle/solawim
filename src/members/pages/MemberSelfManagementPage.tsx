@@ -10,7 +10,6 @@ import { Button } from 'src/atoms/Button';
 import { Checkbox } from 'src/atoms/Checkbox';
 import { Input } from 'src/atoms/Input';
 import { InputPlz } from 'src/atoms/InputPlz';
-import type { SelectOption } from 'src/atoms/Select';
 import { Select } from 'src/atoms/Select';
 import { SolidaritaetSelect } from 'src/atoms/SolidaritaetSelect';
 import { Horizontal } from 'src/layout/Horizontal';
@@ -31,25 +30,10 @@ import { formMe } from 'src/utils/forms';
 import { prices } from 'src/utils/prices';
 import { WaitForIt } from 'src/utils/WaitForIt';
 import { ibanValidator } from 'src/validators/ibanValidator';
+import { abholraumOptions } from 'src/utils/abholraumOptions';
+import { amountsToBook } from 'src/utils/amountsToBook';
 
 const required = true;
-
-const amountsToBook = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30];
-// const amountsToBookFleisch = [0, { value: 0.5, display: 'halber' }, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30];
-const abholraumOptions: SelectOption[] = [
-    {
-        value: 'hutzelberghof',
-        display: 'Hutzelberghof, Hilgershäuser Str. 20, Oberrieden, Bad Sooden-Allendorf',
-    },
-    {
-        value: 'witzenhausen',
-        display: 'Witzenhausen, Nordbahnhofstraße, beim Falafelladen, Witzenhausen',
-    },
-    {
-        value: 'gertenbach',
-        display: 'Witzenhausen/Gertenbach, Am Kirchhof, Witzenhausen',
-    },
-];
 
 let globalDirty = false;
 
@@ -177,7 +161,6 @@ export const MemberSelfManagementPage = (props: React.PropsWithChildren) => {
                             <h3 className="min-w-8 max-w-8">Fleich / Käse</h3>
                             <Select
                                 label="Anzahl"
-                                // options={amountsToBookFleisch}
                                 options={amountsToBook}
                                 maxWidth={6}
                                 required={required}
@@ -400,7 +383,7 @@ export const MemberSelfManagementPage = (props: React.PropsWithChildren) => {
                         </Vertical>
                         <br />
                         <Horizontal jc="flex-end">
-                            <Button style="primary" type="submit" disabled={!isDirty} tabIndex={0}>
+                            <Button buttonType="primary" type="submit" disabled={!isDirty} tabIndex={0}>
                                 Speichern{!isDirty && <small> (Es gibt nichts zu speichern)</small>}
                             </Button>
                         </Horizontal>

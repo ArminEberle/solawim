@@ -12,7 +12,7 @@ export default {
             output: {
                 sourcemap: true,
             },
-            input: glob.sync(path.resolve(process.cwd(), 'content', '*.html')),
+            // input: glob.sync(path.resolve(process.cwd(), 'content', '*.html')),
         },
     },
     // plugins: [
