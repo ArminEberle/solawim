@@ -28,6 +28,9 @@ export const MemberDetailMolecule = (props: MemberDetailMoleculeProps) => {
                     <DataElement label="Tel">{props.data.membership.tel}</DataElement>
                 </Horizontal>
                 <br />
+                <DataElement label="Abholraum" >
+                    {props.data.membership.abholraum}
+                </DataElement>
                 <Horizontal style={{ gap: "0px" }}>
                     <DataElement label="Brot&nbsp;Menge">{props.data.membership.brotMenge}</DataElement>
                     <DataElement label="Brot&nbsp;Solidar">{props.data.membership.brotSolidar}</DataElement>
