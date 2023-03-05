@@ -1,0 +1,24 @@
+.dl-container {
+    background: white;
+    border: solid 2px black;
+    padding: 1em;
+    
+}
+
+.dl-container a {
+    color: unset;
+}
+
+.dl-el {
+    margin: -3px -1px -3px -1px;
+    padding: 0.5em 1em 0.5em 1em;
+}
+.dl-el-la {
+    position: relative;
+    top: calc(-0.5rem + 2px);
+    left: calc(-0.5rem + 2px);
+    font-size: 0.75em;
+}
+.dl-el-ch {
+    font-sizing: 0.5em;
+}

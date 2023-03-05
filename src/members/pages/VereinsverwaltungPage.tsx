@@ -10,6 +10,7 @@ import 'src/css/form.css';
 import { Horizontal } from 'src/layout/Horizontal';
 import { Page } from 'src/layout/Page';
 import { Vertical } from 'src/layout/Vertical';
+import { MemberDetailMolecule } from 'src/members/pages/MemberDetailMolecule';
 import { AllMembersData } from 'src/members/types/AllMembersData';
 import { LoggedInScope } from 'src/members/utils/LoggedInScope';
 import { CollapsibleSection } from 'src/molecules/CollapsibleSection';
@@ -52,35 +53,41 @@ export const VereinsverwaltungPage = () => {
                     </>)}
                 </CollapsibleSection>
                 <br/>
-                <CollapsibleSection title='Mitglieder' collapsed={true}>
+                <CollapsibleSection title='Mitglieder' collapsed={false}>
                             <Vertical>
 {
-    allMembers.map(memberRow => {
-        return <>
-        <form onSubmit={preventDefault} style={{border: 'solid 1pt black', padding: '1rem'}}>
-            {memberRow.membership && <>
-            <h3>{memberRow.membership?.firstname} {memberRow.membership?.lastname}</h3>
-            <Checkbox value={memberRow.membership?.member}>Ist dabei</Checkbox>
-            <Horizontal>
-                <Input label='Vorname' value={memberRow.membership?.firstname} maxlen={30}/>
-                <Input label='Nachname' value={memberRow.membership?.lastname} maxlen={30}/>
-            </Horizontal>
-            </>}
-            <Horizontal key={memberRow.id} jc='flex-start' >
-                <Input label='ID' maxWidth={5} maxlen={10} value={memberRow.id} disabled={true} />
-                <Input label='Username' maxlen={10} value={memberRow.user_nicename} disabled={true} />
-                <Input label='Telefon' maxlen={30} value={memberRow.membership?.tel} disabled={true} />
-                <Input label='Email' maxlen={30} value={memberRow.user_email} disabled={true} />
-                <Button onClick={() => window.open('mailto:'+memberRow.user_email)} buttonType="secondary" style={{alignSelf: 'center'}}>Mail</Button>
-            </Horizontal>
-            <Select
-                    options={abholraumOptions}
-                    disabled={!memberRow.membership?.member}
-                    value={memberRow.membership?.abholraum}
-                />
-        </form>
-        </>
-    })
+    allMembers.map(memberRow => <>
+        <MemberDetailMolecule key={memberRow.id} data={memberRow} />
+        <br/>
+    </>
+    )
+    //     {
+    //     return <>
+    //     <form onSubmit={preventDefault} style={{border: 'solid 1pt black', padding: '1rem'}}>
+    //         {memberRow.membership && <>
+    //         <h3>{memberRow.membership?.firstname} {memberRow.membership?.lastname}</h3>
+    //         <Checkbox value={memberRow.membership?.member}>Ist dabei</Checkbox>
+    //         <Horizontal>
+    //             <Input label='Vorname' value={memberRow.membership?.firstname} maxlen={30}/>
+    //             <Input label='Nachname' value={memberRow.membership?.lastname} maxlen={30}/>
+    //         </Horizontal>
+    //         </>}
+    //         <Horizontal key={memberRow.id} jc='flex-start' >
+    //             <Input label='ID' maxWidth={5} maxlen={10} value={memberRow.id} disabled={true} />
+    //             <Input label='Username' maxlen={10} value={memberRow.user_nicename} disabled={true} />
+    //             <Input label='Telefon' maxlen={30} value={memberRow.membership?.tel} disabled={true} />
+    //             <Input label='Email' maxlen={30} value={memberRow.user_email} disabled={true} />
+    //             <Button onClick={() => window.open('mailto:'+memberRow.user_email)} buttonType="secondary" style={{alignSelf: 'center'}}>Mail</Button>
+    //         </Horizontal>
+    //         <Select
+    //                 options={abholraumOptions}
+    //                 disabled={!memberRow.membership?.member}
+    //                 value={memberRow.membership?.abholraum}
+    //             />
+    //     </form>
+    //     </>
+    // })
+    // })
 }
                             </Vertical>
                 </CollapsibleSection>
