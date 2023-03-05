@@ -1,8 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 
-async function copyFile(source: string, target: string): Promise<void> {
-    // If target is a directory, a new file with the same name will be created
+export async function copyFile(source: string, target: string): Promise<void> {
+    await fs.promises.mkdir(path.dirname(target), {recursive: true});
     if (fs.existsSync(target)) {
         if ((await fs.promises.lstat(target))
             .isDirectory()) {
@@ -11,7 +11,7 @@ async function copyFile(source: string, target: string): Promise<void> {
     }
 
     await fs.promises.writeFile(target, await fs.promises.readFile(source));
-    console.log('copied to file ' + target);
+    // console.log('copied to file ' + target);
 }
 
 export async function copyFolderRecursive(source: string, target: string): Promise<void> {

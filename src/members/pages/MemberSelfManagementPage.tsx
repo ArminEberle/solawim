@@ -32,6 +32,7 @@ import { WaitForIt } from 'src/utils/WaitForIt';
 import { ibanValidator } from 'src/validators/ibanValidator';
 import { abholraumOptions } from 'src/utils/abholraumOptions';
 import { amountsToBook } from 'src/utils/amountsToBook';
+import { calculateMemberTotalSum } from 'src/members/utils/calculateMemberTotalSum';
 
 const required = true;
 
@@ -69,23 +70,6 @@ export const MemberSelfManagementPage = () => {
         setServerState({ ...data });
         setReloadState(false);
     };
-
-    const calculateTotalSum = (data: MemberData) =>
-        calculatePositionSum({
-            amount: data.brotMenge,
-            solidar: data.brotSolidar,
-            price: prices.brot,
-        })
-        + calculatePositionSum({
-            amount: data.fleischMenge,
-            solidar: data.fleischSolidar,
-            price: prices.fleisch,
-        })
-        + calculatePositionSum({
-            amount: data.veggieMenge,
-            solidar: data.veggieSolidar,
-            price: prices.veggie,
-        });
 
     const isDirty = !isEqual(formDataState, serverState);
     globalDirty = isDirty;
@@ -241,10 +225,10 @@ export const MemberSelfManagementPage = () => {
                             />
                         </Horizontal>
                         <br />
-                        {calculateTotalSum(formDataState) > 0
+                        {calculateMemberTotalSum(formDataState) > 0
                             && <p className="alert">
                                 In Summe werde ich dann ab April 2023 bis einschließlich März 2024 zum Anfang jeden
-                                Monats <b>{calculateTotalSum(formDataState)},-&nbsp;EUR</b> bezahlen.
+                                Monats <b>{calculateMemberTotalSum(formDataState)},-&nbsp;EUR</b> bezahlen.
                             </p>
                         }
                         <br />

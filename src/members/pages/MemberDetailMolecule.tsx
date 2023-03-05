@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { DataElement } from 'src/atoms/DataElement';
 import { Horizontal } from "src/layout/Horizontal";
 import { Vertical } from "src/layout/Vertical";
@@ -7,6 +7,8 @@ import { AiOutlineMail } from 'react-icons/ai';
 import { calculatePositionSum } from 'src/members/utils/calculatePositionSum';
 import { prices } from 'src/utils/prices';
 import { calculateMemberTotalSum } from 'src/members/utils/calculateMemberTotalSum';
+import { Checkbox } from 'src/atoms/Checkbox';
+import { MemberEditMolecule } from 'src/members/pages/MemberEditMolecule';
 
 export type MemberDetailMoleculeProps = {
     data: SingleMemberData;
@@ -14,14 +16,17 @@ export type MemberDetailMoleculeProps = {
 }
 
 export const MemberDetailMolecule = (props: MemberDetailMoleculeProps) => {
+    const [editState, setEditState] = useState(false);
+
     return <Vertical key={props.key} className="dl-container">
         <h3>{props.data.membership?.firstname} {props.data.membership?.lastname} ({props.data.user_nicename})</h3>
         <Horizontal jc="space-between" style={{ gap: "0px" }}>
             <DataElement label="ID" className="fg-0">{props.data.id}</DataElement>
             <DataElement label="Email">{props.data.user_email}<a href={'mailto:' + props.data.user_email}><AiOutlineMail /></a></DataElement>
             <DataElement label="Gebucht" className="fg-0">{(props.data.membership && props.data.membership.member && <b>JA</b>) || "NEIN"}</DataElement>
+            <Checkbox value={editState} onChange={ev => setEditState(ev.target.checked)}>Edit this</Checkbox>
         </Horizontal>
-        {props.data.membership && props.data.membership.member &&
+        {!editState && props.data.membership && props.data.membership.member &&
             <>
                 <Horizontal jc="space-between" style={{ gap: "0px" }}>
                     <DataElement label="Adresse">{props.data.membership.street}, {props.data.membership.plz} {props.data.membership.city}</DataElement>
@@ -87,10 +92,17 @@ export const MemberDetailMolecule = (props: MemberDetailMoleculeProps) => {
                 </Horizontal>
                 <DataElement label="Mitgliedsbeitrag">
                     <b style={{ alignSelf: 'end', textAlign: 'right', fontWeight: 'bolder', textDecoration: 'underline' }}>
-                        {calculateMemberTotalSum(props.data)}
+                        {calculateMemberTotalSum(props.data.membership)}
                     </b>
                 </DataElement>
             </>
+        }
+        {
+            editState && <MemberEditMolecule 
+                data={props.data.membership}
+                required={false}
+                onSave={data => console.log('Saving')}
+            />
         }
     </Vertical>
 }

@@ -1,24 +1,24 @@
-import { SingleMemberData } from "src/members/types/AllMembersData";
+import { MemberData } from "src/members/types/MemberData";
 import { calculatePositionSum } from "src/members/utils/calculatePositionSum";
 import { prices } from "src/utils/prices";
 
-export function calculateMemberTotalSum(member: SingleMemberData): number {
-    if(!member.membership?.member) {
+export function calculateMemberTotalSum(member: MemberData | null): number {
+    if(!member?.member) {
         return 0;
     }
     return calculatePositionSum({
-        amount: member.membership.brotMenge,
-        solidar: member.membership.brotSolidar,
+        amount: member.brotMenge,
+        solidar: member.brotSolidar,
         price: prices.brot,
     }) 
     + calculatePositionSum({
-        amount: member.membership.veggieMenge,
-        solidar: member.membership.veggieSolidar,
+        amount: member.veggieMenge,
+        solidar: member.veggieSolidar,
         price: prices.veggie,
     }) 
     + calculatePositionSum({
-        amount: member.membership.fleischMenge,
-        solidar: member.membership.fleischSolidar,
+        amount: member.fleischMenge,
+        solidar: member.fleischSolidar,
         price: prices.fleisch,
     }) 
 }
