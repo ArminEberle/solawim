@@ -30,7 +30,7 @@ export const MemberDetailMolecule = (props: MemberDetailMoleculeProps) => {
                 <br />
                 <Horizontal>
                     <DataElement label='Kontoinhaber/in'>
-                        {props.data.membership.accountowner}                   
+                        {props.data.membership.accountowner}
                     </DataElement>
                     <DataElement label='Kontoinhaber/in Adresse'>
                         {props.data.membership.accountownerStreet},
@@ -49,32 +49,44 @@ export const MemberDetailMolecule = (props: MemberDetailMoleculeProps) => {
                 <Horizontal style={{ gap: "0px" }}>
                     <DataElement label="Brot&nbsp;Menge">{props.data.membership.brotMenge}</DataElement>
                     <DataElement label="Brot&nbsp;Solidar">{props.data.membership.brotSolidar}</DataElement>
-                    <DataElement label="Brot&nbsp;Summe">{calculatePositionSum({
-                        amount: props.data.membership.brotMenge,
-                        solidar: props.data.membership.brotSolidar,
-                        price: prices.brot,
-                    })}</DataElement>
+                    <DataElement label="Brot&nbsp;Summe">
+                        <div style={{ alignSelf: 'end', textAlign: 'right' }} >
+                            {calculatePositionSum({
+                                amount: props.data.membership.brotMenge,
+                                solidar: props.data.membership.brotSolidar,
+                                price: prices.brot,
+                            })}
+                        </div>
+                    </DataElement>
                 </Horizontal>
                 <Horizontal style={{ gap: "0px" }}>
                     <DataElement label="Gemüse&nbsp;Menge">{props.data.membership.veggieMenge}</DataElement>
                     <DataElement label="Gemüse&nbsp;Solidar">{props.data.membership.veggieSolidar}</DataElement>
-                    <DataElement label="Brot&nbsp;Summe">{calculatePositionSum({
-                        amount: props.data.membership.veggieMenge,
-                        solidar: props.data.membership.veggieSolidar,
-                        price: prices.veggie,
-                    })}</DataElement>
+                    <DataElement label="Gemüse&nbsp;Summe">
+                        <div style={{ alignSelf: 'end', textAlign: 'right' }} >
+                            {calculatePositionSum({
+                                amount: props.data.membership.veggieMenge,
+                                solidar: props.data.membership.veggieSolidar,
+                                price: prices.veggie,
+                            })}
+                        </div>
+                    </DataElement>
                 </Horizontal>
                 <Horizontal style={{ gap: "0px" }}>
                     <DataElement label="Fleisch&nbsp;Menge">{props.data.membership.fleischMenge}</DataElement>
                     <DataElement label="Fleisch&nbsp;Solidar">{props.data.membership.fleischSolidar}</DataElement>
-                    <DataElement label="Brot&nbsp;Summe">{calculatePositionSum({
-                        amount: props.data.membership.fleischMenge,
-                        solidar: props.data.membership.fleischSolidar,
-                        price: prices.fleisch,
-                    })}</DataElement>
+                    <DataElement label="Fleisch&nbsp;Summe">
+                        <div style={{ alignSelf: 'end', textAlign: 'right' }} >
+                            {calculatePositionSum({
+                                amount: props.data.membership.fleischMenge,
+                                solidar: props.data.membership.fleischSolidar,
+                                price: prices.fleisch,
+                            })}
+                        </div>
+                    </DataElement>
                 </Horizontal>
                 <DataElement label="Mitgliedsbeitrag">
-                    <b style={{alignSelf: 'end', textAlign: 'right'}}>
+                    <b style={{ alignSelf: 'end', textAlign: 'right', fontWeight: 'bolder', textDecoration: 'underline' }}>
                         {calculateMemberTotalSum(props.data)}
                     </b>
                 </DataElement>
