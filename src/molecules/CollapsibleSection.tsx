@@ -12,7 +12,9 @@ export const CollapsibleSection = (props: CollapsibleSectionProps) => {
     const [collapsed, setCollapsed] = useState(props.collapsed ?? false);
     return <div>
         <h3>
-        <Checkbox value={!collapsed} onChange={e => setCollapsed(!e.target.checked)}>
+        <Checkbox value={!collapsed} 
+                  kind="tree"
+                  onChange={e => setCollapsed(!e.target.checked)}>
             {props.title}
         </Checkbox>
         </h3>

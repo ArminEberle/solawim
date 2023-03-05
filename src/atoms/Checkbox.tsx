@@ -2,16 +2,20 @@ import '/src/atoms/Checkbox.css';
 
 import React, { useRef } from 'react';
 import type { FormInputBaseProps } from 'src/atoms/types/FormInputBaseProps';
+import {RxTriangleDown, RxTriangleRight} from 'react-icons/rx';
 
 export type CheckboxOptions = {
     negate?: boolean;
+    kind?: 'normal' | 'tree';
 } &
 FormInputBaseProps<HTMLInputElement, boolean>
 & React.PropsWithChildren;
 
 export const Checkbox = (options: CheckboxOptions) => {
+    const className = options.kind === 'tree' ? 'checkbox tree' : 'checkbox'
     const ref = useRef<HTMLInputElement>(null);
-    return <div className="checkbox" onClick={event => {
+    const isChecked = options.negate ? !ref.current?.checked : ref.current?.checked;
+    return <div className={className} onClick={event => {
         if (event.target === ref.current) {
             return;
         }
@@ -37,6 +41,13 @@ export const Checkbox = (options: CheckboxOptions) => {
             className="i"
             onLoad={options.onLoad}
         />
+        {
+            options.kind === 'tree' &&
+                ( isChecked 
+                    ? <RxTriangleDown/>
+                    : <RxTriangleRight/>
+                )
+        }
         <div>
             {options.children}
         </div>
