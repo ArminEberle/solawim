@@ -40,10 +40,11 @@ export const MemberEditMolecule = (props: MemberEditProps) => {
             // TODO save this
             // await uploadMyData(data);
             setData(data);
+            console.log('asdfsdaff', data);
             // setReloadState(true);
         },
     });
-    const isDirty = isEqual(initialData, formDataState);
+    const isDirty = !isEqual(initialData, formDataState);
 
     return <form className="pure-form" onSubmit={handleSubmit}>
         <Horizontal jc="space-between">

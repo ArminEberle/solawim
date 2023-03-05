@@ -19,12 +19,14 @@ export const MemberDetailMolecule = (props: MemberDetailMoleculeProps) => {
     const [editState, setEditState] = useState(false);
 
     return <Vertical key={props.key} className="dl-container">
-        <h3>{props.data.membership?.firstname} {props.data.membership?.lastname} ({props.data.user_nicename})</h3>
+        <Horizontal>
+            <h3>{props.data.membership?.firstname} {props.data.membership?.lastname} ({props.data.user_nicename})</h3>
+            <Checkbox className="fg-0" value={editState} onChange={ev => setEditState(ev.target.checked)}>Ändern</Checkbox>
+        </Horizontal>
         <Horizontal jc="space-between" style={{ gap: "0px" }}>
             <DataElement label="ID" className="fg-0">{props.data.id}</DataElement>
             <DataElement label="Email">{props.data.user_email}<a href={'mailto:' + props.data.user_email}><AiOutlineMail /></a></DataElement>
             <DataElement label="Gebucht" className="fg-0">{(props.data.membership && props.data.membership.member && <b>JA</b>) || "NEIN"}</DataElement>
-            <Checkbox value={editState} onChange={ev => setEditState(ev.target.checked)}>Edit this</Checkbox>
         </Horizontal>
         {!editState && props.data.membership && props.data.membership.member &&
             <>

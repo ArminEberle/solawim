@@ -18,8 +18,9 @@ export default {
                 if (filesToCopy.size > 0) {
                     for (const filePath of filesToCopy) {
                         const targetPath = path.join(localWebServerPath, filePath);
-                        console.log('copying ', filePath, ' to ' + targetPath);
-                        workerPromises.push(copyFile(filePath, targetPath));
+                        const sourcePath = path.join(process.cwd(), 'php', filePath);
+                        console.log('copying ', sourcePath, ' to ' + targetPath);
+                        workerPromises.push(copyFile(sourcePath, targetPath));
                     }
                     filesToCopy.clear();
                 }
@@ -44,11 +45,12 @@ export default {
                 }
             };
             interval = setInterval(intervalAction, delay);
-            const watcher = chokidar.watch('php', {
+            const watcher = chokidar.watch('**/*', {
                 persistent: true,
                 awaitWriteFinish: true,
                 atomic: true,
                 ignoreInitial: true,
+                cwd: 'php'
             });
             const addAction = async (path: string, stats: Stats) => {
                 if (stats.isDirectory()) {

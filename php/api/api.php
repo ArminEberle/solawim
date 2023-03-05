@@ -141,7 +141,7 @@ function getAllMemberData()
                 m.content as membership
         FROM    {$wpdb->prefix}users u
                 LEFT JOIN {$membershipTable} m on u.ID = m.user_id
-        WHERE   m.content IS NOT NULL
+        --  WHERE   m.content IS NOT NULL
         ORDER BY u.user_nicename
         "),
         ARRAY_A
