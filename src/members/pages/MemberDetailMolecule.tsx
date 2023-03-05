@@ -28,6 +28,21 @@ export const MemberDetailMolecule = (props: MemberDetailMoleculeProps) => {
                     <DataElement label="Tel">{props.data.membership.tel}</DataElement>
                 </Horizontal>
                 <br />
+                <Horizontal>
+                    <DataElement label='Kontoinhaber/in'>
+                        {props.data.membership.accountowner}                   
+                    </DataElement>
+                    <DataElement label='Kontoinhaber/in Adresse'>
+                        {props.data.membership.accountownerStreet},
+                        {props.data.membership.accountownerPlz} {props.data.membership.accountownerCity}
+                    </DataElement>
+                </Horizontal>
+                <Horizontal>
+                    <DataElement label='Bank' >{props.data.membership.bank}</DataElement>
+                    <DataElement label='BIC' >{props.data.membership.bic}</DataElement>
+                    <DataElement label='IBAN' >{props.data.membership.iban}</DataElement>
+                </Horizontal>
+                <br />
                 <DataElement label="Abholraum" >
                     {props.data.membership.abholraum}
                 </DataElement>
