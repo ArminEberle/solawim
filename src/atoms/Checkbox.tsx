@@ -2,19 +2,25 @@ import '/src/atoms/Checkbox.css';
 
 import React, { useRef } from 'react';
 import type { FormInputBaseProps } from 'src/atoms/types/FormInputBaseProps';
-import {RxTriangleDown, RxTriangleRight} from 'react-icons/rx';
-
+import { RxTriangleDown, RxTriangleRight } from 'react-icons/rx';
+import { BsToggleOn, BsToggleOff } from 'react-icons/bs'
 export type CheckboxOptions = {
     negate?: boolean;
-    kind?: 'normal' | 'tree';
+    kind?: 'normal' | 'tree' | 'toggle';
     className?: string;
 } &
-FormInputBaseProps<HTMLInputElement, boolean>
-& React.PropsWithChildren;
+    FormInputBaseProps<HTMLInputElement, boolean>
+    & React.PropsWithChildren;
 
 export const Checkbox = (props: CheckboxOptions) => {
-    let className = props.kind === 'tree' ? 'checkbox tree' : 'checkbox';
-    if(props.className) {
+    let className = 'checkbox';
+    if (props.kind === 'tree') {
+        className += ' tree custom';
+    }
+    if (props.kind === 'toggle') {
+        className += ' toggle custom';
+    }
+    if (props.className) {
         className = className + ' ' + props.className;
     }
     const ref = useRef<HTMLInputElement>(null);
@@ -47,10 +53,17 @@ export const Checkbox = (props: CheckboxOptions) => {
         />
         {
             props.kind === 'tree' &&
-                ( isChecked 
-                    ? <RxTriangleDown/>
-                    : <RxTriangleRight/>
-                )
+            (isChecked
+                ? <RxTriangleDown />
+                : <RxTriangleRight />
+            )
+        }
+        {
+            props.kind === 'toggle' &&
+            (isChecked
+                ? <BsToggleOn />
+                : <BsToggleOff />
+            )
         }
         <div>
             {props.children}

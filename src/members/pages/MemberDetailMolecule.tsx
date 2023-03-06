@@ -20,8 +20,8 @@ export const MemberDetailMolecule = (props: MemberDetailMoleculeProps) => {
 
     return <Vertical key={props.key} className="dl-container">
         <Horizontal>
-            <h3>{props.data.membership?.firstname} {props.data.membership?.lastname} ({props.data.user_nicename})</h3>
-            <Checkbox className="fg-0" value={editState} onChange={ev => setEditState(ev.target.checked)}>Ändern</Checkbox>
+            <b style={{fontSize: '1.1em'}}>{props.data.membership?.firstname} {props.data.membership?.lastname} ({props.data.user_nicename})</b>
+            <Checkbox kind="toggle" className="fg-0" value={editState} onChange={ev => setEditState(ev.target.checked)}>Ändern</Checkbox>
         </Horizontal>
         <Horizontal jc="space-between" style={{ gap: "0px" }}>
             <DataElement label="ID" className="fg-0">{props.data.id}</DataElement>
@@ -100,11 +100,14 @@ export const MemberDetailMolecule = (props: MemberDetailMoleculeProps) => {
             </>
         }
         {
-            editState && <MemberEditMolecule 
-                data={props.data.membership}
-                required={false}
-                onSave={data => console.log('Saving')}
-            />
+            editState && <>
+                <br />
+                <MemberEditMolecule 
+                    data={props.data.membership}
+                    required={false}
+                    onSave={data => console.log('Saving')}
+                />
+            </>
         }
     </Vertical>
 }

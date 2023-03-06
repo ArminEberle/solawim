@@ -4,13 +4,26 @@
   cursor: pointer;
 }
 
+.checkbox.toggle {
+    align-items: center;
+}
+
+.checkbox.toggle > svg{
+    /* background-color: #A0A0A0;
+    border: 2px solid black;
+    border-radius: 1px; */
+    transform: scale(2.0);
+    margin-right: 1rem;
+    flex-grow: 0;
+}
+
 .checkbox > .i {
     transform: scale(1.5);
     margin-right: 0.5rem;
     flex-grow: 0;
 }
 
-.checkbox.tree > input {
+.checkbox.custom > input {
     position: absolute;
     opacity: 0;
     cursor: pointer;
