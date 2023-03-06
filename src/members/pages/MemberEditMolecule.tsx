@@ -23,7 +23,7 @@ import isEqual from 'lodash.isequal';
 
 export type MemberEditProps = {
     data: MemberData | undefined;
-    onSave: (newData: SingleMemberData) => unknown;
+    onSave: (newData: MemberData) => unknown;
     required: boolean;
 }
 
@@ -37,11 +37,9 @@ export const MemberEditMolecule = (props: MemberEditProps) => {
     } = formMe({
         data: initialData,
         onSubmit: async(data, setData) => {
-            // TODO save this
-            // await uploadMyData(data);
+            await props.onSave(data);
             setData(data);
-            console.log('asdfsdaff', data);
-            // setReloadState(true);
+            console.log('It is done', data);
         },
     });
     const isDirty = !isEqual(initialData, formDataState);

@@ -9,10 +9,12 @@ import { prices } from 'src/utils/prices';
 import { calculateMemberTotalSum } from 'src/members/utils/calculateMemberTotalSum';
 import { Checkbox } from 'src/atoms/Checkbox';
 import { MemberEditMolecule } from 'src/members/pages/MemberEditMolecule';
+import { setMemberData } from 'src/api/setMemberData';
 
 export type MemberDetailMoleculeProps = {
     data: SingleMemberData;
     key: string;
+    reloadCb: () => void;
 }
 
 export const MemberDetailMolecule = (props: MemberDetailMoleculeProps) => {
@@ -105,7 +107,13 @@ export const MemberDetailMolecule = (props: MemberDetailMoleculeProps) => {
                 <MemberEditMolecule 
                     data={props.data.membership}
                     required={false}
-                    onSave={data => console.log('Saving')}
+                    onSave={async memberData => {
+                        await setMemberData({
+                            targetUserId: props.data.id,
+                            memberData: memberData, 
+                        })
+                        props.reloadCb();
+                    }}
                 />
             </>
         }

@@ -79,7 +79,8 @@ function getUserData(string $tablename, object $defaultContent, string $accountI
     return $results;
 }
 
-function setUserData(string $tablename, object $content, string $accountId)
+// $accountId is the requestor, $userId is the user for which we are storing the data
+function setUserData(string $tablename, object $content, string $accountId, string $userId)
 {
     ensureDBInitialized();
     global $wpdb;
@@ -94,7 +95,7 @@ function setUserData(string $tablename, object $content, string $accountId)
         FROM   {$tablename}
         WHERE  user_id = %d
         ",
-            $accountId,
+            $userId,
         ),
         ARRAY_A
     );
@@ -107,14 +108,14 @@ function setUserData(string $tablename, object $content, string $accountId)
         VALUES(%d, %s, %d, NOW())
         ON DUPLICATE KEY UPDATE content = %s, createdAt = NOW()
         ",
-            $accountId,
+            $userId,
             $content,
             $accountId,
             $content
         ),
         ARRAY_A
     );
-    return getUserData($tablename, (object) null, $accountId);
+    return getUserData($tablename, (object) null, $userId);
 }
 
 function clearUserData(string $tablename, string $accountId)
@@ -141,7 +142,6 @@ function getAllMemberData()
                 m.content as membership
         FROM    {$wpdb->prefix}users u
                 LEFT JOIN {$membershipTable} m on u.ID = m.user_id
-        --  WHERE   m.content IS NOT NULL
         ORDER BY u.user_nicename
         "),
         ARRAY_A
@@ -218,13 +218,42 @@ $app->post('/membership', function (Request $request, Response $response, array 
         return reportError($validateResult, $response, 404);
     }
 
-    $result = setUserData($membershipTable, $content, $userId);
+    $result = setUserData($membershipTable, $content, $userId, $userId);
+    $response->getBody()->write(json_encode($result));
+    return $response;
+});
+
+$app->post('/membership-admin', function (Request $request, Response $response, array $args) {
+    global $membershipTable;
+    $accountId = getUserId();
+    if (!($accountId > 0)) {
+        return reportError('Please login before proceeding', $response, 401);
+    }
+    $checkResult = checkUserIsVereinsverwaltung($request, $response);
+    if (!is_null($checkResult)) {
+        return $checkResult;
+    }
+    $contentString = $request->getBody()->getContents();
+
+    $content = json_decode($contentString, false);
+
+    $validateResult = validateJson($content, 'member-data-admin-schema.json');
+
+    if (!is_null($validateResult)) {
+        return reportError($validateResult, $response, 404);
+    }
+
+    $userId = $content->targetUserId;
+    $userContent = $content->memberData;
+
+    $result = setUserData($membershipTable, $userContent, $accountId, $userId);
     $response->getBody()->write(json_encode($result));
     return $response;
 });
 
 $app->post('/membershipactive', function (Request $request, Response $response, array $args) {
     global $membershipTable;
+    $userId = getUserId();
     $checkResult = checkUserIsVereinsverwaltung($request, $response);
     if (!is_null($checkResult)) {
         return $checkResult;
@@ -237,7 +266,7 @@ $app->post('/membershipactive', function (Request $request, Response $response, 
     $membershipData = getMembershipData($targetUserId);
     if (!is_null($membershipData)) {
         $membershipData->activeMembership = $activeMembership;
-        $result = setUserData($membershipTable, $membershipData, $targetUserId);
+        $result = setUserData($membershipTable, $membershipData, $userId, $targetUserId);
     }
 
     $response->getBody()->write(json_encode($result));

@@ -17,7 +17,7 @@ export function WaitForIt<C extends ReactNode | undefined>(options: WaitForItPro
                 console.log(e);
             }
         }
-    });
+    }, [options.redo]);
     return options.redo
         ? <LoadingIndicator /> as JSX.Element
         : options.children as JSX.Element ;

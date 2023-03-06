@@ -51,7 +51,14 @@ export const VereinsverwaltungPage = () => {
                             <Vertical>
 {
     allMembers.map(memberRow => <>
-        <MemberDetailMolecule key={memberRow.id} data={memberRow} />
+        <MemberDetailMolecule 
+            key={memberRow.id} 
+            data={memberRow}
+            reloadCb={() => {
+                console.log('triggering reload');
+                setReloadState(true)}
+            } 
+        />
         <br/>
     </>
     )

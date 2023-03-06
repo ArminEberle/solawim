@@ -1,0 +1,174 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": {
+        "Abholraum": {
+            "enum": [
+                "gertenbach",
+                "hutzelberghof",
+                "witzenhausen"
+            ],
+            "type": "string"
+        },
+        "Solidar": {
+            "enum": [
+                "-1",
+                "-2",
+                "0",
+                "1",
+                "2"
+            ],
+            "type": "string"
+        },
+        "ZeroAndHalfTo30": {
+            "enum": [
+                "0",
+                "0.5",
+                "1",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14",
+                "15",
+                "16",
+                "17",
+                "18",
+                "19",
+                "2",
+                "20",
+                "21",
+                "22",
+                "23",
+                "24",
+                "25",
+                "26",
+                "27",
+                "28",
+                "29",
+                "3",
+                "30",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9"
+            ],
+            "type": "string"
+        },
+        "ZeroTo30": {
+            "enum": [
+                "0",
+                "1",
+                "10",
+                "11",
+                "12",
+                "13",
+                "14",
+                "15",
+                "16",
+                "17",
+                "18",
+                "19",
+                "2",
+                "20",
+                "21",
+                "22",
+                "23",
+                "24",
+                "25",
+                "26",
+                "27",
+                "28",
+                "29",
+                "3",
+                "30",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9"
+            ],
+            "type": "string"
+        }
+    },
+    "properties": {
+        "memberData": {
+            "properties": {
+                "abholraum": {
+                    "$ref": "#/definitions/Abholraum"
+                },
+                "accountowner": {
+                    "type": "string"
+                },
+                "accountownerCity": {
+                    "type": "string"
+                },
+                "accountownerPlz": {
+                    "type": "string"
+                },
+                "accountownerStreet": {
+                    "type": "string"
+                },
+                "active": {
+                    "type": "boolean"
+                },
+                "bank": {
+                    "type": "string"
+                },
+                "bic": {
+                    "type": "string"
+                },
+                "brotMenge": {
+                    "$ref": "#/definitions/ZeroTo30"
+                },
+                "brotSolidar": {
+                    "$ref": "#/definitions/Solidar"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "firstname": {
+                    "type": "string"
+                },
+                "fleischMenge": {
+                    "$ref": "#/definitions/ZeroAndHalfTo30"
+                },
+                "fleischSolidar": {
+                    "$ref": "#/definitions/Solidar"
+                },
+                "iban": {
+                    "type": "string"
+                },
+                "lastname": {
+                    "type": "string"
+                },
+                "member": {
+                    "type": "boolean"
+                },
+                "plz": {
+                    "type": "string"
+                },
+                "street": {
+                    "type": "string"
+                },
+                "tel": {
+                    "type": "string"
+                },
+                "veggieMenge": {
+                    "$ref": "#/definitions/ZeroTo30"
+                },
+                "veggieSolidar": {
+                    "$ref": "#/definitions/Solidar"
+                }
+            },
+            "type": "object"
+        },
+        "targetUserId": {
+            "type": "string"
+        }
+    },
+    "type": "object"
+}
+
