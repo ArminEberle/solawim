@@ -21,7 +21,6 @@ import {
     MemberSelfManagementPagePassiveHint,
     MemberSelfManagementPageYesIWant,
 } from 'src/members/pages/MemberSelfManagementPageText';
-import type { MemberData } from 'src/members/types/MemberData';
 import { emptyMemberData } from 'src/members/types/MemberData';
 import { calculatePositionPrice } from 'src/members/utils/calculatePositionPrice';
 import { calculatePositionSum } from 'src/members/utils/calculatePositionSum';
@@ -85,7 +84,7 @@ export const MemberSelfManagementPage = () => {
                     <MemberSelfManagementPagePassiveHint />
                     <br />
 
-                    {isDirty && <Alert>Bitte speichern (ganz unten) nicht vergessen</Alert>}
+                    {isDirty && <div><Alert>Bitte speichern (ganz unten) nicht vergessen</Alert><br /></div>}
                     {!isDirty && <div><p className="alert">Diese Daten haben wir momentan von Dir gespeichert:</p><br /></div>}
 
                     <form className="pure-form" onSubmit={handleSubmit}>

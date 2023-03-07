@@ -20,6 +20,8 @@ export const VereinsverwaltungPage = () => {
     const [reloadState, setReloadState] = useState(true);
     const [overallSumState, setOverallSumState] = useState(emptyOverallSumState());
 
+    // const [membersCollapsed, setMembersCollapsed] = useState(true);
+
     useMemo(() => {
         setOverallSumState(computeAllMembersSums(allMembers));
     }, [allMembers]);
@@ -35,11 +37,11 @@ export const VereinsverwaltungPage = () => {
                 setAllMembers(memberData);
             }}>
             <Page>
-                <CollapsibleSection title='Übersicht'>
+                <CollapsibleSection title='Übersicht' stateHandler={useState(false)}>
                     <VereinsverwaltungSums sumState={overallSumState.total} />
                 </CollapsibleSection>
                 <br/>
-                <CollapsibleSection title='Übersicht nach Abholraum' collapsed={true}>
+                <CollapsibleSection title='Übersicht nach Abholraum' stateHandler={useState(true)}>
                     {abholraumOptions.map(option => <>
                         <br/>
                         <h3>{option.display}</h3>
@@ -47,7 +49,11 @@ export const VereinsverwaltungPage = () => {
                     </>)}
                 </CollapsibleSection>
                 <br/>
-                <CollapsibleSection title='Mitglieder' collapsed={false}>
+                <CollapsibleSection 
+                    title='Mitglieder' 
+                    stateHandler={useState(true)}
+                    // collapsed={membersCollapsed} onChange={setMembersCollapsed}
+                >
                             <Vertical>
 {
     allMembers.map(memberRow => <>

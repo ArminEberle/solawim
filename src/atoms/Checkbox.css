@@ -1,17 +1,31 @@
 .checkbox {
-  display: flex;
-  justify-content: flex-start;
-  cursor: pointer;
+    display: flex;
+    justify-content: flex-start;
+    cursor: pointer;
+    border-width: 3px;
+    border-style: solid;
+    border-color: rgba(255, 255, 255, 0);
+    border-radius: 4px;
+    padding: 0.2em 0.6em;
+}
+
+.checkbox:hover {
+    border-color: var(--color-bold);
 }
 
 .checkbox.toggle {
     align-items: center;
+    padding: 0.2em 1em;
+}
+
+.checkbox.tree {
+    padding: 0.2em 0;
+}
+
+.checkbox.custom {
 }
 
 .checkbox.toggle > svg{
-    /* background-color: #A0A0A0;
-    border: 2px solid black;
-    border-radius: 1px; */
     transform: scale(2.0);
     margin-right: 1rem;
     flex-grow: 0;
