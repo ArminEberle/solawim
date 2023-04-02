@@ -15,8 +15,11 @@ global $wpdb;
 add_role('vereinsverwaltung', 'Vereinsverwaltung');
 
 $membershipTable = "{$wpdb->prefix}solawim_2023";
+$membershipTableHist = "{$membershipTable}_hist";
 
-$solatables = [$membershipTable];
+$masterdataTable = "{$wpdb->prefix}solawim_masterdata_2023";
+
+$solatables = array($membershipTable, $masterdataTable);
 
 function ensureDBInitialized()
 {
@@ -24,17 +27,13 @@ function ensureDBInitialized()
     global $solatables;
     foreach ($solatables as $tablename) {
         $cnt = $wpdb->get_results("SELECT count(*) as cnt from information_schema.tables WHERE table_name = '{$tablename}'", ARRAY_A);
-        if ($cnt[0]['cnt'] > 0) {
-            return;
+        if ($cnt[0]['cnt'] = 0) {
+            $wpdb->get_results("CREATE TABLE `{$tablename}` (user_id INT PRIMARY KEY, content JSON, createdAt DATETIME, createdBy varchar(255));", ARRAY_A);
         }
-        $wpdb->get_results("CREATE TABLE `{$tablename}` (user_id INT PRIMARY KEY, content JSON, createdAt DATETIME, createdBy varchar(255));", ARRAY_A);
-    }
-    foreach ($solatables as $tablename) {
         $cnt = $wpdb->get_results("SELECT count(*) as cnt from information_schema.tables WHERE table_name = '{$tablename}_hist'", ARRAY_A);
-        if ($cnt[0]['cnt'] > 0) {
-            return;
+        if ($cnt[0]['cnt'] = 0) {
+            $wpdb->get_results("CREATE TABLE `{$tablename}_hist` (user_id INT, content JSON, createdAt DATETIME, createdBy varchar(255));", ARRAY_A);
         }
-        $wpdb->get_results("CREATE TABLE `{$tablename}_hist` (user_id INT, content JSON, createdAt DATETIME, createdBy varchar(255));", ARRAY_A);
     }
     return;
 }
@@ -73,6 +72,23 @@ function getUserData(string $tablename, object $defaultContent, string $accountI
     );
     if (count($results) === 0) {
         $results = $defaultContent;
+    } else {
+        $results = json_decode($results[0]['content'], false);
+    }
+    return $results;
+}
+
+function getBankingData()
+{
+    ensureDBInitialized();
+    global $wpdb;
+    global $masterdataTable;
+    $results = $wpdb->get_results(
+        $wpdb->prepare("SELECT content FROM {$masterdataTable} WHERE user_id = %d", 0),
+        ARRAY_A
+    );
+    if (count($results) === 0) {
+        $results = null;
     } else {
         $results = json_decode($results[0]['content'], false);
     }
@@ -133,15 +149,27 @@ function getAllMemberData()
 {
     ensureDBInitialized();
     global $membershipTable;
+    global $membershipTableHist;
     global $wpdb;
     $results = $wpdb->get_results(
         $wpdb->prepare("
         SELECT  u.id,
                 u.user_nicename,
                 u.user_email,
-                m.content as membership
+                m.content as membership,
+                mandateDate.mandateDate
         FROM    {$wpdb->prefix}users u
                 LEFT JOIN {$membershipTable} m on u.ID = m.user_id
+                LEFT JOIN (
+                    SELECT 	c.user_id as user_id,
+                            coalesce(min(h.createdAt), c.createdAt) as mandateDate
+                    FROM 	{$membershipTable} c
+                            LEFT JOIN {$membershipTableHist} h on c.user_id = h.user_id
+                                                                    AND json_extract(c.content, '$.bic') = json_extract(h.content, '$.bic')
+                                                                    AND json_extract(c.content, '$.iban') = json_extract(h.content, '$.iban')
+                                                                    AND json_extract(c.content, '$.accountowner') = json_extract(h.content, '$.accountowner')
+                    GROUP BY c.user_id
+                ) mandateDate ON u.ID = mandateDate.user_id
         ORDER BY u.user_nicename
         "),
         ARRAY_A
@@ -149,6 +177,9 @@ function getAllMemberData()
     foreach ($results as &$row) {
         if (!is_null($row["membership"])) {
             $row["membership"] = json_decode($row["membership"]);
+            // $row["membership"]->mandateDate = date("c", strtotime($row["mandateDate"]));
+            $row["membership"]->mandateDate = (new DateTime($row["mandateDate"]))->format('Y-m-d');
+            unset($row["mandateDate"]);
         }
     }
     return $results;
@@ -297,6 +328,15 @@ $app->get('/members', function (Request $request, Response $response, array $arg
         return $checkResult;
     }
     $response->getBody()->write(json_encode(getAllMemberData()));
+    return $response->withStatus(200);
+});
+
+$app->get('/bankingdata', function (Request $request, Response $response, array $args) {
+    $checkResult = checkUserIsVereinsverwaltung($request, $response);
+    if (!is_null($checkResult)) {
+        return $checkResult;
+    }
+    $response->getBody()->write(json_encode(getBankingData()));
     return $response->withStatus(200);
 });
 

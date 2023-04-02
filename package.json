@@ -31,6 +31,7 @@
     "react-hook-form": "^7.43.0",
     "react-icons": "^4.7.1",
     "react-tabs": "^6.0.0",
+    "sepa": "^1.0.3",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.1.1",
     "typescript": "^4.9.4"

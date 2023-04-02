@@ -144,6 +144,9 @@
                 "lastname": {
                     "type": "string"
                 },
+                "mandateDate": {
+                    "type": "string"
+                },
                 "member": {
                     "type": "boolean"
                 },

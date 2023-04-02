@@ -45,27 +45,28 @@ export type MemberData = {
     member: boolean;
     active: boolean;
 
-    brotMenge: ZeroTo30,
-    brotSolidar: Solidar,
-    fleischMenge: ZeroAndHalfTo30,
-    fleischSolidar: Solidar,
-    veggieMenge: ZeroTo30,
-    veggieSolidar: Solidar,
+    brotMenge: ZeroTo30;
+    brotSolidar: Solidar;
+    fleischMenge: ZeroAndHalfTo30;
+    fleischSolidar: Solidar;
+    veggieMenge: ZeroTo30;
+    veggieSolidar: Solidar;
 
-    abholraum: Abholraum,
+    abholraum: Abholraum;
 
-    firstname: string,
-    lastname: string,
-    street: string,
-    plz: string,
-    city: string,
-    tel: string,
+    firstname: string;
+    lastname: string;
+    street: string;
+    plz: string;
+    city: string;
+    tel: string;
 
-    iban: string,
-    bic: string,
-    bank: string,
-    accountowner: string,
-    accountownerStreet: string,
-    accountownerPlz: string,
-    accountownerCity: string,
+    mandateDate?: string;
+    iban: string;
+    bic: string;
+    bank: string;
+    accountowner: string;
+    accountownerStreet: string;
+    accountownerPlz: string;
+    accountownerCity: string;
 };
