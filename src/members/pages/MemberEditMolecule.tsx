@@ -29,6 +29,7 @@ export type MemberEditProps = {
 
 export const MemberEditMolecule = (props: MemberEditProps) => {
     const initialData = props.data ?? emptyMemberData();
+    initialData.useSepa = initialData.useSepa ?? true;
     const {
         handleSubmit,
         register,
@@ -257,71 +258,79 @@ export const MemberEditMolecule = (props: MemberEditProps) => {
         <h3 className="form-header">SEPA-Basislastschrift für wiederkehrende Zahlungen</h3>
 
         <Vertical>
-            <Input
-                label="Kontoinhaber"
-                minlen={3}
-                maxlen={40}
-                autocomplete="cc-name"
-                required={props.required}
-                disabled={!formDataState.member}
-                {...register('accountowner')}
-            />
-            <Input
-                label="IBAN"
-                minlen={14}
-                maxlen={50}
-                autocomplete="payee-account-number"
-                required={props.required}
-                disabled={!formDataState.member}
-                validator={ibanValidator}
-                {...register('iban', (iban) => (electronicFormatIBAN(iban) ?? ''))}
-            />
-            <Horizontal>
+            <Checkbox {...register('useSepa')}>
+                Ja ich möchte am Lastschriftverfahren teilnehmen.
+            </Checkbox>
+            {
+                formDataState.useSepa &&
+                <>
                 <Input
-                    label="BIC"
-                    minlen={8}
-                    maxlen={11}
-                    autocomplete="payee-bank-code"
-                    required={props.required}
-                    disabled={!formDataState.member}
-                    {...register('bic')}
-                />
-                <Input
-                    label="Bank"
+                    label="Kontoinhaber"
                     minlen={3}
-                    maxlen={30}
-                    autocomplete="cc-type"
+                    maxlen={40}
+                    autocomplete="cc-name"
                     required={props.required}
                     disabled={!formDataState.member}
-                    {...register('bank')}
-                />
-            </Horizontal>
-            <Input
-                label="Kontoinhaber Strasse und Hausnummer"
-                minlen={3}
-                maxlen={100}
-                autocomplete="street-address"
-                required={props.required}
-                disabled={!formDataState.member}
-                {...register('accountownerStreet')}
-            />
-            <Horizontal>
-                <InputPlz
-                    label="Kontoinhaber PLZ"
-                    required={props.required}
-                    disabled={!formDataState.member}
-                    {...register('accountownerPlz')}
+                    {...register('accountowner')}
                 />
                 <Input
-                    minlen={2}
-                    label="Kontoinhaber Stadt"
+                    label="IBAN"
+                    minlen={14}
                     maxlen={50}
-                    autocomplete="address-level2"
+                    autocomplete="payee-account-number"
                     required={props.required}
                     disabled={!formDataState.member}
-                    {...register('accountownerCity')}
+                    validator={ibanValidator}
+                    {...register('iban', (iban) => (electronicFormatIBAN(iban) ?? ''))}
                 />
-            </Horizontal>
+                <Horizontal>
+                    <Input
+                        label="BIC"
+                        minlen={8}
+                        maxlen={11}
+                        autocomplete="payee-bank-code"
+                        required={props.required}
+                        disabled={!formDataState.member}
+                        {...register('bic')}
+                    />
+                    <Input
+                        label="Bank"
+                        minlen={3}
+                        maxlen={30}
+                        autocomplete="cc-type"
+                        required={props.required}
+                        disabled={!formDataState.member}
+                        {...register('bank')}
+                    />
+                </Horizontal>
+                <Input
+                    label="Kontoinhaber Strasse und Hausnummer"
+                    minlen={3}
+                    maxlen={100}
+                    autocomplete="street-address"
+                    required={props.required}
+                    disabled={!formDataState.member}
+                    {...register('accountownerStreet')}
+                />
+                <Horizontal>
+                    <InputPlz
+                        label="Kontoinhaber PLZ"
+                        required={props.required}
+                        disabled={!formDataState.member}
+                        {...register('accountownerPlz')}
+                    />
+                    <Input
+                        minlen={2}
+                        label="Kontoinhaber Stadt"
+                        maxlen={50}
+                        autocomplete="address-level2"
+                        required={props.required}
+                        disabled={!formDataState.member}
+                        {...register('accountownerCity')}
+                    />
+                </Horizontal>
+                </>
+            }
         </Vertical>
         <br />
         <Horizontal jc="flex-end">

@@ -19,6 +19,7 @@ export const emptyMemberData = (): MemberData => {
         city: '',
         tel: '',
 
+        useSepa: true,
         iban: '',
         bic: '',
         bank: '',
@@ -61,6 +62,7 @@ export type MemberData = {
     city: string;
     tel: string;
 
+    useSepa?: boolean;
     mandateDate?: string;
     iban: string;
     bic: string;

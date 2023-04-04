@@ -157,6 +157,9 @@
         "tel": {
             "type": "string"
         },
+        "useSepa": {
+            "type": "boolean"
+        },
         "veggieMenge": {
             "$ref": "#/definitions/ZeroTo30"
         },

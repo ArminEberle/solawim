@@ -32,6 +32,7 @@ import { ibanValidator } from 'src/validators/ibanValidator';
 import { abholraumOptions } from 'src/utils/abholraumOptions';
 import { amountsToBook } from 'src/utils/amountsToBook';
 import { calculateMemberTotalSum } from 'src/members/utils/calculateMemberTotalSum';
+import { computeSepaMandateId } from 'src/members/utils/computeSepaMandateId';
 
 const required = true;
 
@@ -65,6 +66,7 @@ export const MemberSelfManagementPage = () => {
 
     const fetchFormData = async() => {
         const data = (await getMyData()) ?? emptyMemberData();
+        data.useSepa = data.useSepa ?? true;
         setFormDataState({ ...data });
         setServerState({ ...data });
         setReloadState(false);
@@ -295,11 +297,14 @@ export const MemberSelfManagementPage = () => {
                                 disabled={!formDataState.member}
                                 {...register('tel')}
                             />
-                        </Vertical>
-
-                        <h3 className="form-header">SEPA-Basislastschrift für wiederkehrende Zahlungen</h3>
-
-                        <Vertical>
+                            <br/>
+                            <Checkbox {...register('useSepa')} >Ich möchte über Lastschrifteinzugsverfahren bezahlen.</Checkbox>
+                            {!formDataState.useSepa &&
+                            <p>Wenn Du deinen Beitrag nicht über das Lastschriftverfahren bezahlen willst, sprich uns bitte direkt an, damit wir klären können wie die Alternative ist.</p>
+                            }
+                            {formDataState.useSepa &&
+                            <>
+                            <h3 className="form-header">SEPA-Basislastschrift für wiederkehrende Zahlungen</h3>
                             <Input
                                 label="Kontoinhaber"
                                 minlen={3}
@@ -365,6 +370,8 @@ export const MemberSelfManagementPage = () => {
                                     {...register('accountownerCity')}
                                 />
                             </Horizontal>
+                            </>
+                            }
                         </Vertical>
                         <br />
                         <Horizontal jc="flex-end">

@@ -5,6 +5,7 @@ import { calculatePositionSum } from "src/members/utils/calculatePositionSum";
 import { prices } from "src/utils/prices";
 import { download } from "src/members/utils/download";
 import { getBankingData } from "src/api/getBankingData";
+import { computeSepaMandateId } from "./computeSepaMandateId";
 
 export const createAndDownloadSepaFiles = async(memberData: AllMembersData): Promise<void> => {
     const bankingData = await getBankingData();
@@ -30,6 +31,8 @@ export const createAndDownloadSepaFiles = async(memberData: AllMembersData): Pro
 
     const errorList: string[] = [];
     const transactionList: string[] = [];
+    const excludedList: string[] = [];
+
 
     const info = doc.createPaymentInfo();
     info.collectionDate = date;
@@ -70,34 +73,42 @@ export const createAndDownloadSepaFiles = async(memberData: AllMembersData): Pro
             continue;
         }
 
-        const mandateId = "SOLAWI.2023." + member.id;
+        const mandateId = computeSepaMandateId(member);
         const brotBetrag = brot.toFixed();
         const veggieBetrag = veggie.toFixed();
         const fleischBetrag = fleisch.toFixed();
         const verwendungszweck = `${debitComment} ${m.firstname} ${m.lastname} b ${brotBetrag} g ${veggieBetrag} f ${fleischBetrag}`;
         const end2EndId = mandateId + '.' + year + '.' + monthPadded;
 
-        const tx = info.createTransaction();
-        tx.debtorName = m.accountowner;
-        tx.debtorIBAN = m.iban;
-        tx.debtorBIC = m.bic;
-        tx.mandateId = mandateId;
-        tx.mandateSignatureDate = new Date(m.mandateDate as string);
-        tx.amount = amount;
-        tx.currency = 'EUR';
-        tx.remittanceInfo = verwendungszweck;
-        tx.end2endId = end2EndId;
+
+        let tx;
 
         const reportRow = `${member.id};${m.firstname};${m.lastname};${m.accountowner};${m.iban};${m.bic};${mandateId};${m.mandateDate};${end2EndId};${brotBetrag};${veggieBetrag};${fleischBetrag};${amount}`;
-        try {
-            tx.validate()
-            info.addTransaction(tx);
-            transactionList.push(reportRow)
-        } catch (e) {
-            const msg = `${reportRow};${e}`;
-            errorList.push(msg);
-            console.log(msg);
+
+        if(m.useSepa ?? true) {
+            tx = info.createTransaction();
+            tx.debtorName = m.accountowner;
+            tx.debtorIBAN = m.iban;
+            tx.debtorBIC = m.bic;
+            tx.mandateId = mandateId;
+            tx.mandateSignatureDate = new Date(m.mandateDate as string);
+            tx.amount = amount;
+            tx.currency = 'EUR';
+            tx.remittanceInfo = verwendungszweck;
+            tx.end2endId = end2EndId;
+            try {
+                tx.validate()
+                info.addTransaction(tx);
+                transactionList.push(reportRow)
+            } catch (e) {
+                const msg = `${reportRow};${e}`;
+                errorList.push(msg);
+                console.log(msg);
+            }
+        } else {
+            excludedList.push(reportRow);
         }
+
     }
     const sepaDoc = doc.toString().replace('encoding="null"', 'encoding="UTF-8"');
 
@@ -106,7 +117,24 @@ export const createAndDownloadSepaFiles = async(memberData: AllMembersData): Pro
         errorList.push('KEINE');
     }
 
-    const summaryDoc = [summaryHeaders, ...transactionList, '', '', 'Fehlerliste - Nicht enthalten in SEPA-Datei:', '', ...errorList].join('\r\n');
+    const excludedCount = excludedList.length;
+    if(excludedCount === 0) {
+        excludedList.push('KEINE');
+    }
+
+    const summaryDoc = [
+        summaryHeaders, 
+        ...transactionList, 
+        '', 
+        '',
+        'Mitglieder ohne Lastschriftverfahren',
+        '',
+        ...excludedList,
+        '',
+        'Fehlerliste - Nicht enthalten in SEPA-Datei:', 
+        '', 
+        ...errorList
+    ].join('\r\n');
 
     download(`Solawi_Sammellastschrift_${year}_${monthPadded}_SEPA.xml`,
         sepaDoc
@@ -118,4 +146,5 @@ export const createAndDownloadSepaFiles = async(memberData: AllMembersData): Pro
         alert(`Es gab ${errorCount} Fehler, siehe am Ende von Datei ${summaryFilename}`);
     }
 }
+
 
