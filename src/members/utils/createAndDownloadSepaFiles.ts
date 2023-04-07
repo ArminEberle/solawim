@@ -6,8 +6,16 @@ import { prices } from "src/utils/prices";
 import { download } from "src/members/utils/download";
 import { getBankingData } from "src/api/getBankingData";
 import { computeSepaMandateId } from "./computeSepaMandateId";
+import { getAllMemberData } from "src/api/getAllMemberData";
+import { replaceCharsToSepaChars } from "src/members/utils/replaceCharsToSepaChars";
 
-export const createAndDownloadSepaFiles = async(memberData: AllMembersData): Promise<void> => {
+export const createAndDownloadSepaFiles = async(): Promise<void> => {
+    try {
+
+        const memberData = await getAllMemberData();
+        if(!memberData) {
+            alert('Es gab ein Problem beim Herunterladen der Mitgliederdaten.')
+    }
     const bankingData = await getBankingData();
     if(!bankingData) {
         alert('Es gab ein Problem beim Herunterladen der Stammdaten.');
@@ -17,12 +25,12 @@ export const createAndDownloadSepaFiles = async(memberData: AllMembersData): Pro
     const date = new Date();
     const monthPadded = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
-    const debitId = 'SOLAWI_' + String(year) + '_' + monthPadded;
+    const debitId = 'SOLAWI.' + String(year) + '.' + monthPadded;
     const creditorName = bankingData.holder; // 'Anbaustelle e.V.';
     const creditorId = bankingData.creditorId; // 'DE20ZZZ00002458365';
     const creditorIban = bankingData.iban; // 'DE94522500300050033976';
     const creditorBic = bankingData.bic; // 'HELADEF1ESW';
-    const debitComment = 'SolaWi Beitrag ' + year + '_' + monthPadded;
+    const debitComment = 'SolaWi Beitrag ' + year + '.' + monthPadded;
 
     const doc = new SEPA.Document('pain.008.001.02');
     doc.grpHdr.id = debitId;
@@ -50,7 +58,7 @@ export const createAndDownloadSepaFiles = async(memberData: AllMembersData): Pro
         if (!m?.member) {
             continue;
         }
-
+        
         const brot = calculatePositionSum({
             amount: m.brotMenge,
             solidar: m.brotSolidar,
@@ -79,15 +87,15 @@ export const createAndDownloadSepaFiles = async(memberData: AllMembersData): Pro
         const fleischBetrag = fleisch.toFixed();
         const verwendungszweck = `${debitComment} ${m.firstname} ${m.lastname} b ${brotBetrag} g ${veggieBetrag} f ${fleischBetrag}`;
         const end2EndId = mandateId + '.' + year + '.' + monthPadded;
-
+        
 
         let tx;
-
+        
         const reportRow = `${member.id};${m.firstname};${m.lastname};${m.accountowner};${m.iban};${m.bic};${mandateId};${m.mandateDate};${end2EndId};${brotBetrag};${veggieBetrag};${fleischBetrag};${amount}`;
 
         if(m.useSepa ?? true) {
             tx = info.createTransaction();
-            tx.debtorName = m.accountowner;
+            tx.debtorName = replaceCharsToSepaChars(m.accountowner).substring(0, 70);
             tx.debtorIBAN = m.iban;
             tx.debtorBIC = m.bic;
             tx.mandateId = mandateId;
@@ -137,13 +145,17 @@ export const createAndDownloadSepaFiles = async(memberData: AllMembersData): Pro
     ].join('\r\n');
 
     download(`Solawi_Sammellastschrift_${year}_${monthPadded}_SEPA.xml`,
-        sepaDoc
+    sepaDoc
     );
 
     const summaryFilename = `Solawi_Sammellastschrift_${year}_${monthPadded}_Uebersicht.csv`;
     download(summaryFilename, summaryDoc, 'text/csv');
     if (errorCount > 0) {
         alert(`Es gab ${errorCount} Fehler, siehe am Ende von Datei ${summaryFilename}`);
+    }
+    } catch (e) {
+        alert('Ein Problem ist aufgetreten siehe console.log: '+ String(e));
+        console.log(e);
     }
 }
 

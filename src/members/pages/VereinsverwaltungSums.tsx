@@ -1,4 +1,4 @@
-import React, { CSSProperties } from 'react';
+import React, { CSSProperties, useCallback, useMemo } from 'react';
 import { Button } from 'src/atoms/Button';
 import { Output } from 'src/atoms/Output';
 import { Horizontal } from 'src/layout/Horizontal';
@@ -12,6 +12,7 @@ export function VereinsverwaltungSums(props: {
     sumState: SumState;
     memberData?: AllMembersData; 
 }) {
+
     const fleischSoldarStyle: CSSProperties = props.sumState.fleisch.reduziert > props.sumState.fleisch.solidar ?
         { color: 'red' }
         : {  }
@@ -34,7 +35,7 @@ export function VereinsverwaltungSums(props: {
             </Horizontal>
             { props.memberData && 
             <Horizontal jc="flex-end" >
-                <Button onClick={() => createAndDownloadSepaFiles(props.memberData as AllMembersData)} >SEPA Lastschrift Datei herunterladen</Button>
+                <Button onClick={createAndDownloadSepaFiles} >SEPA Lastschrift Datei herunterladen</Button>
             </Horizontal>
             }
             <b>Brot</b>
