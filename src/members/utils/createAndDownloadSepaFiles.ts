@@ -85,7 +85,7 @@ export const createAndDownloadSepaFiles = async(): Promise<void> => {
         const brotBetrag = brot.toFixed();
         const veggieBetrag = veggie.toFixed();
         const fleischBetrag = fleisch.toFixed();
-        const verwendungszweck = `${debitComment} ${m.firstname} ${m.lastname} b ${brotBetrag} g ${veggieBetrag} f ${fleischBetrag}`;
+        const verwendungszweck = `${debitComment} ${replaceCharsToSepaChars(m.firstname)} ${replaceCharsToSepaChars(m.lastname)} b ${brotBetrag} g ${veggieBetrag} f ${fleischBetrag}`;
         const end2EndId = mandateId + '.' + year + '.' + monthPadded;
         
 
