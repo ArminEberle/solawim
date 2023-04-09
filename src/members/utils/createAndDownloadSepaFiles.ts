@@ -8,6 +8,7 @@ import { getBankingData } from "src/api/getBankingData";
 import { computeSepaMandateId } from "./computeSepaMandateId";
 import { getAllMemberData } from "src/api/getAllMemberData";
 import { replaceCharsToSepaChars } from "src/members/utils/replaceCharsToSepaChars";
+import { findNextRemittanceDate } from "src/utils/findNextRemittanceDate";
 
 export const createAndDownloadSepaFiles = async(): Promise<void> => {
     try {
@@ -43,12 +44,16 @@ export const createAndDownloadSepaFiles = async(): Promise<void> => {
 
 
     const info = doc.createPaymentInfo();
-    info.collectionDate = date;
+    info.collectionDate = findNextRemittanceDate(7, date);
     info.creditorIBAN = creditorIban;
     info.creditorBIC = creditorBic;
     info.creditorName = creditorName;
     info.creditorId = creditorId;
-    info.batchBooking = true; //optional
+    // beim nächsten mal anmachen
+    // info.sequenceType = 'RCUR'
+    info.batchBooking = false; //optional
+
+    // info.batchBooking = true; //optional
     doc.addPaymentInfo(info);
 
     const summaryHeaders = `User-Id;Vorname;Nachname;Kontoinhaber;IBAN;BIC;Mandatsreferenz;Mandatsdatum;SEPA-End2EndId;Brot Betrag;Veggie Betrag;Fleisch Betrag;Gesamtbetrag;Fehler`;
