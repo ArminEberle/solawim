@@ -44,7 +44,7 @@ export const createAndDownloadSepaFiles = async(): Promise<void> => {
 
 
     const info = doc.createPaymentInfo();
-    info.collectionDate = findNextRemittanceDate(7, date);
+    info.collectionDate = findNextRemittanceDate(6, date);
     info.creditorIBAN = creditorIban;
     info.creditorBIC = creditorBic;
     info.creditorName = creditorName;
