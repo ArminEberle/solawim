@@ -44,7 +44,7 @@ export const createAndDownloadSepaFiles = async(): Promise<void> => {
 
 
     const info = doc.createPaymentInfo();
-    info.collectionDate = findNextRemittanceDate(6, date);
+    info.collectionDate = findNextRemittanceDate(7, date);
     info.creditorIBAN = creditorIban;
     info.creditorBIC = creditorBic;
     info.creditorName = creditorName;
@@ -123,7 +123,8 @@ export const createAndDownloadSepaFiles = async(): Promise<void> => {
         }
 
     }
-    const sepaDoc = doc.toString().replace('encoding="null"', 'encoding="UTF-8"');
+    const sepaDoc = doc.toString()
+        .replace('encoding="null"', 'encoding="UTF-8"');
 
     const errorCount = errorList.length;
     if (errorCount === 0) {
