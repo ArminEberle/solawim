@@ -43,13 +43,13 @@ export const createAndDownloadSepaFiles = async (): Promise<void> => {
 
 
         const info = doc.createPaymentInfo();
-        info.collectionDate = findNextRemittanceDate(7, date);
+        info.collectionDate = findNextRemittanceDate(3, date);
         info.creditorIBAN = creditorIban;
         info.creditorBIC = creditorBic;
         info.creditorName = creditorName;
         info.creditorId = creditorId;
         // beim nächsten mal anmachen
-        // info.sequenceType = 'RCUR'
+        info.sequenceType = 'RCUR'
         info.batchBooking = false; //optional
 
         // info.batchBooking = true; //optional
