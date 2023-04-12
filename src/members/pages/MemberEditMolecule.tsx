@@ -288,6 +288,7 @@ export const MemberEditMolecule = (props: MemberEditProps) => {
                         label="BIC"
                         minlen={8}
                         maxlen={11}
+                        pattern="[A-Z]{6,6}[A-Z2-9][A-NP-Z0-9]([A-Z0-9]{3,3}){0,1}"
                         autocomplete="payee-bank-code"
                         required={props.required}
                         disabled={!formDataState.member}

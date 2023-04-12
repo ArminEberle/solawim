@@ -10,6 +10,8 @@ export type InputProps = {
     maxlen: number;
     minlen?: number;
     width?: number;
+    pattern?: string;
+    title?: string;
     autocomplete?: 'username'
     | 'password'
     | 'given-name'
@@ -73,6 +75,8 @@ export const Input = (options: InputProps):ReactElement => {
             required={required}
             disabled={disabled}
             style={options.style}
+            pattern={options.pattern}
+            title={options.title}
             ref={myRef} />
     </div>;
     return result;

@@ -326,9 +326,11 @@ export const MemberSelfManagementPage = () => {
                             />
                             <Horizontal>
                                 <Input
-                                    label="BIC"
+                                    label="BIC (Nur Großbuchstaben oder Ziffern, erste sechs Zeichen nur Großbuchstaben)"
                                     minlen={8}
                                     maxlen={11}
+                                    pattern="[A-Z]{6,6}[A-Z2-9][A-NP-Z0-9]([A-Z0-9]{3,3}){0,1}"
+                                    title="Nur Großbuchstaben oder Ziffern, erste sechs Zeichen nur Großbuchstaben, mindestens 8, höchstens 11 Zeichen"
                                     autocomplete="payee-bank-code"
                                     required={required}
                                     disabled={!formDataState.member}
