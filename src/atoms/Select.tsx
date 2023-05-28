@@ -12,6 +12,7 @@ export type SelectOption<T extends string | number = string | number> = {
 
 export type SelectOptions = FormInputBaseProps<HTMLSelectElement> & {
     options: (SelectOption | string | number)[];
+    defaultValue?: string | number;
     label?: string;
 } & LayoutExtraProps;
 
@@ -25,6 +26,7 @@ export const Select = (options: SelectOptions) => {
             className="form-control"
             name={options.name}
             value={options.value}
+            defaultValue={options.defaultValue}
             onChange={options.onChange}
             onBlur={options.onBlur}
             required={required}

@@ -21,4 +21,9 @@ export function calculateMemberTotalSum(member: MemberData | null): number {
         solidar: member.fleischSolidar,
         price: prices.fleisch,
     }) 
+    + calculatePositionSum({
+        amount: member.milchMenge,
+        solidar: member.milchSolidar,
+        price: prices.milch,
+    }) 
 }

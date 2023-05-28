@@ -7,6 +7,8 @@ export const emptyMemberData = (): MemberData => {
         brotSolidar: '0',
         fleischMenge: '0',
         fleischSolidar: '0',
+        milchMenge: '0',
+        milchSolidar: '0',
         veggieMenge: '0',
         veggieSolidar: '0',
 
@@ -48,8 +50,10 @@ export type MemberData = {
 
     brotMenge: ZeroTo30;
     brotSolidar: Solidar;
-    fleischMenge: ZeroAndHalfTo30;
+    fleischMenge: ZeroTo30;
     fleischSolidar: Solidar;
+    milchMenge?: ZeroTo30;
+    milchSolidar?: Solidar;
     veggieMenge: ZeroTo30;
     veggieSolidar: Solidar;
 

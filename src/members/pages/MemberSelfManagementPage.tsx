@@ -33,6 +33,7 @@ import { abholraumOptions } from 'src/utils/abholraumOptions';
 import { amountsToBook } from 'src/utils/amountsToBook';
 import { calculateMemberTotalSum } from 'src/members/utils/calculateMemberTotalSum';
 import { computeSepaMandateId } from 'src/members/utils/computeSepaMandateId';
+import toNumber from 'lodash/toNumber';
 
 const required = true;
 
@@ -57,15 +58,26 @@ export const MemberSelfManagementPage = () => {
         setState: setFormDataState,
     } = formMe({
         data: emptyMemberData(),
-        onSubmit: async(data, setData) => {
+        watch: data => {
+            if(data.fleischMenge === '0' && data.milchMenge !== '0') {
+                data.milchMenge = '0';
+            }
+        },
+        onSubmit: async (data, setData) => {
             await uploadMyData(data);
             setData(data);
             setReloadState(true);
         },
     });
 
-    const fetchFormData = async() => {
+    const fetchFormData = async () => {
         const data = (await getMyData()) ?? emptyMemberData();
+        if (!data.milchMenge) {
+            data.milchMenge = '0';
+        }
+        if (!data.milchSolidar) {
+            data.milchSolidar = '0';
+        }
         data.useSepa = data.useSepa ?? true;
         setFormDataState({ ...data });
         setServerState({ ...data });
@@ -186,6 +198,47 @@ export const MemberSelfManagementPage = () => {
                         </Horizontal>
 
                         <Horizontal>
+                            <h3 className="min-w-8 max-w-8">Milch {toNumber(formDataState.fleischMenge) === 0 && <small>(nur zusammen mit Fleisch)</small>}</h3>
+                            <Select
+                                label="Anzahl / Liter"
+                                options={amountsToBook}
+                                maxWidth={6}
+                                required={required}
+                                disabled={!formDataState.member || toNumber(formDataState.fleischMenge) === 0}
+                                {...register('milchMenge')}
+                            />
+                            <SolidaritaetSelect
+                                required={required}
+                                disabled={!formDataState.member || toNumber(formDataState.fleischMenge) === 0}
+                                {...register('milchSolidar')}
+                            />
+                            <div style={{
+                                alignSelf: 'flex-end',
+                                paddingBottom: '1rem',
+                                flexGrow: 1,
+                            }}>
+                                <small >
+                                    ({calculatePositionPrice({
+                                        price: prices.milch,
+                                        solidar: formDataState.milchSolidar,
+                                    })} EUR / pro Anteil)
+                                </small>
+                            </div>
+                            <Input
+                                label="Summe"
+                                value={String(calculatePositionSum({
+                                    amount: formDataState.milchMenge,
+                                    solidar: formDataState.milchSolidar,
+                                    price: prices.milch,
+                                }))}
+                                disabled={true}
+                                maxlen={4}
+                                maxWidth={4}
+                                style={{ fontWeight: 'bold', textAlign: 'end', paddingRight: '1em' }}
+                            />
+                        </Horizontal>
+
+                        <Horizontal>
                             <h3 className="min-w-8 max-w-8">Gemüse</h3>
                             <Select
                                 label="Anzahl"
@@ -297,82 +350,82 @@ export const MemberSelfManagementPage = () => {
                                 disabled={!formDataState.member}
                                 {...register('tel')}
                             />
-                            <br/>
+                            <br />
                             <Checkbox {...register('useSepa')} >Ich möchte über Lastschrifteinzugsverfahren bezahlen.</Checkbox>
                             {!formDataState.useSepa &&
-                            <p>Wenn Du deinen Beitrag nicht über das Lastschriftverfahren bezahlen willst, sprich uns bitte direkt an, damit wir klären können wie die Alternative ist.</p>
+                                <p>Wenn Du deinen Beitrag nicht über das Lastschriftverfahren bezahlen willst, sprich uns bitte direkt an, damit wir klären können wie die Alternative ist.</p>
                             }
                             {formDataState.useSepa &&
-                            <>
-                            <h3 className="form-header">SEPA-Basislastschrift für wiederkehrende Zahlungen</h3>
-                            <Input
-                                label="Kontoinhaber"
-                                minlen={3}
-                                maxlen={40}
-                                autocomplete="cc-name"
-                                required={required}
-                                disabled={!formDataState.member}
-                                {...register('accountowner')}
-                            />
-                            <Input
-                                label="IBAN"
-                                minlen={14}
-                                maxlen={50}
-                                autocomplete="payee-account-number"
-                                required={required}
-                                disabled={!formDataState.member}
-                                validator={ibanValidator}
-                                {...register('iban', (iban) => (electronicFormatIBAN(iban) ?? ''))}
-                            />
-                            <Horizontal>
-                                <Input
-                                    label="BIC (Nur Großbuchstaben oder Ziffern, erste sechs Zeichen nur Großbuchstaben)"
-                                    minlen={8}
-                                    maxlen={11}
-                                    pattern="[A-Z]{6,6}[A-Z2-9][A-NP-Z0-9]([A-Z0-9]{3,3}){0,1}"
-                                    title="Nur Großbuchstaben oder Ziffern, erste sechs Zeichen nur Großbuchstaben, mindestens 8, höchstens 11 Zeichen"
-                                    autocomplete="payee-bank-code"
-                                    required={required}
-                                    disabled={!formDataState.member}
-                                    {...register('bic')}
-                                />
-                                <Input
-                                    label="Bank"
-                                    minlen={3}
-                                    maxlen={30}
-                                    autocomplete="cc-type"
-                                    required={required}
-                                    disabled={!formDataState.member}
-                                    {...register('bank')}
-                                />
-                            </Horizontal>
-                            <Input
-                                label="Kontoinhaber Strasse und Hausnummer"
-                                minlen={3}
-                                maxlen={100}
-                                autocomplete="street-address"
-                                required={required}
-                                disabled={!formDataState.member}
-                                {...register('accountownerStreet')}
-                            />
-                            <Horizontal>
-                                <InputPlz
-                                    label="Kontoinhaber PLZ"
-                                    required={required}
-                                    disabled={!formDataState.member}
-                                    {...register('accountownerPlz')}
-                                />
-                                <Input
-                                    minlen={2}
-                                    label="Kontoinhaber Stadt"
-                                    maxlen={50}
-                                    autocomplete="address-level2"
-                                    required={required}
-                                    disabled={!formDataState.member}
-                                    {...register('accountownerCity')}
-                                />
-                            </Horizontal>
-                            </>
+                                <>
+                                    <h3 className="form-header">SEPA-Basislastschrift für wiederkehrende Zahlungen</h3>
+                                    <Input
+                                        label="Kontoinhaber"
+                                        minlen={3}
+                                        maxlen={40}
+                                        autocomplete="cc-name"
+                                        required={required}
+                                        disabled={!formDataState.member}
+                                        {...register('accountowner')}
+                                    />
+                                    <Input
+                                        label="IBAN"
+                                        minlen={14}
+                                        maxlen={50}
+                                        autocomplete="payee-account-number"
+                                        required={required}
+                                        disabled={!formDataState.member}
+                                        validator={ibanValidator}
+                                        {...register('iban', (iban) => (electronicFormatIBAN(iban) ?? ''))}
+                                    />
+                                    <Horizontal>
+                                        <Input
+                                            label="BIC (Nur Großbuchstaben oder Ziffern, erste sechs Zeichen nur Großbuchstaben)"
+                                            minlen={8}
+                                            maxlen={11}
+                                            pattern="[A-Z]{6,6}[A-Z2-9][A-NP-Z0-9]([A-Z0-9]{3,3}){0,1}"
+                                            title="Nur Großbuchstaben oder Ziffern, erste sechs Zeichen nur Großbuchstaben, mindestens 8, höchstens 11 Zeichen"
+                                            autocomplete="payee-bank-code"
+                                            required={required}
+                                            disabled={!formDataState.member}
+                                            {...register('bic')}
+                                        />
+                                        <Input
+                                            label="Bank"
+                                            minlen={3}
+                                            maxlen={30}
+                                            autocomplete="cc-type"
+                                            required={required}
+                                            disabled={!formDataState.member}
+                                            {...register('bank')}
+                                        />
+                                    </Horizontal>
+                                    <Input
+                                        label="Kontoinhaber Strasse und Hausnummer"
+                                        minlen={3}
+                                        maxlen={100}
+                                        autocomplete="street-address"
+                                        required={required}
+                                        disabled={!formDataState.member}
+                                        {...register('accountownerStreet')}
+                                    />
+                                    <Horizontal>
+                                        <InputPlz
+                                            label="Kontoinhaber PLZ"
+                                            required={required}
+                                            disabled={!formDataState.member}
+                                            {...register('accountownerPlz')}
+                                        />
+                                        <Input
+                                            minlen={2}
+                                            label="Kontoinhaber Stadt"
+                                            maxlen={50}
+                                            autocomplete="address-level2"
+                                            required={required}
+                                            disabled={!formDataState.member}
+                                            {...register('accountownerCity')}
+                                        />
+                                    </Horizontal>
+                                </>
                             }
                         </Vertical>
                         <br />

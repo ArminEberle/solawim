@@ -6,6 +6,7 @@ export const SolidaritaetSelect = (props: FormInputBaseProps<HTMLSelectElement>)
     return <Select
         label="Solidarbeitrag"
         maxWidth={15}
+        defaultValue="0"
         options={[{
             display: '2/6 reduzierten',
             value: '-2',

@@ -19,6 +19,7 @@ import { formMe } from "src/utils/forms";
 import { prices } from "src/utils/prices";
 import { ibanValidator } from "src/validators/ibanValidator";
 import isEqual from 'lodash.isequal';
+import toNumber from "lodash/toNumber";
 
 
 export type MemberEditProps = {
@@ -29,6 +30,7 @@ export type MemberEditProps = {
 
 export const MemberEditMolecule = (props: MemberEditProps) => {
     const initialData = props.data ?? emptyMemberData();
+    
     initialData.useSepa = initialData.useSepa ?? true;
     const {
         handleSubmit,
@@ -37,7 +39,7 @@ export const MemberEditMolecule = (props: MemberEditProps) => {
         setState: setFormDataState,
     } = formMe({
         data: initialData,
-        onSubmit: async(data, setData) => {
+        onSubmit: async (data, setData) => {
             await props.onSave(data);
             setData(data);
             console.log('It is done', data);
@@ -140,6 +142,51 @@ export const MemberEditMolecule = (props: MemberEditProps) => {
                 style={{ fontWeight: 'bold', textAlign: 'end', paddingRight: '1em' }}
             />
         </Horizontal>
+
+        {toNumber(formDataState.fleischMenge) > 0 &&
+            <>
+                <Horizontal>
+                    <h3 className="min-w-8 max-w-8">Milch</h3>
+                    <Select
+                        label="Anzahl / Liter"
+                        options={amountsToBook}
+                        maxWidth={6}
+                        required={props.required}
+                        disabled={!formDataState.member}
+                        {...register('milchMenge')}
+                    />
+                    <SolidaritaetSelect
+                        required={props.required}
+                        disabled={!formDataState.member}
+                        {...register('milchSolidar')}
+                    />
+                    <div style={{
+                        alignSelf: 'flex-end',
+                        paddingBottom: '1rem',
+                        flexGrow: 1,
+                    }}>
+                        <small >
+                            ({calculatePositionPrice({
+                                price: prices.milch,
+                                solidar: formDataState.milchSolidar,
+                            })} EUR / pro Anteil)
+                        </small>
+                    </div>
+                    <Input
+                        label="Summe"
+                        value={String(calculatePositionSum({
+                            amount: formDataState.milchMenge,
+                            solidar: formDataState.milchSolidar,
+                            price: prices.milch,
+                        }))}
+                        disabled={true}
+                        maxlen={4}
+                        maxWidth={4}
+                        style={{ fontWeight: 'bold', textAlign: 'end', paddingRight: '1em' }}
+                    />
+                </Horizontal>
+            </>
+        }
 
         <Horizontal>
             <h3 className="min-w-8 max-w-8">Gemüse</h3>
@@ -264,72 +311,72 @@ export const MemberEditMolecule = (props: MemberEditProps) => {
             {
                 formDataState.useSepa &&
                 <>
-                <Input
-                    label="Kontoinhaber"
-                    minlen={3}
-                    maxlen={40}
-                    autocomplete="cc-name"
-                    required={props.required}
-                    disabled={!formDataState.member}
-                    {...register('accountowner')}
-                />
-                <Input
-                    label="IBAN"
-                    minlen={14}
-                    maxlen={50}
-                    autocomplete="payee-account-number"
-                    required={props.required}
-                    disabled={!formDataState.member}
-                    validator={ibanValidator}
-                    {...register('iban', (iban) => (electronicFormatIBAN(iban) ?? ''))}
-                />
-                <Horizontal>
                     <Input
-                        label="BIC"
-                        minlen={8}
-                        maxlen={11}
-                        pattern="[A-Z]{6,6}[A-Z2-9][A-NP-Z0-9]([A-Z0-9]{3,3}){0,1}"
-                        autocomplete="payee-bank-code"
-                        required={props.required}
-                        disabled={!formDataState.member}
-                        {...register('bic')}
-                    />
-                    <Input
-                        label="Bank"
+                        label="Kontoinhaber"
                         minlen={3}
-                        maxlen={30}
-                        autocomplete="cc-type"
+                        maxlen={40}
+                        autocomplete="cc-name"
                         required={props.required}
                         disabled={!formDataState.member}
-                        {...register('bank')}
-                    />
-                </Horizontal>
-                <Input
-                    label="Kontoinhaber Strasse und Hausnummer"
-                    minlen={3}
-                    maxlen={100}
-                    autocomplete="street-address"
-                    required={props.required}
-                    disabled={!formDataState.member}
-                    {...register('accountownerStreet')}
-                />
-                <Horizontal>
-                    <InputPlz
-                        label="Kontoinhaber PLZ"
-                        required={props.required}
-                        disabled={!formDataState.member}
-                        {...register('accountownerPlz')}
+                        {...register('accountowner')}
                     />
                     <Input
-                        minlen={2}
-                        label="Kontoinhaber Stadt"
+                        label="IBAN"
+                        minlen={14}
                         maxlen={50}
-                        autocomplete="address-level2"
+                        autocomplete="payee-account-number"
                         required={props.required}
                         disabled={!formDataState.member}
-                        {...register('accountownerCity')}
+                        validator={ibanValidator}
+                        {...register('iban', (iban) => (electronicFormatIBAN(iban) ?? ''))}
                     />
-                </Horizontal>
+                    <Horizontal>
+                        <Input
+                            label="BIC"
+                            minlen={8}
+                            maxlen={11}
+                            pattern="[A-Z]{6,6}[A-Z2-9][A-NP-Z0-9]([A-Z0-9]{3,3}){0,1}"
+                            autocomplete="payee-bank-code"
+                            required={props.required}
+                            disabled={!formDataState.member}
+                            {...register('bic')}
+                        />
+                        <Input
+                            label="Bank"
+                            minlen={3}
+                            maxlen={30}
+                            autocomplete="cc-type"
+                            required={props.required}
+                            disabled={!formDataState.member}
+                            {...register('bank')}
+                        />
+                    </Horizontal>
+                    <Input
+                        label="Kontoinhaber Strasse und Hausnummer"
+                        minlen={3}
+                        maxlen={100}
+                        autocomplete="street-address"
+                        required={props.required}
+                        disabled={!formDataState.member}
+                        {...register('accountownerStreet')}
+                    />
+                    <Horizontal>
+                        <InputPlz
+                            label="Kontoinhaber PLZ"
+                            required={props.required}
+                            disabled={!formDataState.member}
+                            {...register('accountownerPlz')}
+                        />
+                        <Input
+                            minlen={2}
+                            label="Kontoinhaber Stadt"
+                            maxlen={50}
+                            autocomplete="address-level2"
+                            required={props.required}
+                            disabled={!formDataState.member}
+                            {...register('accountownerCity')}
+                        />
+                    </Horizontal>
                 </>
             }
         </Vertical>

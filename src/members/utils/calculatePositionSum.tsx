@@ -1,12 +1,14 @@
 import { calculatePositionPrice } from 'src/members/utils/calculatePositionPrice';
 
 export type CalculatePositionSumParams = {
-    amount: string | number;
-    solidar: string;
+    amount?: string | number;
+    solidar?: string;
     price: number;
 };
 
 export function calculatePositionSum({ amount, solidar, price }: CalculatePositionSumParams): number {
+    if(!amount) return 0;
+    solidar = solidar ?? '0';
     let amountNumber = Number.parseFloat(String(amount));
     if (Number.isNaN(amountNumber)) {
         amountNumber = 0;

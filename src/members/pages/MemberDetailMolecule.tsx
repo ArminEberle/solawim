@@ -100,6 +100,19 @@ export const MemberDetailMolecule = (props: MemberDetailMoleculeProps) => {
                         </div>
                     </DataElement>
                 </Horizontal>
+                <Horizontal style={{ gap: "0px" }}>
+                    <DataElement label="Milch&nbsp;Menge">{props.data.membership.milchMenge}</DataElement>
+                    <DataElement label="Milch&nbsp;Solidar">{props.data.membership.milchSolidar}</DataElement>
+                    <DataElement label="Milch&nbsp;Summe">
+                        <div style={{ alignSelf: 'end', textAlign: 'right' }} >
+                            {calculatePositionSum({
+                                amount: props.data.membership.milchMenge,
+                                solidar: props.data.membership.milchSolidar,
+                                price: prices.milch,
+                            })}
+                        </div>
+                    </DataElement>
+                </Horizontal>
                 <DataElement label="Mitgliedsbeitrag">
                     <b style={{ alignSelf: 'end', textAlign: 'right', fontWeight: 'bolder', textDecoration: 'underline' }}>
                         {calculateMemberTotalSum(props.data.membership)}
