@@ -8,6 +8,8 @@ import { computeSepaMandateId } from "./computeSepaMandateId";
 import { getAllMemberData } from "src/api/getAllMemberData";
 import { replaceCharsToSepaChars } from "src/members/utils/replaceCharsToSepaChars";
 import { findNextRemittanceDate } from "src/utils/findNextRemittanceDate";
+import { AllMembersData } from "../types/AllMembersData";
+import { BankingData } from "../types/BankingData";
 
 export const createAndDownloadSepaFiles = async (): Promise<void> => {
     try {
@@ -22,108 +24,54 @@ export const createAndDownloadSepaFiles = async (): Promise<void> => {
             return;
         }
 
+        const summaryHeaders = `User-Id;Vorname;Nachname;Kontoinhaber;IBAN;BIC;Mandatsreferenz;Mandatsdatum;SEPA-End2EndId;Brot Betrag;Veggie Betrag;Fleisch Betrag;Milch Betrag;Gesamtbetrag;Fehler`;
+
         const date = new Date();
         const monthPadded = String(date.getMonth() + 1).padStart(2, '0');
         const year = date.getFullYear();
-        const debitId = 'SOLAWI.' + String(year) + '.' + monthPadded;
-        const creditorName = bankingData.holder; // 'Anbaustelle e.V.';
-        const creditorId = bankingData.creditorId; // 'DE20ZZZ00002458365';
-        const creditorIban = bankingData.iban; // 'DE94522500300050033976';
-        const creditorBic = bankingData.bic; // 'HELADEF1ESW';
-        const debitComment = 'SolaWi Beitrag ' + year + '.' + monthPadded;
-
-        const doc = new SEPA.Document('pain.008.001.02');
-        doc.grpHdr.id = debitId;
-        doc.grpHdr.created = date;
-        doc.grpHdr.initiatorName = creditorName;
 
         const errorList: string[] = [];
         const transactionList: string[] = [];
         const excludedList: string[] = [];
 
+        const fleischSepaDoc = createSepaDoc({ 
+            year, 
+            monthPadded, 
+            bankingData, 
+            date, 
+            memberData, 
+            transactionList, 
+            errorList, 
+            sepaDocTopic: 'FM',
+        });
+        const brotSepaDoc = createSepaDoc({ 
+            year, 
+            monthPadded, 
+            bankingData, 
+            date, 
+            memberData, 
+            transactionList, 
+            errorList, 
+            sepaDocTopic: 'B',
+        });
+        const veggieSepaDoc = createSepaDoc({ 
+            year, 
+            monthPadded, 
+            bankingData, 
+            date, 
+            memberData, 
+            transactionList, 
+            errorList, 
+            sepaDocTopic: 'V',
+        });
 
-        const info = doc.createPaymentInfo();
-        info.collectionDate = findNextRemittanceDate(3, date);
-        info.creditorIBAN = creditorIban;
-        info.creditorBIC = creditorBic;
-        info.creditorName = creditorName;
-        info.creditorId = creditorId;
-        // beim nächsten mal anmachen
-        info.sequenceType = 'RCUR'
-        info.batchBooking = false; //optional
-
-        // info.batchBooking = true; //optional
-        doc.addPaymentInfo(info);
-
-        const summaryHeaders = `User-Id;Vorname;Nachname;Kontoinhaber;IBAN;BIC;Mandatsreferenz;Mandatsdatum;SEPA-End2EndId;Brot Betrag;Veggie Betrag;Fleisch Betrag;Gesamtbetrag;Fehler`;
-
-        for (const member of memberData) {
-            const m = member.membership;
-            if (!m?.member) {
-                continue;
-            }
-
-            const brot = calculatePositionSum({
-                amount: m.brotMenge,
-                solidar: m.brotSolidar,
-                price: prices.brot,
-            });
-            const veggie = calculatePositionSum({
-                amount: m.veggieMenge,
-                solidar: m.veggieSolidar,
-                price: prices.veggie,
-            });
-            const fleisch = calculatePositionSum({
-                amount: m.fleischMenge,
-                solidar: m.fleischSolidar,
-                price: prices.fleisch,
-            })
-
-            const amount = calculateMemberTotalSum(m);
-            if (amount <= 0) {
-                { }
-                continue;
-            }
-
-            const mandateId = computeSepaMandateId(member);
-            const brotBetrag = brot.toFixed();
-            const veggieBetrag = veggie.toFixed();
-            const fleischBetrag = fleisch.toFixed();
-            const verwendungszweck = `${debitComment} ${replaceCharsToSepaChars(m.firstname)} ${replaceCharsToSepaChars(m.lastname)} b ${brotBetrag} g ${veggieBetrag} f ${fleischBetrag}`;
-            const end2EndId = mandateId + '.' + year + '.' + monthPadded;
-
-
-            let tx;
-
-            const reportRow = `${member.id};${m.firstname};${m.lastname};${m.accountowner};${m.iban};${m.bic};${mandateId};${m.mandateDate};${end2EndId};${brotBetrag};${veggieBetrag};${fleischBetrag};${amount}`;
-
-            if (m.useSepa ?? true) {
-                tx = info.createTransaction();
-                tx.debtorName = replaceCharsToSepaChars(m.accountowner).substring(0, 70);
-                tx.debtorIBAN = m.iban;
-                tx.debtorBIC = m.bic;
-                tx.mandateId = mandateId;
-                tx.mandateSignatureDate = new Date(m.mandateDate as string);
-                tx.amount = amount;
-                tx.currency = 'EUR';
-                tx.remittanceInfo = verwendungszweck;
-                tx.end2endId = end2EndId;
-                try {
-                    tx.validate()
-                    info.addTransaction(tx);
-                    transactionList.push(reportRow)
-                } catch (e) {
-                    const msg = `${reportRow};${e}`;
-                    errorList.push(msg);
-                    console.log(msg);
-                }
-            } else {
-                excludedList.push(reportRow);
-            }
-
-        }
-        const sepaDoc = doc.toString()
-            .replace('encoding="null"', 'encoding="UTF-8"');
+        fillTransactionList({
+            year,
+            monthPadded,
+            memberData,
+            transactionList,
+            excludedList,
+        })
 
         const errorCount = errorList.length;
         if (errorCount === 0) {
@@ -149,8 +97,14 @@ export const createAndDownloadSepaFiles = async (): Promise<void> => {
             ...errorList
         ].join('\r\n');
 
-        download(`Solawi_Sammellastschrift_${year}_${monthPadded}_SEPA.xml`,
-            sepaDoc
+        download(`Solawi_Sammellastschrift_${year}_${monthPadded}_Fleisch_SEPA.xml`,
+            fleischSepaDoc
+        );
+        download(`Solawi_Sammellastschrift_${year}_${monthPadded}_Brot_SEPA.xml`,
+            brotSepaDoc
+        );
+        download(`Solawi_Sammellastschrift_${year}_${monthPadded}_Veggie_SEPA.xml`,
+            veggieSepaDoc
         );
 
         const summaryFilename = `Solawi_Sammellastschrift_${year}_${monthPadded}_Uebersicht.csv`;
@@ -164,4 +118,189 @@ export const createAndDownloadSepaFiles = async (): Promise<void> => {
     }
 }
 
+type SepaDocTopic = 'FM' | 'B' | 'V';
+
+function createSepaDoc({
+    year,
+    monthPadded,
+    bankingData,
+    date,
+    memberData,
+    errorList,
+    sepaDocTopic,
+}: {
+    year: number;
+    monthPadded: string;
+    bankingData: BankingData;
+    date: Date;
+    memberData: AllMembersData;
+    transactionList: string[];
+    errorList: string[];
+    sepaDocTopic: SepaDocTopic;
+}) {
+    const debitId = `SOLAWI.${sepaDocTopic}.${String(year)}.${monthPadded}`;
+    const creditorName = bankingData.holder; // 'Anbaustelle e.V.';
+    const creditorId = bankingData.creditorId; // 'DE20ZZZ00002458365';
+    const creditorIban = bankingData.iban; // 'DE94522500300050033976';
+    const creditorBic = bankingData.bic; // 'HELADEF1ESW';
+    const debitComment = 'SolaWi Beitrag ' + year + '.' + monthPadded;
+    const doc = new SEPA.Document('pain.008.001.02');
+    doc.grpHdr.id = debitId;
+    doc.grpHdr.created = date;
+    doc.grpHdr.initiatorName = creditorName;
+
+    const info = doc.createPaymentInfo();
+    info.collectionDate = findNextRemittanceDate(3, date);
+    info.creditorIBAN = creditorIban;
+    info.creditorBIC = creditorBic;
+    info.creditorName = creditorName;
+    info.creditorId = creditorId;
+    info.sequenceType = 'RCUR';
+    info.batchBooking = false; //optional
+
+    doc.addPaymentInfo(info);
+
+    for (const member of memberData) {
+        const m = member.membership;
+        if (!m?.member) {
+            continue;
+        }
+
+        const mandateId = computeSepaMandateId(member);
+
+        let topicNice = '';
+        let amount: number;
+        switch (sepaDocTopic) {
+            case 'B':
+                amount = calculatePositionSum({
+                    amount: m.brotMenge,
+                    solidar: m.brotSolidar,
+                    price: prices.brot,
+                });
+                topicNice = 'Brot ' + amount.toFixed();
+                break;
+            case 'FM':
+                const fleisch = calculatePositionSum({
+                    amount: m.fleischMenge,
+                    solidar: m.fleischSolidar,
+                    price: prices.fleisch,
+                });
+                const milch = calculatePositionSum({
+                    amount: m.milchMenge,
+                    solidar: m.milchSolidar,
+                    price: prices.milch,
+                });
+
+                amount = fleisch + milch;
+                topicNice = `Fleisch ${fleisch.toFixed()} und Milch ${milch.toFixed()}`;
+                break;
+            case 'V':
+                amount = calculatePositionSum({
+                    amount: m.veggieMenge,
+                    solidar: m.veggieSolidar,
+                    price: prices.veggie,
+                })
+                topicNice = 'Veggie ' + amount.toFixed();
+                break;
+        }
+        if(amount <= 0) {
+            continue;
+        }
+
+        const verwendungszweck = `${debitComment} ${replaceCharsToSepaChars(m.firstname)} ${replaceCharsToSepaChars(m.lastname)} ${topicNice}`;
+        const end2EndId = mandateId + '.' + year + '.' + monthPadded;
+
+        let tx;
+
+        const reportRow = `${member.id};${m.firstname};${m.lastname};${m.accountowner};${m.iban};${m.bic};${mandateId};${m.mandateDate};${end2EndId};${topicNice};${amount}`;
+
+        if (m.useSepa ?? true) {
+            tx = info.createTransaction();
+            tx.debtorName = replaceCharsToSepaChars(m.accountowner).substring(0, 70);
+            tx.debtorIBAN = m.iban;
+            tx.debtorBIC = m.bic;
+            tx.mandateId = mandateId;
+            tx.mandateSignatureDate = new Date(m.mandateDate as string);
+            tx.amount = amount;
+            tx.currency = 'EUR';
+            tx.remittanceInfo = verwendungszweck;
+            tx.end2endId = end2EndId;
+            try {
+                tx.validate();
+                info.addTransaction(tx);
+            } catch (e) {
+                const msg = `${reportRow};${e}`;
+                errorList.push(msg);
+                console.log(msg);
+            }
+        }
+
+    }
+    const sepaDoc = doc.toString()
+        .replace('encoding="null"', 'encoding="UTF-8"');
+    return sepaDoc;
+}
+
+function fillTransactionList({
+    year,
+    monthPadded,
+    memberData,
+    transactionList,
+    excludedList,
+}: {
+    year: number;
+    monthPadded: string;
+    memberData: AllMembersData;
+    transactionList: string[];
+    excludedList: string[];
+}) {
+    for (const member of memberData) {
+        const m = member.membership;
+        if (!m?.member) {
+            continue;
+        }
+
+        const brot = calculatePositionSum({
+            amount: m.brotMenge,
+            solidar: m.brotSolidar,
+            price: prices.brot,
+        });
+        const veggie = calculatePositionSum({
+            amount: m.veggieMenge,
+            solidar: m.veggieSolidar,
+            price: prices.veggie,
+        });
+        const fleisch = calculatePositionSum({
+            amount: m.fleischMenge,
+            solidar: m.fleischSolidar,
+            price: prices.fleisch,
+        });
+        const milch = calculatePositionSum({
+            amount: m.milchMenge,
+            solidar: m.milchSolidar,
+            price: prices.milch,
+        });
+
+        const amount = calculateMemberTotalSum(m);
+        if (amount <= 0) {
+            continue;
+        }
+
+        const mandateId = computeSepaMandateId(member);
+        const brotBetrag = brot.toFixed();
+        const veggieBetrag = veggie.toFixed();
+        const fleischBetrag = fleisch.toFixed();
+        const milchBetrag = milch.toFixed();
+        const end2EndId = mandateId + '.' + year + '.' + monthPadded;
+
+        const reportRow = `${member.id};${m.firstname};${m.lastname};${m.accountowner};${m.iban};${m.bic};${mandateId};${m.mandateDate};${end2EndId};${brotBetrag};${veggieBetrag};${fleischBetrag};${milchBetrag};${amount}`;
+
+        if (m.useSepa ?? true) {
+            transactionList.push(reportRow);
+        } else {
+            excludedList.push(reportRow);
+        }
+
+    }
+}
 
