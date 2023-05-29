@@ -198,7 +198,7 @@ export const MemberSelfManagementPage = () => {
                         </Horizontal>
 
                         <Horizontal>
-                            <h3 className="min-w-8 max-w-8">Milch {toNumber(formDataState.fleischMenge) === 0 && <small>(nur zusammen mit Fleisch)</small>}</h3>
+                            <h3 className="min-w-8 max-w-8">Milch</h3>
                             <Select
                                 label="Anzahl / Liter"
                                 options={amountsToBook}
@@ -207,18 +207,12 @@ export const MemberSelfManagementPage = () => {
                                 disabled={!formDataState.member || toNumber(formDataState.fleischMenge) === 0}
                                 {...register('milchMenge')}
                             />
-                            <SolidaritaetSelect
-                                required={required}
-                                disabled={!formDataState.member || toNumber(formDataState.fleischMenge) === 0}
-                                {...register('milchSolidar')}
-                            />
                             <div style={{
                                 alignSelf: 'flex-end',
                                 paddingBottom: '1rem',
                                 flexGrow: 1,
                             }}>
-                                <small >
-                                    ({calculatePositionPrice({
+                                <small>(nur zusammen mit Fleisch, keine Solidarmöglichkeit, {calculatePositionPrice({
                                         price: prices.milch,
                                         solidar: formDataState.milchSolidar,
                                     })} EUR / pro Anteil)

@@ -38,6 +38,32 @@ export function computeAllMembersSums(allMembers: AllMembersData) {
             }
         }
 
+        const milchCount = Number.parseInt(membership?.milchMenge ?? '0') ?? 0;
+        newSumState.total.milch.count += milchCount;
+        newSumState[abholraum].milch.count += milchCount;
+        const milchSum = calculatePositionSum({
+            solidar: membership.milchSolidar,
+            price: prices.milch,
+            amount: membership.milchMenge,
+        });
+        newSumState.total.milch.sum += milchSum;
+        newSumState[abholraum].milch.sum += milchSum;
+        if (milchSum > 0) {
+            newSumState.total.milch.accountCount += 1;
+            newSumState[abholraum].milch.accountCount += 1;
+        }
+        const milchSolidar = Number.parseInt(membership.milchSolidar ?? '0');
+        if (milchSolidar !== 0) {
+            const solidarFactor = Math.abs(milchSolidar);
+            if (milchSolidar < 0) {
+                newSumState.total.milch.reduziert += solidarFactor * milchCount;
+                newSumState[abholraum].milch.reduziert += solidarFactor * milchCount;
+            } else {
+                newSumState.total.milch.solidar += solidarFactor * milchCount;
+                newSumState[abholraum].milch.solidar += solidarFactor * milchCount;
+            }
+        }
+
         const brotCount = Number.parseInt(membership?.brotMenge) ?? 0;
         newSumState.total.brot.count += brotCount;
         newSumState[abholraum].brot.count += brotCount;
@@ -89,7 +115,7 @@ export function computeAllMembersSums(allMembers: AllMembersData) {
                 newSumState[abholraum].veggie.solidar += solidarFactor * veggieCount;
             }
         }
-        const total = fleischSum + brotSum + veggieSum;
+        const total = fleischSum + milchSum + brotSum + veggieSum;
         newSumState.total.totalSum += total;
         newSumState[abholraum].totalSum += total;
         if (total > 0) {

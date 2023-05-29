@@ -54,6 +54,16 @@ export function VereinsverwaltungSums(props: {
                 <Output style={fleischSoldarStyle} label="Erhöhte Sechstel" value={String(props.sumState.fleisch.solidar)} />
                 <Output style={{ fontSize: '1.3em', fontWeight: 'bolder', textDecoration: 'underline' }} label="Summe (EUR)" value={String(props.sumState.fleisch.sum)} />
             </Horizontal>
+            <b>Milch</b>
+            <Horizontal style={{gap: 0}}>
+                <Output style={{  }} label="Accounts" value={String(props.sumState.milch.accountCount)} />
+                <Output style={{  }} label="Anteile insgesamt" value={String(props.sumState.milch.count)} />
+                <div className='output-wrapper'></div>
+                <div className='output-wrapper'></div>
+                {/* <Output style={fleischSoldarStyle} label="Reduzierte Sechstel" value={0} />
+                <Output style={fleischSoldarStyle} label="Erhöhte Sechstel" value={0} /> */}
+                <Output style={{ fontSize: '1.3em', fontWeight: 'bolder', textDecoration: 'underline' }} label="Summe (EUR)" value={String(props.sumState.milch.sum)} />
+            </Horizontal>
             <b>Gemüse</b>
             <Horizontal style={{gap: 0}}>
                 <Output style={{  }} label="Accounts" value={String(props.sumState.veggie.accountCount)} />
