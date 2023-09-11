@@ -151,7 +151,7 @@ function createSepaDoc({
 
     const info = doc.createPaymentInfo();
     info.collectionDate = findNextRemittanceDate(3, date);
-    info.creditorIBAN = creditorIban;
+    info.creditorIBAN = creditorIban.replace(/[ \t]/g, '');
     info.creditorBIC = creditorBic;
     info.creditorName = creditorName;
     info.creditorId = creditorId;
@@ -217,7 +217,7 @@ function createSepaDoc({
         if (m.useSepa ?? true) {
             tx = info.createTransaction();
             tx.debtorName = replaceCharsToSepaChars(m.accountowner).substring(0, 70);
-            tx.debtorIBAN = m.iban;
+            tx.debtorIBAN = m.iban.replace(/[ \t]/g, '');
             tx.debtorBIC = m.bic;
             tx.mandateId = mandateId;
             tx.mandateSignatureDate = new Date(m.mandateDate as string);
