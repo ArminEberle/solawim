@@ -7,4 +7,19 @@ export type SingleMemberData = {
     membership?: MemberData;
 };
 
+export type SingleMemberHistoryData =
+SingleMemberData & {
+    createdAt: string;
+    createdBy: string;
+    changes: ChangeEntry[];
+}
+
+export type ChangeEntry = {
+    field: string;
+    old: string;
+    new: string;
+}
+
 export type AllMembersData = SingleMemberData[];
+
+export type AllMembersHistoryData = SingleMemberHistoryData[];

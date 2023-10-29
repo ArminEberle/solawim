@@ -185,6 +185,40 @@ function getAllMemberData()
     return $results;
 }
 
+function getAllMemberDataHistory()
+{
+    ensureDBInitialized();
+    global $membershipTable;
+    global $membershipTableHist;
+    global $wpdb;
+    $results = $wpdb->get_results(
+        $wpdb->prepare("
+    SELECT  u.id,
+            u.user_nicename,
+            u.user_email,
+            x.*,
+            c.user_nicename AS createdBy
+    FROM {$wpdb->prefix}users u
+    LEFT JOIN (
+        SELECT * FROM `{$membershipTable}`
+        UNION
+        SELECT * FROM `{$membershipTableHist}`
+    ) x ON u.id = x.user_id
+    LEFT JOIN {$wpdb->prefix}users c ON x.createdBy = c.id
+    ORDER BY x.createdAt DESC
+    "),
+        ARRAY_A
+    );
+    foreach ($results as &$row) {
+        if (!is_null($row["content"])) {
+            $row["membership"] = json_decode($row["content"]);
+            $row["membership"] = json_decode($row["content"]);
+            unset($row["content"]);
+        }
+    }
+    return $results;
+}
+
 function getMembershipData(string $accountId)
 {
     global $membershipTable;
@@ -328,6 +362,15 @@ $app->get('/members', function (Request $request, Response $response, array $arg
         return $checkResult;
     }
     $response->getBody()->write(json_encode(getAllMemberData()));
+    return $response->withStatus(200);
+});
+
+$app->get('/membershistory', function (Request $request, Response $response, array $args) {
+    $checkResult = checkUserIsVereinsverwaltung($request, $response);
+    if (!is_null($checkResult)) {
+        return $checkResult;
+    }
+    $response->getBody()->write(json_encode(getAllMemberDataHistory()));
     return $response->withStatus(200);
 });
 

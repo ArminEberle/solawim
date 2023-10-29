@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import 'react-tabs/style/react-tabs.css';
 import { getAllMemberData } from 'src/api/getAllMemberData';
-import { Button } from 'src/atoms/Button';
 import { ButtonLink } from 'src/atoms/ButtonLink';
 import 'src/css/form.css';
 import { Page } from 'src/layout/Page';
@@ -15,11 +14,13 @@ import { WaitForIt } from 'src/utils/WaitForIt';
 import { computeAllMembersSums } from './computeAllMembersSums';
 import { emptyOverallSumState } from './emptyOverallSumState';
 import { VereinsverwaltungSums } from './VereinsverwaltungSums';
+import { VereinsverwaltungHistory } from 'src/members/pages/VereinsverwaltungHistory';
 
 export const VereinsverwaltungPage = () => {
     const [allMembers, setAllMembers] = useState([] as AllMembersData);
     const [reloadState, setReloadState] = useState(true);
     const [overallSumState, setOverallSumState] = useState(emptyOverallSumState());
+    const [updateTimestamp, setUpdateTimestamp] = useState(new Date().getTime());
 
     // const [membersCollapsed, setMembersCollapsed] = useState(true);
 
@@ -72,6 +73,9 @@ export const VereinsverwaltungPage = () => {
                             )
                         }
                     </Vertical>
+                </CollapsibleSection>
+                <CollapsibleSection title='Änderungshistorie' stateHandler={useState(false)}>
+                        <VereinsverwaltungHistory updateTimestamp={updateTimestamp}/>
                 </CollapsibleSection>
             </Page>
         </WaitForIt>
