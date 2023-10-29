@@ -131,7 +131,147 @@ function setUserData(string $tablename, object $content, string $accountId, stri
         ),
         ARRAY_A
     );
+    updateMailingLists();
     return getUserData($tablename, (object) null, $userId);
+}
+
+function updateMailingLists()
+{
+    try {
+        if (!class_exists(\MailPoet\API\API::class)) {
+            return;
+        }
+        $mailpoet_api = \MailPoet\API\API::MP('v1');
+        $allUsers = getAllMemberData();
+
+        $allUsersList = [];
+        $fleischUsersList = [];
+        $milchUsersList = [];
+        $brotUsersList = [];
+        $veggieUsersList = [];
+        $hutzelberghofUsersList = [];
+        $witzenhausenUsersList = [];
+        $gertenbachUsersList = [];
+
+        foreach ($allUsers as $user) {
+            if (!$user["membership"]->member) {
+                continue;
+            }
+            // error_log(print_r($user, true));
+            array_push($allUsersList, $user);
+            if ($user["membership"]->fleischMenge > 0) {
+                array_push($fleischUsersList, $user);
+            }
+            if ($user["membership"]->milchMenge > 0) {
+                array_push($milchUsersList, $user);
+            }
+            if ($user["membership"]->veggieMenge > 0) {
+                array_push($veggieUsersList, $user);
+            }
+            if ($user["membership"]->brotMenge > 0) {
+                array_push($brotUsersList, $user);
+            }
+            if ($user["membership"] -> abholraum === 'hutzelberghof') {
+                array_push($hutzelberghofUsersList, $user);
+            }
+            if ($user["membership"] -> abholraum === 'witzenhausen') {
+                array_push($witzenhausenUsersList, $user);
+            }
+            if ($user["membership"] -> abholraum === 'gertenbach') {
+                array_push($gertenbachUsersList, $user);
+            }
+        }
+
+        $lists = $mailpoet_api->getLists();
+        $allSubscribers = $mailpoet_api->getSubscribers(array(), 10000, 0);
+
+        ensureMailingList($mailpoet_api, $lists, 'AUTO_LISTE_ALLE', $allUsersList, $allSubscribers);
+        ensureMailingList($mailpoet_api, $lists, 'AUTO_LISTE_FLEISCH', $fleischUsersList, $allSubscribers);
+        ensureMailingList($mailpoet_api, $lists, 'AUTO_LISTE_MILCH', $milchUsersList, $allSubscribers);
+        ensureMailingList($mailpoet_api, $lists, 'AUTO_LISTE_VEGGIE', $veggieUsersList, $allSubscribers);
+        ensureMailingList($mailpoet_api, $lists, 'AUTO_LISTE_BROT', $brotUsersList, $allSubscribers);
+        ensureMailingList($mailpoet_api, $lists, 'AUTO_LISTE_HUTZELBERGHOF', $hutzelberghofUsersList, $allSubscribers);
+        ensureMailingList($mailpoet_api, $lists, 'AUTO_LISTE_WITZENHAUSEN', $witzenhausenUsersList, $allSubscribers);
+        ensureMailingList($mailpoet_api, $lists, 'AUTO_LISTE_GERTENBACH', $gertenbachUsersList, $allSubscribers);
+
+        // error_log(print_r($allUsers, true));
+        // error_log(print_r($allUsersList, true));
+    } catch (Exception $e) {
+        error_log('Problem when updating the mailing lists: '.$e);
+    }
+}
+
+function ensureMailingList($api, $allLists, $listName, $members, $allSubscribers)
+{
+    $theList = null;
+    foreach ($allLists as $list) {
+        if ($list["name"] === $listName) {
+            $theList = $list;
+            break;
+        }
+    }
+    if ($theList === null) {
+        $theList = $api->addList(array(
+            "name" => $listName,
+            "description" => "Automatisch erzeugte Liste aus den Mitgliedschaften"
+        ));
+    }
+    ensureMembersInMailingList($api, $theList, $members, $allSubscribers);
+}
+
+function ensureMembersInMailingList($api, $mailList, $members, $allSubscribers)
+{
+    $currentSubscribers = $api->getSubscribers(array("listId" => $mailList["id"]), 10000, 0);
+    // delete obsolete members
+    foreach ($currentSubscribers as $subscriber) {
+        $deleteIt = true;
+
+        foreach ($members as $member) {
+            if ($member["id"] === $subscriber["wp_user_id"]) {
+                $deleteIt = false;
+                break;
+            }
+        }
+        if ($deleteIt === true) {
+            $api->unsubscribeFromList($subscriber["id"], $mailList["id"]);
+        }
+    }
+    // add missing members
+    foreach ($members as $member) {
+        $addIt = true;
+        foreach ($currentSubscribers as $subscriber) {
+            if ($member["id"] === $subscriber["wp_user_id"]) {
+                $addIt = false;
+                break;
+            }
+        }
+        if ($addIt === true) {
+            // try find if the person is already a subscriber and create it if necessary
+            $registeredSubscriber = null;
+            foreach ($allSubscribers as $currentSubscriber) {
+                if ($member["user_email"] === $currentSubscriber["email"]) {
+                    $registeredSubscriber = $currentSubscriber;
+                    break;
+                }
+            }
+            if ($registeredSubscriber === null) {
+                // subscriber not found, need to create it
+                error_log(print_r($member, true));
+                $registeredSubscriber = $api -> addSubscriber(array(
+                    "email" => $member["user_email"],
+                    "first_name" => $member["membership"]->firstname,
+                    "last_name" => $member["membership"]->lastname,
+                ), array(), array(
+                    "skip_subscriber_notification" => false
+                ));
+            }
+            try {
+                $api->subscribeToList($registeredSubscriber["id"], $mailList["id"]);
+            } catch (Exception $e) {
+                error_log('Problem when adding '.$member["user_nicename"].' to '.$mailList["name"].': '.$e);
+            }
+        }
+    }
 }
 
 function clearUserData(string $tablename, string $accountId)
@@ -270,11 +410,11 @@ $app->post('/membership', function (Request $request, Response $response, array 
     // thus we set the previous or false as the value up front
     $previousVersion = getMembershipData($userId);
     if (!is_null($previousVersion)) {
-        $previousActiveMembership = $previousVersion->activeMembership;
+        $previousActiveMembership = $previousVersion->active;
         if (is_null($previousActiveMembership)) {
             $previousActiveMembership = false;
         }
-        $content->activeMembership = $previousActiveMembership;
+        $content->active = $previousActiveMembership;
     }
 
     $validateResult = validateJson($content, 'member-data-schema.json');
@@ -326,11 +466,11 @@ $app->post('/membershipactive', function (Request $request, Response $response, 
     $contentString = $request->getBody()->getContents();
     $content = json_decode($contentString, false);
     $targetUserId = $content->targetUserId;
-    $activeMembership = $content->activeMembership;
+    $activeMembership = $content->active;
 
     $membershipData = getMembershipData($targetUserId);
     if (!is_null($membershipData)) {
-        $membershipData->activeMembership = $activeMembership;
+        $membershipData->active = $activeMembership;
         $result = setUserData($membershipTable, $membershipData, $userId, $targetUserId);
     }
 
