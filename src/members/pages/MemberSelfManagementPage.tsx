@@ -34,6 +34,7 @@ import { amountsToBook } from 'src/utils/amountsToBook';
 import { calculateMemberTotalSum } from 'src/members/utils/calculateMemberTotalSum';
 import { computeSepaMandateId } from 'src/members/utils/computeSepaMandateId';
 import toNumber from 'lodash/toNumber';
+import { showAlertWithBackdrop } from 'src/atoms/AlertWithBackdrop';
 
 const required = true;
 
@@ -66,6 +67,7 @@ export const MemberSelfManagementPage = () => {
         onSubmit: async (data, setData) => {
             await uploadMyData(data);
             setData(data);
+            await showAlertWithBackdrop('Deine Daten sind jetzt gespeichert und werden so verwendet, wenn Du sie nicht mehr änderst.');
             setReloadState(true);
         },
     });
