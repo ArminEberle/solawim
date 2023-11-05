@@ -15,6 +15,8 @@ import { computeAllMembersSums } from './computeAllMembersSums';
 import { emptyOverallSumState } from './emptyOverallSumState';
 import { VereinsverwaltungSums } from './VereinsverwaltungSums';
 import { VereinsverwaltungHistory } from 'src/members/pages/VereinsverwaltungHistory';
+import { Button } from 'src/atoms/Button';
+import { updateMailingLists } from 'src/api/updateMailingLists';
 
 export const VereinsverwaltungPage = () => {
     const [allMembers, setAllMembers] = useState([] as AllMembersData);
@@ -22,13 +24,22 @@ export const VereinsverwaltungPage = () => {
     const [overallSumState, setOverallSumState] = useState(emptyOverallSumState());
     const [updateTimestamp, setUpdateTimestamp] = useState(new Date().getTime());
 
+    const [updatingMailingLists, setUpdatingMailingLists] = useState(false);
+
     // const [membersCollapsed, setMembersCollapsed] = useState(true);
 
     useMemo(() => {
         setOverallSumState(computeAllMembersSums(allMembers));
     }, [allMembers]);
 
-    return <div style={{ padding: '0.5rem' }} onKeyDown={e => e.stopPropagation()}>
+    const updateMailingListsAction = () => {
+        setUpdatingMailingLists(true);
+        void updateMailingLists().then(() => {
+            setUpdatingMailingLists(false);
+        });
+    }
+
+    return <div style={{ padding: '0.5rem', marginTop:'5rem' }} onKeyDown={e => e.stopPropagation()}>
         <LoggedInScope loginHint={
             <ButtonLink buttonType="primary" href="/anmelden/?redirect_to=/vereinsverwaltung">Bitte log Dich erst ein.</ButtonLink>
         }>
@@ -39,6 +50,12 @@ export const VereinsverwaltungPage = () => {
                     setAllMembers(memberData);
                 }}>
                 <Page>
+                    <Button 
+                        buttonType='primary' 
+                        disabled={updatingMailingLists}
+                        onClick={updateMailingListsAction}
+                    >{updatingMailingLists ? 'Mailing Listen werden upgedatet, Seite nicht verlassen...' : 'Mailing Listen updaten'}
+                    </Button>
                     <CollapsibleSection title='Übersicht' stateHandler={useState(false)}>
                         <VereinsverwaltungSums sumState={overallSumState.total} memberData={allMembers}/>
                 </CollapsibleSection>

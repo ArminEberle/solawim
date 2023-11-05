@@ -131,7 +131,6 @@ function setUserData(string $tablename, object $content, string $accountId, stri
         ),
         ARRAY_A
     );
-    updateMailingLists();
     return getUserData($tablename, (object) null, $userId);
 }
 
@@ -502,6 +501,16 @@ $app->get('/members', function (Request $request, Response $response, array $arg
         return $checkResult;
     }
     $response->getBody()->write(json_encode(getAllMemberData()));
+    return $response->withStatus(200);
+});
+
+$app->get('/updatemailinglists', function (Request $request, Response $response, array $args) {
+    $checkResult = checkUserIsVereinsverwaltung($request, $response);
+    if (!is_null($checkResult)) {
+        return $checkResult;
+    }
+    updateMailingLists();
+    $response->getBody()->write('{}');
     return $response->withStatus(200);
 });
 
