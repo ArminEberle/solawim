@@ -1,9 +1,10 @@
 import cloneDeep from 'lodash.clonedeep';
 import { localWebServerPath } from 'src/build/config/buildConfig';
 import type { UserConfig } from 'vite';
+import react from '@vitejs/plugin-react'
 
 export default {
-    action: async(): Promise<void> => {
+    action: async (): Promise<void> => {
         const [
             vite,
             buildConfigModule,
@@ -14,6 +15,23 @@ export default {
         const buildConfig = buildConfigModule.default;
         if (buildConfig.build) {
             buildConfig.build.outDir = localWebServerPath + '/member';
+            // buildConfig.resolve = {
+            //     alias: {
+            //         // I needed this to make dev mode work.
+            //         'react/jsx-runtime': 'react/jsx-runtime.js',
+            //     },
+            // };
+            buildConfig.plugins = [react({
+                jsxRuntime: 'classic',
+            })];
+            // buildConfig.plugins = [react({
+            //     babel: {
+            //         plugins: [
+            //             ['@babel/plugin-transform-react-jsx', { runtime: 'automatic' }],
+            //         ]
+            //     },
+            // })];
+            buildConfig.mode = 'development';
             buildConfig.build.emptyOutDir = false;
             buildConfig.build.watch = {};
             buildConfig.build.minify = false;

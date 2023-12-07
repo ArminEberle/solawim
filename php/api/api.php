@@ -11,30 +11,42 @@ use JsonSchema\Constraints\Constraint;
 require_once(__DIR__ . '/../../../../wp-load.php');
 
 global $wpdb;
+$dbInitialized = false;
 
 add_role('vereinsverwaltung', 'Vereinsverwaltung');
 
-$membershipTable = "{$wpdb->prefix}solawim_2023";
-$membershipTableHist = "{$membershipTable}_hist";
+$seasons = [2024, 2023];
+$defaultSeason = 2024;
+
+$seasonToMembership = array(
+    2023 => array(
+        "membership" => "{$wpdb->prefix}solawim_2023",
+        "hist" =>  "{$wpdb->prefix}solawim_2023_hist"
+    ),
+    2024 => array(
+        "membership" => "{$wpdb->prefix}solawim_2024",
+        "hist" =>  "{$wpdb->prefix}solawim_2024_hist"
+    ),
+);
 
 $masterdataTable = "{$wpdb->prefix}solawim_masterdata_2023";
-
-$solatables = array($membershipTable, $masterdataTable);
 
 function ensureDBInitialized()
 {
     global $wpdb;
-    global $solatables;
-    foreach ($solatables as $tablename) {
-        $cnt = $wpdb->get_results("SELECT count(*) as cnt from information_schema.tables WHERE table_name = '{$tablename}'", ARRAY_A);
-        if ($cnt[0]['cnt'] = 0) {
-            $wpdb->get_results("CREATE TABLE `{$tablename}` (user_id INT PRIMARY KEY, content JSON, createdAt DATETIME, createdBy varchar(255));", ARRAY_A);
-        }
-        $cnt = $wpdb->get_results("SELECT count(*) as cnt from information_schema.tables WHERE table_name = '{$tablename}_hist'", ARRAY_A);
-        if ($cnt[0]['cnt'] = 0) {
-            $wpdb->get_results("CREATE TABLE `{$tablename}_hist` (user_id INT, content JSON, createdAt DATETIME, createdBy varchar(255));", ARRAY_A);
-        }
+    global $seasonToMembership;
+    global $seasons;
+    global $dbInitialized;
+
+    if ($dbInitialized) {
+        return;
     }
+    foreach ($seasons as $season) {
+        $tablename = "{$wpdb->prefix}solawim_{$season}";
+        $wpdb->get_results("CREATE TABLE IF NOT EXISTS `{$tablename}` (user_id INT PRIMARY KEY, content JSON, createdAt DATETIME, createdBy varchar(255));", ARRAY_A);
+        $wpdb->get_results("CREATE TABLE IF NOT EXISTS `{$tablename}_hist` (user_id INT, content JSON, createdAt DATETIME, createdBy varchar(255));", ARRAY_A);
+    }
+    $dbInitialized = true;
     return;
 }
 
@@ -62,8 +74,11 @@ function getUserId()
     return $current_user->get('ID');
 }
 
-function getUserData(string $tablename, object $defaultContent, string $accountId)
-{
+function getUserData(
+    string $tablename,
+    object $defaultContent,
+    string $accountId,
+) {
     ensureDBInitialized();
     global $wpdb;
     $results = $wpdb->get_results(
@@ -141,7 +156,8 @@ function updateMailingLists()
             return;
         }
         $mailpoet_api = \MailPoet\API\API::MP('v1');
-        $allUsers = getAllMemberData();
+        global $defaultSeason;
+        $allUsers = getAllMemberData($defaultSeason);
 
         $allUsersList = [];
         $fleischUsersList = [];
@@ -284,11 +300,12 @@ function clearUserData(string $tablename, string $accountId)
     return getUserData($tablename, (object) null, $accountId);
 }
 
-function getAllMemberData()
+function getAllMemberData($season)
 {
     ensureDBInitialized();
-    global $membershipTable;
-    global $membershipTableHist;
+    global $seasonToMembership;
+    $membershipTable = $seasonToMembership[$season]["membership"];
+    $membershipTableHist = $seasonToMembership[$season]["hist"];
     global $wpdb;
     $results = $wpdb->get_results(
         $wpdb->prepare("
@@ -324,11 +341,12 @@ function getAllMemberData()
     return $results;
 }
 
-function getAllMemberDataHistory()
+function getAllMemberDataHistory($season)
 {
     ensureDBInitialized();
-    global $membershipTable;
-    global $membershipTableHist;
+    global $seasonToMembership;
+    $membershipTable = $seasonToMembership[$season]["membership"];
+    $membershipTableHist = $seasonToMembership[$season]["hist"];
     global $wpdb;
     $results = $wpdb->get_results(
         $wpdb->prepare("
@@ -358,9 +376,10 @@ function getAllMemberDataHistory()
     return $results;
 }
 
-function getMembershipData(string $accountId)
+function getMembershipData(string $accountId, $season)
 {
-    global $membershipTable;
+    global $seasonToMembership;
+    $membershipTable = $seasonToMembership[$season]["membership"];
     return getUserData($membershipTable, (object) [], $accountId);
 }
 
@@ -378,20 +397,35 @@ function validateJson($submission, $schemaName)
     return $errorMsg;
 }
 
+function getSeasonFromQueryString(Request $request)
+{
+    global $defaultSeason;
+    global $seasons;
+    $query = $request->getQueryParams();
+    $season = $defaultSeason;
+    if (in_array("season", $query) && in_array($query["season"], $seasons)) {
+        $season = $query["season"];
+    }
+    return $season;
+}
+
 $app = new \Slim\App();
 
 $app->get('/membership', function (Request $request, Response $response, array $args) {
+    $season = getSeasonFromQueryString($request);
     $userId = getUserId();
     if (!($userId > 0)) {
         return reportError('Please login before proceeding', $response, 401);
     }
-    $result = getMembershipData($userId);
+    $result = getMembershipData($userId, $season);
     $response->getBody()->write(json_encode($result));
     return $response;
 });
 
 $app->post('/membership', function (Request $request, Response $response, array $args) {
-    global $membershipTable;
+    $season = getSeasonFromQueryString($request);
+    global $seasonToMembership;
+    $membershipTable = $seasonToMembership[$season]["membership"];
     $userId = getUserId();
     if (!($userId > 0)) {
         return reportError('Please login before proceeding', $response, 401);
@@ -407,7 +441,7 @@ $app->post('/membership', function (Request $request, Response $response, array 
 
     // we cannot change this activeMembership state with this service
     // thus we set the previous or false as the value up front
-    $previousVersion = getMembershipData($userId);
+    $previousVersion = getMembershipData($userId, $season);
     if (!is_null($previousVersion)) {
         $previousActiveMembership = $previousVersion->active;
         if (is_null($previousActiveMembership)) {
@@ -428,7 +462,10 @@ $app->post('/membership', function (Request $request, Response $response, array 
 });
 
 $app->post('/membership-admin', function (Request $request, Response $response, array $args) {
-    global $membershipTable;
+    $season = getSeasonFromQueryString($request);
+    global $seasonToMembership;
+    $membershipTable = $seasonToMembership[$season]["membership"];
+
     $accountId = getUserId();
     if (!($accountId > 0)) {
         return reportError('Please login before proceeding', $response, 401);
@@ -456,7 +493,10 @@ $app->post('/membership-admin', function (Request $request, Response $response, 
 });
 
 $app->post('/membershipactive', function (Request $request, Response $response, array $args) {
-    global $membershipTable;
+    $season = getSeasonFromQueryString($request);
+    global $seasonToMembership;
+    $membershipTable = $seasonToMembership[$season]["membership"];
+
     $userId = getUserId();
     $checkResult = checkUserIsVereinsverwaltung($request, $response);
     if (!is_null($checkResult)) {
@@ -467,7 +507,7 @@ $app->post('/membershipactive', function (Request $request, Response $response, 
     $targetUserId = $content->targetUserId;
     $activeMembership = $content->active;
 
-    $membershipData = getMembershipData($targetUserId);
+    $membershipData = getMembershipData($targetUserId, $season);
     if (!is_null($membershipData)) {
         $membershipData->active = $activeMembership;
         $result = setUserData($membershipTable, $membershipData, $userId, $targetUserId);
@@ -500,7 +540,11 @@ $app->get('/members', function (Request $request, Response $response, array $arg
     if (!is_null($checkResult)) {
         return $checkResult;
     }
-    $response->getBody()->write(json_encode(getAllMemberData()));
+    $season = getSeasonFromQueryString($request);
+    global $seasonToMembership;
+    $membershipTable = $seasonToMembership[$season]["membership"];
+
+    $response->getBody()->write(json_encode(getAllMemberData($season)));
     return $response->withStatus(200);
 });
 
@@ -519,7 +563,8 @@ $app->get('/membershistory', function (Request $request, Response $response, arr
     if (!is_null($checkResult)) {
         return $checkResult;
     }
-    $response->getBody()->write(json_encode(getAllMemberDataHistory()));
+    $season = getSeasonFromQueryString($request);
+    $response->getBody()->write(json_encode(getAllMemberDataHistory($season)));
     return $response->withStatus(200);
 });
 
@@ -529,6 +574,12 @@ $app->get('/bankingdata', function (Request $request, Response $response, array 
         return $checkResult;
     }
     $response->getBody()->write(json_encode(getBankingData()));
+    return $response->withStatus(200);
+});
+
+$app->get('/seasons', function (Request $request, Response $response, array $args) {
+    global $seasons;
+    $response->getBody()->write(json_encode($seasons));
     return $response->withStatus(200);
 });
 
