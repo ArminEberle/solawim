@@ -19,14 +19,16 @@ import { Button } from 'src/atoms/Button';
 import { updateMailingLists } from 'src/api/updateMailingLists';
 import { SeasonSelect } from 'src/atoms/SeasonSelect';
 import { RootContext } from 'src/contexts/RootContext';
-import { SeasonContext, SeasonScope } from 'src/contexts/SeasonContext';
-import { Horizontal } from 'src/layout/Horizontal';
-import { useGetSeasons } from 'src/api/useGetSeasons';
 
 export const VereinsverwaltungPage = () => {
-    return <RootContext>
-        <VereinsverwaltungPageInternal />
-    </RootContext>
+    return <LoggedInScope
+        loginHint={
+            <ButtonLink buttonType="primary" href="/anmelden/?redirect_to=/vereinsverwaltung">Bitte log Dich erst ein.</ButtonLink>
+        }>
+        <RootContext>
+            <VereinsverwaltungPageInternal />
+        </RootContext>
+    </LoggedInScope>
 }
 
 const VereinsverwaltungPageInternal = () => {
@@ -53,60 +55,56 @@ const VereinsverwaltungPageInternal = () => {
     }
 
     return <div style={{ padding: '0.5rem', marginTop: '5rem' }} onKeyDown={e => e.stopPropagation()}>
-        <LoggedInScope loginHint={
-            <ButtonLink buttonType="primary" href="/anmelden/?redirect_to=/vereinsverwaltung">Bitte log Dich erst ein.</ButtonLink>
-        }>
-            <Page>
-                <div >
-                    <label htmlFor="seasonselect">Saison </label>
-                    <SeasonSelect name="seasonselect" />
-                </div>
+        <Page>
+            <div >
+                <label htmlFor="seasonselect">Saison </label>
+                <SeasonSelect name="seasonselect" />
+            </div>
 
-                <Button
-                    buttonType='primary'
-                    disabled={updatingMailingLists}
-                    onClick={updateMailingListsAction}
-                >{updatingMailingLists ? 'Mailing Listen werden upgedatet, Seite nicht verlassen...' : 'Mailing Listen updaten'}
-                </Button>
-                <CollapsibleSection title='Übersicht' stateHandler={useState(false)}>
-                    <VereinsverwaltungSums sumState={overallSumState.total} memberData={allMembersQuery.data} />
-                </CollapsibleSection>
-                <br />
-                <CollapsibleSection title='Übersicht nach Abholraum' stateHandler={useState(true)}>
-                    {abholraumOptions.map(option => <>
-                        <br />
-                        <h3>{option.display}</h3>
-                        <VereinsverwaltungSums sumState={overallSumState[option.value]} />
-                    </>)}
-                </CollapsibleSection>
-                <br />
-                <CollapsibleSection
-                    title='Mitglieder'
-                    stateHandler={useState(true)}
-                >
-                    <Vertical>
-                        {
-                            allMembersQuery.data.map(memberRow => <>
-                                <MemberDetailMolecule
-                                    key={memberRow.id}
-                                    data={memberRow}
-                                    reloadCb={() => {
-                                        console.log('triggering reload');
-                                        setReloadState(true)
-                                    }
-                                    }
-                                />
-                                <br />
-                            </>
-                            )
-                        }
-                    </Vertical>
-                </CollapsibleSection>
-                <CollapsibleSection title='Änderungshistorie' stateHandler={useState(false)}>
-                    <VereinsverwaltungHistory updateTimestamp={updateTimestamp} />
-                </CollapsibleSection>
-            </Page>
-        </LoggedInScope>
+            <Button
+                buttonType='primary'
+                disabled={updatingMailingLists}
+                onClick={updateMailingListsAction}
+            >{updatingMailingLists ? 'Mailing Listen werden upgedatet, Seite nicht verlassen...' : 'Mailing Listen updaten'}
+            </Button>
+            <CollapsibleSection title='Übersicht' stateHandler={useState(false)}>
+                <VereinsverwaltungSums sumState={overallSumState.total} memberData={allMembersQuery.data} />
+            </CollapsibleSection>
+            <br />
+            <CollapsibleSection title='Übersicht nach Abholraum' stateHandler={useState(true)}>
+                {abholraumOptions.map(option => <>
+                    <br />
+                    <h3>{option.display}</h3>
+                    <VereinsverwaltungSums sumState={overallSumState[option.value]} />
+                </>)}
+            </CollapsibleSection>
+            <br />
+            <CollapsibleSection
+                title='Mitglieder'
+                stateHandler={useState(true)}
+            >
+                <Vertical>
+                    {
+                        allMembersQuery.data.map(memberRow => <>
+                            <MemberDetailMolecule
+                                key={memberRow.id}
+                                data={memberRow}
+                                reloadCb={() => {
+                                    console.log('triggering reload');
+                                    setReloadState(true)
+                                }
+                                }
+                            />
+                            <br />
+                        </>
+                        )
+                    }
+                </Vertical>
+            </CollapsibleSection>
+            <CollapsibleSection title='Änderungshistorie' stateHandler={useState(false)}>
+                <VereinsverwaltungHistory updateTimestamp={updateTimestamp} />
+            </CollapsibleSection>
+        </Page>
     </div >;
 };
 

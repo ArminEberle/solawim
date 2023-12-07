@@ -34,9 +34,8 @@ $masterdataTable = "{$wpdb->prefix}solawim_masterdata_2023";
 function ensureDBInitialized()
 {
     global $wpdb;
-    global $seasonToMembership;
-    global $seasons;
     global $dbInitialized;
+    global $seasons;
 
     if ($dbInitialized) {
         return;
@@ -302,32 +301,36 @@ function clearUserData(string $tablename, string $accountId)
 
 function getAllMemberData($season)
 {
-    ensureDBInitialized();
     global $seasonToMembership;
+    ensureDBInitialized();
     $membershipTable = $seasonToMembership[$season]["membership"];
     $membershipTableHist = $seasonToMembership[$season]["hist"];
     global $wpdb;
+    $query = "
+    SELECT  u.id,
+            u.user_nicename,
+            u.user_email,
+            m.content as membership,
+            mandateDate.mandateDate
+    FROM    {$wpdb->prefix}users u
+            INNER JOIN {$membershipTable} m on u.ID = m.user_id
+            LEFT JOIN (
+                SELECT 	c.user_id as user_id,
+                        coalesce(min(h.createdAt), c.createdAt) as mandateDate
+                FROM 	{$membershipTable} c
+                        LEFT JOIN {$membershipTableHist} h ON 
+                            c.user_id = h.user_id
+                            AND json_extract(c.content, '$.bic') = json_extract(h.content, '$.bic')
+                            AND json_extract(c.content, '$.iban') = json_extract(h.content, '$.iban')
+                            AND json_extract(c.content, '$.accountowner') = json_extract(h.content, '$.accountowner')
+                GROUP BY c.user_id
+            ) mandateDate ON u.ID = mandateDate.user_id
+    ORDER BY u.user_nicename
+    ";
+    error_log("Season ".$season);
+    // error_log($query);
     $results = $wpdb->get_results(
-        $wpdb->prepare("
-        SELECT  u.id,
-                u.user_nicename,
-                u.user_email,
-                m.content as membership,
-                mandateDate.mandateDate
-        FROM    {$wpdb->prefix}users u
-                LEFT JOIN {$membershipTable} m on u.ID = m.user_id
-                LEFT JOIN (
-                    SELECT 	c.user_id as user_id,
-                            coalesce(min(h.createdAt), c.createdAt) as mandateDate
-                    FROM 	{$membershipTable} c
-                            LEFT JOIN {$membershipTableHist} h on c.user_id = h.user_id
-                                                                    AND json_extract(c.content, '$.bic') = json_extract(h.content, '$.bic')
-                                                                    AND json_extract(c.content, '$.iban') = json_extract(h.content, '$.iban')
-                                                                    AND json_extract(c.content, '$.accountowner') = json_extract(h.content, '$.accountowner')
-                    GROUP BY c.user_id
-                ) mandateDate ON u.ID = mandateDate.user_id
-        ORDER BY u.user_nicename
-        "),
+        $wpdb->prepare($query),
         ARRAY_A
     );
     foreach ($results as &$row) {
@@ -343,8 +346,8 @@ function getAllMemberData($season)
 
 function getAllMemberDataHistory($season)
 {
-    ensureDBInitialized();
     global $seasonToMembership;
+    ensureDBInitialized();
     $membershipTable = $seasonToMembership[$season]["membership"];
     $membershipTableHist = $seasonToMembership[$season]["hist"];
     global $wpdb;
@@ -378,7 +381,6 @@ function getAllMemberDataHistory($season)
 
 function getMembershipData(string $accountId, $season)
 {
-    global $seasonToMembership;
     $membershipTable = $seasonToMembership[$season]["membership"];
     return getUserData($membershipTable, (object) [], $accountId);
 }
@@ -400,13 +402,17 @@ function validateJson($submission, $schemaName)
 function getSeasonFromQueryString(Request $request)
 {
     global $defaultSeason;
-    global $seasons;
     $query = $request->getQueryParams();
-    $season = $defaultSeason;
-    if (in_array("season", $query) && in_array($query["season"], $seasons)) {
-        $season = $query["season"];
+    // $season = $defaultSeason;
+
+    // if (in_array("season", $query) && in_array($query["season"], $seasons)) {
+    //     $season = $query["season"];
+    // }
+    // return $season;
+    if (isset($query["season"])) {
+        return $query["season"];
     }
-    return $season;
+    return $defaultSeason;
 }
 
 $app = new \Slim\App();
@@ -424,7 +430,6 @@ $app->get('/membership', function (Request $request, Response $response, array $
 
 $app->post('/membership', function (Request $request, Response $response, array $args) {
     $season = getSeasonFromQueryString($request);
-    global $seasonToMembership;
     $membershipTable = $seasonToMembership[$season]["membership"];
     $userId = getUserId();
     if (!($userId > 0)) {
@@ -463,7 +468,6 @@ $app->post('/membership', function (Request $request, Response $response, array 
 
 $app->post('/membership-admin', function (Request $request, Response $response, array $args) {
     $season = getSeasonFromQueryString($request);
-    global $seasonToMembership;
     $membershipTable = $seasonToMembership[$season]["membership"];
 
     $accountId = getUserId();
@@ -494,7 +498,6 @@ $app->post('/membership-admin', function (Request $request, Response $response, 
 
 $app->post('/membershipactive', function (Request $request, Response $response, array $args) {
     $season = getSeasonFromQueryString($request);
-    global $seasonToMembership;
     $membershipTable = $seasonToMembership[$season]["membership"];
 
     $userId = getUserId();
@@ -536,12 +539,13 @@ function checkUserIsVereinsverwaltung(Request $request, Response $response)
 }
 
 $app->get('/members', function (Request $request, Response $response, array $args) {
+    global $seasonToMembership;
     $checkResult = checkUserIsVereinsverwaltung($request, $response);
     if (!is_null($checkResult)) {
         return $checkResult;
     }
     $season = getSeasonFromQueryString($request);
-    global $seasonToMembership;
+    error_log("Season from query ".$season);
     $membershipTable = $seasonToMembership[$season]["membership"];
 
     $response->getBody()->write(json_encode(getAllMemberData($season)));
