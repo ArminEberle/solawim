@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import React, { useState } from "react"
 import { PropsWithChildren } from "react"
-import { SeasonContext } from "src/contexts/SeasonContext"
+import { SeasonContext, SeasonScope } from "src/contexts/SeasonContext"
 
 export type RootContextProps = PropsWithChildren & {}
 
@@ -13,14 +13,9 @@ export const RootContext = (props: RootContextProps) => {
         },
     });
 
-    const [season, setSeason] = useState<number | undefined>(undefined);
-
     return <QueryClientProvider client={queryClient}>
-        <SeasonContext.Provider value={{
-            season,
-            setSeason
-        }}>
+        <SeasonScope>
             {props.children}
-        </SeasonContext.Provider>
+        </SeasonScope>
     </QueryClientProvider>;
 }
