@@ -1,6 +1,6 @@
-import React, { useMemo, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import 'react-tabs/style/react-tabs.css';
-import { getAllMemberData } from 'src/api/getAllMemberData';
+import { getAllMemberData, useGetAllMemberData } from 'src/api/getAllMemberData';
 import { ButtonLink } from 'src/atoms/ButtonLink';
 import 'src/css/form.css';
 import { Page } from 'src/layout/Page';
@@ -17,9 +17,25 @@ import { VereinsverwaltungSums } from './VereinsverwaltungSums';
 import { VereinsverwaltungHistory } from 'src/members/pages/VereinsverwaltungHistory';
 import { Button } from 'src/atoms/Button';
 import { updateMailingLists } from 'src/api/updateMailingLists';
+import { SeasonSelect } from 'src/atoms/SeasonSelect';
+import { RootContext } from 'src/contexts/RootContext';
+import { SeasonContext } from 'src/contexts/SeasonContext';
+import { Horizontal } from 'src/layout/Horizontal';
+import { useGetSeasons } from 'src/api/useGetSeasons';
 
 export const VereinsverwaltungPage = () => {
-    const [allMembers, setAllMembers] = useState([] as AllMembersData);
+    return <RootContext>
+        <VereinsverwaltungPageInternal />
+    </RootContext>
+}
+
+const VereinsverwaltungPageInternal = () => {
+
+    const seasonContext = useContext(SeasonContext);
+    const seasonsQuery = useGetSeasons();
+    const [season, setSeason] = useState(2024);
+
+    // const [allMembers, setAllMembers] = useState([] as AllMembersData);
     const [reloadState, setReloadState] = useState(true);
     const [overallSumState, setOverallSumState] = useState(emptyOverallSumState());
     const [updateTimestamp, setUpdateTimestamp] = useState(new Date().getTime());
@@ -28,9 +44,11 @@ export const VereinsverwaltungPage = () => {
 
     // const [membersCollapsed, setMembersCollapsed] = useState(true);
 
+    const allMembersQuery = useGetAllMemberData();
+
     useMemo(() => {
-        setOverallSumState(computeAllMembersSums(allMembers));
-    }, [allMembers]);
+        setOverallSumState(computeAllMembersSums(allMembersQuery.data));
+    }, [allMembersQuery.data]);
 
     const updateMailingListsAction = () => {
         setUpdatingMailingLists(true);
@@ -39,25 +57,37 @@ export const VereinsverwaltungPage = () => {
         });
     }
 
-    return <div style={{ padding: '0.5rem', marginTop:'5rem' }} onKeyDown={e => e.stopPropagation()}>
+    return <div style={{ padding: '0.5rem', marginTop: '5rem' }} onKeyDown={e => e.stopPropagation()}>
         <LoggedInScope loginHint={
             <ButtonLink buttonType="primary" href="/anmelden/?redirect_to=/vereinsverwaltung">Bitte log Dich erst ein.</ButtonLink>
         }>
-            <WaitForIt redo={reloadState}
-                callback={async function (): Promise<void> {
-                    setReloadState(false);
-                    const memberData = await getAllMemberData();
-                    setAllMembers(memberData);
-                }}>
-                <Page>
-                    <Button 
-                        buttonType='primary' 
-                        disabled={updatingMailingLists}
-                        onClick={updateMailingListsAction}
-                    >{updatingMailingLists ? 'Mailing Listen werden upgedatet, Seite nicht verlassen...' : 'Mailing Listen updaten'}
-                    </Button>
-                    <CollapsibleSection title='Übersicht' stateHandler={useState(false)}>
-                        <VereinsverwaltungSums sumState={overallSumState.total} memberData={allMembers}/>
+            <Page>
+                <SeasonContext.Provider value={season}>
+                    <div >
+                        <label htmlFor="seasonselect">Saison </label>
+                        {seasonsQuery.isFetched && (
+                            <select name="seasonselect"
+                                onChange={(event) => setSeason(Number.parseInt(event.target.value))}
+                            >
+                                {seasonsQuery.data?.map((season) => <option
+                                    value={season} {...(seasonContext === season) ? { selected: true } : {}}
+                                >{season} / {season + 1}</option>)}
+                            </select>
+                        )}
+                        {!seasonsQuery.isFetched && (
+                            <div>Lade Daten...</div>
+                        )}
+                    </div>
+                </SeasonContext.Provider>
+
+                <Button
+                    buttonType='primary'
+                    disabled={updatingMailingLists}
+                    onClick={updateMailingListsAction}
+                >{updatingMailingLists ? 'Mailing Listen werden upgedatet, Seite nicht verlassen...' : 'Mailing Listen updaten'}
+                </Button>
+                <CollapsibleSection title='Übersicht' stateHandler={useState(false)}>
+                    <VereinsverwaltungSums sumState={overallSumState.total} memberData={allMembersQuery.data} />
                 </CollapsibleSection>
                 <br />
                 <CollapsibleSection title='Übersicht nach Abholraum' stateHandler={useState(true)}>
@@ -71,11 +101,10 @@ export const VereinsverwaltungPage = () => {
                 <CollapsibleSection
                     title='Mitglieder'
                     stateHandler={useState(true)}
-                // collapsed={membersCollapsed} onChange={setMembersCollapsed}
                 >
                     <Vertical>
                         {
-                            allMembers.map(memberRow => <>
+                            allMembersQuery.data.map(memberRow => <>
                                 <MemberDetailMolecule
                                     key={memberRow.id}
                                     data={memberRow}
@@ -92,11 +121,10 @@ export const VereinsverwaltungPage = () => {
                     </Vertical>
                 </CollapsibleSection>
                 <CollapsibleSection title='Änderungshistorie' stateHandler={useState(false)}>
-                        <VereinsverwaltungHistory updateTimestamp={updateTimestamp}/>
+                    <VereinsverwaltungHistory updateTimestamp={updateTimestamp} />
                 </CollapsibleSection>
             </Page>
-        </WaitForIt>
-    </LoggedInScope>
+        </LoggedInScope>
     </div >;
 };
 
