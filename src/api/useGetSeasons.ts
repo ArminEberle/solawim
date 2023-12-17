@@ -5,7 +5,7 @@ import {
     useQuery,
 } from '@tanstack/react-query'
 
-export const getSeasons = async(): Promise<number[]> => {
+export const getSeasons = async (): Promise<number[]> => {
     const serverResult = await getJsonBody(await fetch(apiBaseUrl + 'seasons'));
     if (isEqual(serverResult, {})) {
         return [];
@@ -17,6 +17,7 @@ export const useGetSeasons = () => {
     return useQuery({
         queryKey: ['seasons'],
         queryFn: getSeasons,
+        initialData: [new Date().getFullYear()]
     })
 }
 

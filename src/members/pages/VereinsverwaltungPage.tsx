@@ -6,11 +6,9 @@ import 'src/css/form.css';
 import { Page } from 'src/layout/Page';
 import { Vertical } from 'src/layout/Vertical';
 import { MemberDetailMolecule } from 'src/members/pages/MemberDetailMolecule';
-import { AllMembersData } from 'src/members/types/AllMembersData';
 import { LoggedInScope } from 'src/members/utils/LoggedInScope';
 import { CollapsibleSection } from 'src/molecules/CollapsibleSection';
 import { abholraumOptions } from 'src/utils/abholraumOptions';
-import { WaitForIt } from 'src/utils/WaitForIt';
 import { computeAllMembersSums } from './computeAllMembersSums';
 import { emptyOverallSumState } from './emptyOverallSumState';
 import { VereinsverwaltungSums } from './VereinsverwaltungSums';
@@ -33,7 +31,6 @@ export const VereinsverwaltungPage = () => {
 
 const VereinsverwaltungPageInternal = () => {
 
-    const [reloadState, setReloadState] = useState(true);
     const [overallSumState, setOverallSumState] = useState(emptyOverallSumState());
     const [updateTimestamp, setUpdateTimestamp] = useState(new Date().getTime());
 
@@ -90,10 +87,8 @@ const VereinsverwaltungPageInternal = () => {
                                 key={memberRow.id}
                                 data={memberRow}
                                 reloadCb={() => {
-                                    console.log('triggering reload');
-                                    setReloadState(true)
-                                }
-                                }
+                                    allMembersQuery.refetch()
+                                }}
                             />
                             <br />
                         </>

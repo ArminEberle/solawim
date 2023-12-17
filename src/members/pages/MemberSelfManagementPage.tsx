@@ -35,6 +35,8 @@ import { calculateMemberTotalSum } from 'src/members/utils/calculateMemberTotalS
 import { computeSepaMandateId } from 'src/members/utils/computeSepaMandateId';
 import toNumber from 'lodash/toNumber';
 import { showAlertWithBackdrop } from 'src/atoms/AlertWithBackdrop';
+import { useGetSeasons } from 'src/api/useGetSeasons';
+import { RootContext } from 'src/contexts/RootContext';
 
 const required = true;
 
@@ -48,7 +50,14 @@ window.addEventListener('beforeunload', (event) => {
     return null;
 });
 
+
 export const MemberSelfManagementPage = () => {
+    return <RootContext>
+        <MemberSelfManagementPageInternal />
+    </RootContext>
+};
+
+export const MemberSelfManagementPageInternal = () => {
     const [serverState, setServerState] = useState(emptyMemberData());
     const [reloadState, setReloadState] = useState(true);
 
@@ -60,7 +69,7 @@ export const MemberSelfManagementPage = () => {
     } = formMe({
         data: emptyMemberData(),
         watch: data => {
-            if(data.fleischMenge === '0' && data.milchMenge !== '0') {
+            if (data.fleischMenge === '0' && data.milchMenge !== '0') {
                 data.milchMenge = '0';
             }
         },
@@ -86,6 +95,8 @@ export const MemberSelfManagementPage = () => {
         setReloadState(false);
     };
 
+    const season = useGetSeasons().data?.[0];
+
     const isDirty = !isEqual(formDataState, serverState);
     globalDirty = isDirty;
 
@@ -106,7 +117,7 @@ export const MemberSelfManagementPage = () => {
                     <form className="pure-form" onSubmit={handleSubmit}>
                         <Horizontal jc="space-between">
                             <Checkbox {...register('member')}>
-                                Ja ich möchte dabei sein in der Saison April 2023 / März 2024
+                                Ja ich möchte dabei sein in der Saison April {season} / März {season + 1}
                             </Checkbox>
                             <Checkbox {...register('member')} negate={true}>
                                 Nein, ich bin nicht dabei.
@@ -215,9 +226,9 @@ export const MemberSelfManagementPage = () => {
                                 flexGrow: 1,
                             }}>
                                 <small>(nur zusammen mit Fleisch, keine Solidarmöglichkeit, {calculatePositionPrice({
-                                        price: prices.milch,
-                                        solidar: formDataState.milchSolidar,
-                                    })} EUR / pro Anteil)
+                                    price: prices.milch,
+                                    solidar: formDataState.milchSolidar,
+                                })} EUR / pro Anteil)
                                 </small>
                             </div>
                             <Input

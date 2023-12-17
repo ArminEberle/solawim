@@ -5,19 +5,13 @@ import { prices } from "src/utils/prices";
 import { download } from "src/members/utils/download";
 import { getBankingData } from "src/api/getBankingData";
 import { computeSepaMandateId } from "./computeSepaMandateId";
-import { getAllMemberData } from "src/api/getAllMemberData";
 import { replaceCharsToSepaChars } from "src/members/utils/replaceCharsToSepaChars";
 import { findNextRemittanceDate } from "src/utils/findNextRemittanceDate";
 import { AllMembersData } from "../types/AllMembersData";
 import { BankingData } from "../types/BankingData";
 
-export const createAndDownloadSepaFiles = async (): Promise<void> => {
+export const createAndDownloadSepaFiles = async (memberData: AllMembersData): Promise<void> => {
     try {
-
-        const memberData = await getAllMemberData();
-        if (!memberData) {
-            alert('Es gab ein Problem beim Herunterladen der Mitgliederdaten.')
-        }
         const bankingData = await getBankingData();
         if (!bankingData) {
             alert('Es gab ein Problem beim Herunterladen der Stammdaten.');
@@ -34,34 +28,34 @@ export const createAndDownloadSepaFiles = async (): Promise<void> => {
         const transactionList: string[] = [];
         const excludedList: string[] = [];
 
-        const fleischSepaDoc = createSepaDoc({ 
-            year, 
-            monthPadded, 
-            bankingData, 
-            date, 
-            memberData, 
-            transactionList, 
-            errorList, 
+        const fleischSepaDoc = createSepaDoc({
+            year,
+            monthPadded,
+            bankingData,
+            date,
+            memberData,
+            transactionList,
+            errorList,
             sepaDocTopic: 'FM',
         });
-        const brotSepaDoc = createSepaDoc({ 
-            year, 
-            monthPadded, 
-            bankingData, 
-            date, 
-            memberData, 
-            transactionList, 
-            errorList, 
+        const brotSepaDoc = createSepaDoc({
+            year,
+            monthPadded,
+            bankingData,
+            date,
+            memberData,
+            transactionList,
+            errorList,
             sepaDocTopic: 'B',
         });
-        const veggieSepaDoc = createSepaDoc({ 
-            year, 
-            monthPadded, 
-            bankingData, 
-            date, 
-            memberData, 
-            transactionList, 
-            errorList, 
+        const veggieSepaDoc = createSepaDoc({
+            year,
+            monthPadded,
+            bankingData,
+            date,
+            memberData,
+            transactionList,
+            errorList,
             sepaDocTopic: 'V',
         });
 
@@ -203,7 +197,7 @@ function createSepaDoc({
                 topicNice = 'Veggie ' + amount.toFixed();
                 break;
         }
-        if(amount <= 0) {
+        if (amount <= 0) {
             continue;
         }
 

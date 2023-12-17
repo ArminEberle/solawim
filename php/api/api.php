@@ -327,7 +327,7 @@ function getAllMemberData($season)
             ) mandateDate ON u.ID = mandateDate.user_id
     ORDER BY u.user_nicename
     ";
-    error_log("Season ".$season);
+    // error_log("Season ".$season);
     // error_log($query);
     $results = $wpdb->get_results(
         $wpdb->prepare($query),
@@ -381,6 +381,7 @@ function getAllMemberDataHistory($season)
 
 function getMembershipData(string $accountId, $season)
 {
+    global $seasonToMembership;
     $membershipTable = $seasonToMembership[$season]["membership"];
     return getUserData($membershipTable, (object) [], $accountId);
 }
@@ -403,12 +404,6 @@ function getSeasonFromQueryString(Request $request)
 {
     global $defaultSeason;
     $query = $request->getQueryParams();
-    // $season = $defaultSeason;
-
-    // if (in_array("season", $query) && in_array($query["season"], $seasons)) {
-    //     $season = $query["season"];
-    // }
-    // return $season;
     if (isset($query["season"])) {
         return $query["season"];
     }
@@ -429,6 +424,7 @@ $app->get('/membership', function (Request $request, Response $response, array $
 });
 
 $app->post('/membership', function (Request $request, Response $response, array $args) {
+    global $seasonToMembership;
     $season = getSeasonFromQueryString($request);
     $membershipTable = $seasonToMembership[$season]["membership"];
     $userId = getUserId();
@@ -467,6 +463,7 @@ $app->post('/membership', function (Request $request, Response $response, array 
 });
 
 $app->post('/membership-admin', function (Request $request, Response $response, array $args) {
+    global $seasonToMembership;
     $season = getSeasonFromQueryString($request);
     $membershipTable = $seasonToMembership[$season]["membership"];
 
@@ -545,7 +542,6 @@ $app->get('/members', function (Request $request, Response $response, array $arg
         return $checkResult;
     }
     $season = getSeasonFromQueryString($request);
-    error_log("Season from query ".$season);
     $membershipTable = $seasonToMembership[$season]["membership"];
 
     $response->getBody()->write(json_encode(getAllMemberData($season)));
