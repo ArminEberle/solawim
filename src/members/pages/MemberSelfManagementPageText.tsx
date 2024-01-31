@@ -3,7 +3,7 @@ import { useGetSeasons } from 'src/api/useGetSeasons';
 
 export const MemberSelfManagementPageInto = () =>
     <section>
-        <h3>Hallo, schön dass Du in der Kollektiv Solawi Mitglied werden möchtest!</h3>
+        <h3>Hallo, schön dass Du in der Kollektiv Solawi Mitglied werden möchtest oder schon bist!</h3>
         <p>
             Mit deinem Beitreten wirst du Teil von unserem Verein.
             Dein Mitgliedsbeitrag entspricht deinem Anteil an produzierten Gütern.
@@ -35,9 +35,6 @@ export const MemberSelfManagementPageYesIWant = () =>
             Diese werden dann wöchentlich (bis auf Fleisch) in den von euch gewählten Abholraum geliefert.
         </p><p>
             Bitte beachtet die jeweils ausgehängten Informationen zu Haltbarkeit und Verarbeitung.
-        </p><p>
-            Eure Fleischanteile könnt ihr euch direkt nach jedem der 4 – 5 Schlachttage im Jahr beim Hof abholen.
-            So vermeiden wir großräumige, energieaufwendige Kühllagerzeiten.
         </p>
     </section>;
 
@@ -52,11 +49,8 @@ export const MemberSelfManagementPageConditions = () =>
             Mit dem Absenden Deines Mitgliedsantrages erteilst Du uns auch ein SEPA-Lastschriftmandat,
             über das der von dir gewählte Beitrag monatlich abgebucht werden kann (Am Anfang jedes Monats).
         </p><p>
-            Prinzipiell wirst Du für ein Jahr Mitglied. Damit ermöglicht Du uns eine langfristige Planungssicherheit.
-        </p><p>
-            Du kannst diese Einstellung bis einschließlich 28.02.{useGetSeasons().data?.[0]} widerrufen,
-            indem Du das hier auf dieser Seite wieder zurückstellst
-            oder schriftlich an den Verein (siehe 'Kontakt') mitteilst.
+            Prinzipiell wirst Du für ein Jahr Mitglied. Um eine langfristige Planungssicherheit zu gewährleisten,
+            bitten wir Dich, bis 1. Januar des Folgejahres via E-Mail zu kündigen (siehe 'Kontakt').
         </p><p>
             Zu einem späteren Zeitpunkt sind auch individuelle Lösungen nach Absprachen möglich,
             sollte sich bei euch etwas grundlegend verändert haben.

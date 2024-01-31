@@ -117,7 +117,7 @@ export const MemberSelfManagementPageInternal = () => {
                     <form className="pure-form" onSubmit={handleSubmit}>
                         <Horizontal jc="space-between">
                             <Checkbox {...register('member')}>
-                                Ja ich möchte dabei sein in der Saison April {season} / März {season + 1}
+                                Ja ich möchte dabei sein in der <b>Saison April {season} / März {season + 1}</b>
                             </Checkbox>
                             <Checkbox {...register('member')} negate={true}>
                                 Nein, ich bin nicht dabei.
@@ -127,7 +127,7 @@ export const MemberSelfManagementPageInternal = () => {
                         <br />
 
                         <h3>Deine Anteile</h3>
-
+                        <div><p className="alert">Die angezeigten Preise werden aktuell überarbeitet und können sich aufgrund gestiegener Energie- und Lohnkosten bis zum 24.02.24 geringfügig nach oben verändern.</p></div>
                         <Horizontal>
                             <h3 className="min-w-8 max-w-8">Brot</h3>
                             <Select
