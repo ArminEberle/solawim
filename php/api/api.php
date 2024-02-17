@@ -36,6 +36,7 @@ function ensureDBInitialized()
     global $wpdb;
     global $dbInitialized;
     global $seasons;
+    global $masterdataTable;
 
     if ($dbInitialized) {
         return;
@@ -45,6 +46,7 @@ function ensureDBInitialized()
         $wpdb->get_results("CREATE TABLE IF NOT EXISTS `{$tablename}` (user_id INT PRIMARY KEY, content JSON, createdAt DATETIME, createdBy varchar(255));", ARRAY_A);
         $wpdb->get_results("CREATE TABLE IF NOT EXISTS `{$tablename}_hist` (user_id INT, content JSON, createdAt DATETIME, createdBy varchar(255));", ARRAY_A);
     }
+    $wpdb->get_results("CREATE TABLE IF NOT EXISTS `{$masterdataTable}` (user_id INT, content JSON, createdAt DATETIME, createdBy varchar(255));", ARRAY_A);
     $dbInitialized = true;
     return;
 }

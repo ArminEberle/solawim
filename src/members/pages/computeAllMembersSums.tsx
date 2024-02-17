@@ -3,7 +3,7 @@ import { calculatePositionSum } from 'src/members/utils/calculatePositionSum';
 import { prices } from 'src/utils/prices';
 import { emptyOverallSumState } from './emptyOverallSumState';
 
-export function computeAllMembersSums(allMembers: AllMembersData) {
+export function computeAllMembersSums(allMembers: AllMembersData, season: number) {
     const newSumState = emptyOverallSumState();
     for (const member of allMembers) {
         if (!member.membership?.member) {
@@ -17,7 +17,7 @@ export function computeAllMembersSums(allMembers: AllMembersData) {
         newSumState[abholraum].fleisch.count += fleischCount;
         const fleischSum = calculatePositionSum({
             solidar: membership.fleischSolidar,
-            price: prices.fleisch,
+            price: prices[season].fleisch,
             amount: membership.fleischMenge,
         });
         newSumState.total.fleisch.sum += fleischSum;
@@ -43,7 +43,7 @@ export function computeAllMembersSums(allMembers: AllMembersData) {
         newSumState[abholraum].milch.count += milchCount;
         const milchSum = calculatePositionSum({
             solidar: membership.milchSolidar,
-            price: prices.milch,
+            price: prices[season].milch,
             amount: membership.milchMenge,
         });
         newSumState.total.milch.sum += milchSum;
@@ -69,7 +69,7 @@ export function computeAllMembersSums(allMembers: AllMembersData) {
         newSumState[abholraum].brot.count += brotCount;
         const brotSum = calculatePositionSum({
             solidar: membership.brotSolidar,
-            price: prices.brot,
+            price: prices[season].brot,
             amount: membership.brotMenge,
         });
         newSumState.total.brot.sum += brotSum;
@@ -95,7 +95,7 @@ export function computeAllMembersSums(allMembers: AllMembersData) {
         newSumState[abholraum].veggie.count += veggieCount;
         const veggieSum = calculatePositionSum({
             solidar: membership.veggieSolidar,
-            price: prices.veggie,
+            price: prices[season].veggie,
             amount: membership.veggieMenge,
         });
         newSumState.total.veggie.sum += veggieSum;

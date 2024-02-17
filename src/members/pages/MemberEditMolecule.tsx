@@ -8,7 +8,6 @@ import { Select } from "src/atoms/Select";
 import { SolidaritaetSelect } from "src/atoms/SolidaritaetSelect";
 import { Horizontal } from "src/layout/Horizontal";
 import { Vertical } from "src/layout/Vertical";
-import { SingleMemberData } from "src/members/types/AllMembersData"
 import { emptyMemberData, MemberData } from "src/members/types/MemberData";
 import { calculateMemberTotalSum } from "src/members/utils/calculateMemberTotalSum";
 import { calculatePositionPrice } from "src/members/utils/calculatePositionPrice";
@@ -20,6 +19,7 @@ import { prices } from "src/utils/prices";
 import { ibanValidator } from "src/validators/ibanValidator";
 import isEqual from 'lodash.isequal';
 import toNumber from "lodash/toNumber";
+import { useSeason } from "src/atoms/SeasonSelect";
 
 
 export type MemberEditProps = {
@@ -30,13 +30,14 @@ export type MemberEditProps = {
 
 export const MemberEditMolecule = (props: MemberEditProps) => {
     const initialData = props.data ?? emptyMemberData();
-    
+
+    const season = useSeason();
+
     initialData.useSepa = initialData.useSepa ?? true;
     const {
         handleSubmit,
         register,
         state: formDataState,
-        setState: setFormDataState,
     } = formMe({
         data: initialData,
         onSubmit: async (data, setData) => {
@@ -83,7 +84,7 @@ export const MemberEditMolecule = (props: MemberEditProps) => {
             }}>
                 <small >
                     ({calculatePositionPrice({
-                        price: prices.brot,
+                        price: prices[season].brot,
                         solidar: formDataState.brotSolidar,
                     })} EUR / pro Anteil)
                 </small>
@@ -93,7 +94,7 @@ export const MemberEditMolecule = (props: MemberEditProps) => {
                 value={String(calculatePositionSum({
                     amount: formDataState.brotMenge,
                     solidar: formDataState.brotSolidar,
-                    price: prices.brot,
+                    price: prices[season].brot,
                 }))}
                 disabled={true}
                 maxlen={4}
@@ -124,7 +125,7 @@ export const MemberEditMolecule = (props: MemberEditProps) => {
             }}>
                 <small >
                     ({calculatePositionPrice({
-                        price: prices.fleisch,
+                        price: prices[season].fleisch,
                         solidar: formDataState.fleischSolidar,
                     })} EUR / pro Anteil)
                 </small>
@@ -134,7 +135,7 @@ export const MemberEditMolecule = (props: MemberEditProps) => {
                 value={String(calculatePositionSum({
                     amount: formDataState.fleischMenge,
                     solidar: formDataState.fleischSolidar,
-                    price: prices.fleisch,
+                    price: prices[season].fleisch,
                 }))}
                 disabled={true}
                 maxlen={4}
@@ -167,7 +168,7 @@ export const MemberEditMolecule = (props: MemberEditProps) => {
                     }}>
                         <small >
                             ({calculatePositionPrice({
-                                price: prices.milch,
+                                price: prices[season].milch,
                                 solidar: formDataState.milchSolidar,
                             })} EUR / pro Anteil)
                         </small>
@@ -177,7 +178,7 @@ export const MemberEditMolecule = (props: MemberEditProps) => {
                         value={String(calculatePositionSum({
                             amount: formDataState.milchMenge,
                             solidar: formDataState.milchSolidar,
-                            price: prices.milch,
+                            price: prices[season].milch,
                         }))}
                         disabled={true}
                         maxlen={4}
@@ -210,7 +211,7 @@ export const MemberEditMolecule = (props: MemberEditProps) => {
             }}>
                 <small >
                     ({calculatePositionPrice({
-                        price: prices.veggie,
+                        price: prices[season].veggie,
                         solidar: formDataState.veggieSolidar,
                     })} EUR / pro Anteil)
                 </small>
@@ -220,7 +221,7 @@ export const MemberEditMolecule = (props: MemberEditProps) => {
                 value={String(calculatePositionSum({
                     amount: formDataState.veggieMenge,
                     solidar: formDataState.veggieSolidar,
-                    price: prices.veggie,
+                    price: prices[season].veggie,
                 }))}
                 disabled={true}
                 maxlen={4}
@@ -229,10 +230,10 @@ export const MemberEditMolecule = (props: MemberEditProps) => {
             />
         </Horizontal>
         <br />
-        {calculateMemberTotalSum(formDataState) > 0
+        {calculateMemberTotalSum(formDataState, season) > 0
             && <p className="alert">
                 In Summe werde ich dann ab April 2023 bis einschließlich März 2024 zum Anfang jeden
-                Monats <b>{calculateMemberTotalSum(formDataState)},-&nbsp;EUR</b> bezahlen.
+                Monats <b>{calculateMemberTotalSum(formDataState, season)},-&nbsp;EUR</b> bezahlen.
             </p>
         }
         <br />

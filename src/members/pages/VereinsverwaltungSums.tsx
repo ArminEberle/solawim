@@ -1,11 +1,11 @@
-import React, { CSSProperties, useCallback, useMemo } from 'react';
+import React, { CSSProperties, useCallback } from 'react';
 import { useGetAllMemberData } from 'src/api/getAllMemberData';
 import { Button } from 'src/atoms/Button';
 import { Output } from 'src/atoms/Output';
+import { useSeason } from 'src/atoms/SeasonSelect';
 import { Horizontal } from 'src/layout/Horizontal';
 import { Vertical } from 'src/layout/Vertical';
 import { SumState } from 'src/members/pages/emptySumState';
-import { AllMembersData } from 'src/members/types/AllMembersData';
 import { createAndDownloadSepaFiles } from 'src/members/utils/createAndDownloadSepaFiles';
 import { preventDefault } from 'src/utils/preventDefault';
 
@@ -14,9 +14,11 @@ export function VereinsverwaltungSums(props: {
 }) {
     const memberdataQuery = useGetAllMemberData();
 
+    const season = useSeason();
+
     const createSepaFiles = useCallback(async () => {
         await memberdataQuery.refetch();
-        await createAndDownloadSepaFiles(memberdataQuery.data);
+        await createAndDownloadSepaFiles(memberdataQuery.data, season);
     }, [memberdataQuery]);
 
     const fleischSoldarStyle: CSSProperties = props.sumState.fleisch.reduziert > props.sumState.fleisch.solidar ?

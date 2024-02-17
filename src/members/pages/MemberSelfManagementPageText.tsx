@@ -1,5 +1,4 @@
 import React from 'react';
-import { useGetSeasons } from 'src/api/useGetSeasons';
 
 export const MemberSelfManagementPageInto = () =>
     <section>
@@ -50,7 +49,7 @@ export const MemberSelfManagementPageConditions = () =>
             über das der von dir gewählte Beitrag monatlich abgebucht werden kann (Am Anfang jedes Monats).
         </p><p>
             Prinzipiell wirst Du für ein Jahr Mitglied. Um eine langfristige Planungssicherheit zu gewährleisten,
-            bitten wir Dich, bis 1. Januar des Folgejahres via E-Mail zu kündigen (siehe 'Kontakt').
+            bitten wir Dich, bis 31. Dezember des Jahres via E-Mail zu kündigen (siehe 'Kontakt').
         </p><p>
             Zu einem späteren Zeitpunkt sind auch individuelle Lösungen nach Absprachen möglich,
             sollte sich bei euch etwas grundlegend verändert haben.

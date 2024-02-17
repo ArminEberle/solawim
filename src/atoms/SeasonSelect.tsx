@@ -7,6 +7,10 @@ export type SeasonSelectProps = {
     onSeasonSelect?: (season: number) => void;
 }
 
+export const useSeason = (): number => {
+    return useContext(SeasonContext).season;
+}
+
 export const SeasonSelect = (props: SeasonSelectProps) => {
     const seasonsQuery = useGetSeasons();
     const seasonContext = useContext(SeasonContext);

@@ -10,6 +10,7 @@ import { calculateMemberTotalSum } from 'src/members/utils/calculateMemberTotalS
 import { Checkbox } from 'src/atoms/Checkbox';
 import { MemberEditMolecule } from 'src/members/pages/MemberEditMolecule';
 import { setMemberData } from 'src/api/setMemberData';
+import { useSeason } from 'src/atoms/SeasonSelect';
 
 export type MemberDetailMoleculeProps = {
     data: SingleMemberData;
@@ -19,10 +20,11 @@ export type MemberDetailMoleculeProps = {
 
 export const MemberDetailMolecule = (props: MemberDetailMoleculeProps) => {
     const [editState, setEditState] = useState(false);
+    const season = useSeason();
 
     return <Vertical key={props.key} className="dl-container">
         <Horizontal>
-            <b style={{fontSize: '1.1em'}}>{props.data.membership?.firstname} {props.data.membership?.lastname} ({props.data.user_nicename})</b>
+            <b style={{ fontSize: '1.1em' }}>{props.data.membership?.firstname} {props.data.membership?.lastname} ({props.data.user_nicename})</b>
             <Checkbox kind="toggle" className="fg-0" value={editState} onChange={ev => setEditState(ev.target.checked)}>Ändern</Checkbox>
         </Horizontal>
         <Horizontal jc="space-between" style={{ gap: "0px" }}>
@@ -41,21 +43,21 @@ export const MemberDetailMolecule = (props: MemberDetailMoleculeProps) => {
                 {
                     (props.data.membership.useSepa ?? true) &&
                     <>
-                    <Horizontal>
-                        <DataElement label='Kontoinhaber/in'>
-                            {props.data.membership.accountowner}
-                        </DataElement>
-                        <DataElement label='Kontoinhaber/in Adresse'>
-                            {props.data.membership.accountownerStreet},
-                            {props.data.membership.accountownerPlz} {props.data.membership.accountownerCity}
-                        </DataElement>
-                    </Horizontal>
-                    <Horizontal>
-                        <DataElement label='Bank' >{props.data.membership.bank}</DataElement>
-                        <DataElement label='BIC' >{props.data.membership.bic}</DataElement>
-                        <DataElement label='IBAN' >{props.data.membership.iban}</DataElement>
-                    </Horizontal>
-                    <br />
+                        <Horizontal>
+                            <DataElement label='Kontoinhaber/in'>
+                                {props.data.membership.accountowner}
+                            </DataElement>
+                            <DataElement label='Kontoinhaber/in Adresse'>
+                                {props.data.membership.accountownerStreet},
+                                {props.data.membership.accountownerPlz} {props.data.membership.accountownerCity}
+                            </DataElement>
+                        </Horizontal>
+                        <Horizontal>
+                            <DataElement label='Bank' >{props.data.membership.bank}</DataElement>
+                            <DataElement label='BIC' >{props.data.membership.bic}</DataElement>
+                            <DataElement label='IBAN' >{props.data.membership.iban}</DataElement>
+                        </Horizontal>
+                        <br />
                     </>
                 }
                 <DataElement label="Abholraum" >
@@ -69,7 +71,7 @@ export const MemberDetailMolecule = (props: MemberDetailMoleculeProps) => {
                             {calculatePositionSum({
                                 amount: props.data.membership.brotMenge,
                                 solidar: props.data.membership.brotSolidar,
-                                price: prices.brot,
+                                price: prices[season].brot,
                             })}
                         </div>
                     </DataElement>
@@ -82,7 +84,7 @@ export const MemberDetailMolecule = (props: MemberDetailMoleculeProps) => {
                             {calculatePositionSum({
                                 amount: props.data.membership.veggieMenge,
                                 solidar: props.data.membership.veggieSolidar,
-                                price: prices.veggie,
+                                price: prices[season].veggie,
                             })}
                         </div>
                     </DataElement>
@@ -95,7 +97,7 @@ export const MemberDetailMolecule = (props: MemberDetailMoleculeProps) => {
                             {calculatePositionSum({
                                 amount: props.data.membership.fleischMenge,
                                 solidar: props.data.membership.fleischSolidar,
-                                price: prices.fleisch,
+                                price: prices[season].fleisch,
                             })}
                         </div>
                     </DataElement>
@@ -108,14 +110,14 @@ export const MemberDetailMolecule = (props: MemberDetailMoleculeProps) => {
                             {calculatePositionSum({
                                 amount: props.data.membership.milchMenge,
                                 solidar: props.data.membership.milchSolidar,
-                                price: prices.milch,
+                                price: prices[season].milch,
                             })}
                         </div>
                     </DataElement>
                 </Horizontal>
                 <DataElement label="Mitgliedsbeitrag">
                     <b style={{ alignSelf: 'end', textAlign: 'right', fontWeight: 'bolder', textDecoration: 'underline' }}>
-                        {calculateMemberTotalSum(props.data.membership)}
+                        {calculateMemberTotalSum(props.data.membership, season)}
                     </b>
                 </DataElement>
             </>
@@ -123,13 +125,13 @@ export const MemberDetailMolecule = (props: MemberDetailMoleculeProps) => {
         {
             editState && <>
                 <br />
-                <MemberEditMolecule 
+                <MemberEditMolecule
                     data={props.data.membership}
                     required={false}
                     onSave={async memberData => {
                         await setMemberData({
                             targetUserId: props.data.id,
-                            memberData: memberData, 
+                            memberData: memberData,
                         })
                         props.reloadCb();
                     }}

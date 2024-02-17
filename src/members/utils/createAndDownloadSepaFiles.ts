@@ -10,11 +10,11 @@ import { findNextRemittanceDate } from "src/utils/findNextRemittanceDate";
 import { AllMembersData } from "../types/AllMembersData";
 import { BankingData } from "../types/BankingData";
 
-export const createAndDownloadSepaFiles = async (memberData: AllMembersData): Promise<void> => {
+export const createAndDownloadSepaFiles = async (memberData: AllMembersData, season: number): Promise<void> => {
     try {
         const bankingData = await getBankingData();
         if (!bankingData) {
-            alert('Es gab ein Problem beim Herunterladen der Stammdaten.');
+            alert('Es gab ein Problem beim Herunterladen der Stammdaten. Siehe Server-Log.');
             return;
         }
 
@@ -37,6 +37,7 @@ export const createAndDownloadSepaFiles = async (memberData: AllMembersData): Pr
             transactionList,
             errorList,
             sepaDocTopic: 'FM',
+            season,
         });
         const brotSepaDoc = createSepaDoc({
             year,
@@ -47,6 +48,7 @@ export const createAndDownloadSepaFiles = async (memberData: AllMembersData): Pr
             transactionList,
             errorList,
             sepaDocTopic: 'B',
+            season,
         });
         const veggieSepaDoc = createSepaDoc({
             year,
@@ -57,6 +59,7 @@ export const createAndDownloadSepaFiles = async (memberData: AllMembersData): Pr
             transactionList,
             errorList,
             sepaDocTopic: 'V',
+            season,
         });
 
         fillTransactionList({
@@ -65,6 +68,7 @@ export const createAndDownloadSepaFiles = async (memberData: AllMembersData): Pr
             memberData,
             transactionList,
             excludedList,
+            season,
         })
 
         const errorCount = errorList.length;
@@ -122,6 +126,7 @@ function createSepaDoc({
     memberData,
     errorList,
     sepaDocTopic,
+    season,
 }: {
     year: number;
     monthPadded: string;
@@ -131,6 +136,7 @@ function createSepaDoc({
     transactionList: string[];
     errorList: string[];
     sepaDocTopic: SepaDocTopic;
+    season: number;
 }) {
     const debitId = `SOLAWI.${sepaDocTopic}.${String(year)}.${monthPadded}`;
     const creditorName = bankingData.holder; // 'Anbaustelle e.V.';
@@ -169,7 +175,7 @@ function createSepaDoc({
                 amount = calculatePositionSum({
                     amount: m.brotMenge,
                     solidar: m.brotSolidar,
-                    price: prices.brot,
+                    price: prices[season].brot,
                 });
                 topicNice = 'Brot ' + amount.toFixed();
                 break;
@@ -177,12 +183,12 @@ function createSepaDoc({
                 const fleisch = calculatePositionSum({
                     amount: m.fleischMenge,
                     solidar: m.fleischSolidar,
-                    price: prices.fleisch,
+                    price: prices[season].fleisch,
                 });
                 const milch = calculatePositionSum({
                     amount: m.milchMenge,
                     solidar: m.milchSolidar,
-                    price: prices.milch,
+                    price: prices[season].milch,
                 });
 
                 amount = fleisch + milch;
@@ -192,7 +198,7 @@ function createSepaDoc({
                 amount = calculatePositionSum({
                     amount: m.veggieMenge,
                     solidar: m.veggieSolidar,
-                    price: prices.veggie,
+                    price: prices[season].veggie,
                 })
                 topicNice = 'Veggie ' + amount.toFixed();
                 break;
@@ -241,12 +247,14 @@ function fillTransactionList({
     memberData,
     transactionList,
     excludedList,
+    season,
 }: {
     year: number;
     monthPadded: string;
     memberData: AllMembersData;
     transactionList: string[];
     excludedList: string[];
+    season: number;
 }) {
     for (const member of memberData) {
         const m = member.membership;
@@ -257,25 +265,25 @@ function fillTransactionList({
         const brot = calculatePositionSum({
             amount: m.brotMenge,
             solidar: m.brotSolidar,
-            price: prices.brot,
+            price: prices[season].brot,
         });
         const veggie = calculatePositionSum({
             amount: m.veggieMenge,
             solidar: m.veggieSolidar,
-            price: prices.veggie,
+            price: prices[season].veggie,
         });
         const fleisch = calculatePositionSum({
             amount: m.fleischMenge,
             solidar: m.fleischSolidar,
-            price: prices.fleisch,
+            price: prices[season].fleisch,
         });
         const milch = calculatePositionSum({
             amount: m.milchMenge,
             solidar: m.milchSolidar,
-            price: prices.milch,
+            price: prices[season].milch,
         });
 
-        const amount = calculateMemberTotalSum(m);
+        const amount = calculateMemberTotalSum(m, season);
         if (amount <= 0) {
             continue;
         }

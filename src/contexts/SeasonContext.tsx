@@ -1,7 +1,7 @@
-import React, { PropsWithChildren, createContext, useContext, useMemo, useState } from "react";
+import React, { PropsWithChildren, createContext, useMemo, useState } from "react";
 
 export type SeasonContextType = {
-    season?: number;
+    season: number;
     setSeason?: (season: number) => void;
 }
 

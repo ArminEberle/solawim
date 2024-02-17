@@ -1,6 +1,6 @@
-import React, { useContext, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import 'react-tabs/style/react-tabs.css';
-import { getAllMemberData, useGetAllMemberData } from 'src/api/getAllMemberData';
+import { useGetAllMemberData } from 'src/api/getAllMemberData';
 import { ButtonLink } from 'src/atoms/ButtonLink';
 import 'src/css/form.css';
 import { Page } from 'src/layout/Page';
@@ -15,7 +15,7 @@ import { VereinsverwaltungSums } from './VereinsverwaltungSums';
 import { VereinsverwaltungHistory } from 'src/members/pages/VereinsverwaltungHistory';
 import { Button } from 'src/atoms/Button';
 import { updateMailingLists } from 'src/api/updateMailingLists';
-import { SeasonSelect } from 'src/atoms/SeasonSelect';
+import { SeasonSelect, useSeason } from 'src/atoms/SeasonSelect';
 import { RootContext } from 'src/contexts/RootContext';
 
 export const VereinsverwaltungPage = () => {
@@ -32,16 +32,18 @@ export const VereinsverwaltungPage = () => {
 const VereinsverwaltungPageInternal = () => {
 
     const [overallSumState, setOverallSumState] = useState(emptyOverallSumState());
-    const [updateTimestamp, setUpdateTimestamp] = useState(new Date().getTime());
+    const [updateTimestamp,] = useState(new Date().getTime());
 
     const [updatingMailingLists, setUpdatingMailingLists] = useState(false);
+
+    const season = useSeason();
 
     // const [membersCollapsed, setMembersCollapsed] = useState(true);
 
     const allMembersQuery = useGetAllMemberData();
 
     useMemo(() => {
-        setOverallSumState(computeAllMembersSums(allMembersQuery.data));
+        setOverallSumState(computeAllMembersSums(allMembersQuery.data, season));
     }, [allMembersQuery.data]);
 
     const updateMailingListsAction = () => {
@@ -65,7 +67,7 @@ const VereinsverwaltungPageInternal = () => {
             >{updatingMailingLists ? 'Mailing Listen werden upgedatet, Seite nicht verlassen...' : 'Mailing Listen updaten'}
             </Button>
             <CollapsibleSection title='Übersicht' stateHandler={useState(false)}>
-                <VereinsverwaltungSums sumState={overallSumState.total} memberData={allMembersQuery.data} />
+                <VereinsverwaltungSums sumState={overallSumState.total} />
             </CollapsibleSection>
             <br />
             <CollapsibleSection title='Übersicht nach Abholraum' stateHandler={useState(true)}>

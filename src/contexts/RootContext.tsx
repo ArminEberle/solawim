@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import React, { useState } from "react"
+import React from "react"
 import { PropsWithChildren } from "react"
-import { SeasonContext, SeasonScope } from "src/contexts/SeasonContext"
+import { SeasonScope } from "src/contexts/SeasonContext"
 
 export type RootContextProps = PropsWithChildren & {}
 

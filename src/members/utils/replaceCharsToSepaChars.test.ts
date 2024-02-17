@@ -1,4 +1,4 @@
-import {expect, jest, test} from '@jest/globals';
+import { expect, test } from '@jest/globals';
 import { replaceCharsToSepaChars } from 'src/members/utils/replaceCharsToSepaChars';
 
 test('replaceCharsToSepaChars', () => {

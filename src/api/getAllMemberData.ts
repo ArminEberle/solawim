@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import { apiBaseUrl } from 'src/api/apiBaseUrl';
 import { getJsonBody } from 'src/api/getJsonBody';
 import { SeasonContext } from 'src/contexts/SeasonContext';

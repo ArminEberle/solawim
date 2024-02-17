@@ -32,7 +32,6 @@ import { ibanValidator } from 'src/validators/ibanValidator';
 import { abholraumOptions } from 'src/utils/abholraumOptions';
 import { amountsToBook } from 'src/utils/amountsToBook';
 import { calculateMemberTotalSum } from 'src/members/utils/calculateMemberTotalSum';
-import { computeSepaMandateId } from 'src/members/utils/computeSepaMandateId';
 import toNumber from 'lodash/toNumber';
 import { showAlertWithBackdrop } from 'src/atoms/AlertWithBackdrop';
 import { useGetSeasons } from 'src/api/useGetSeasons';
@@ -150,7 +149,7 @@ export const MemberSelfManagementPageInternal = () => {
                             }}>
                                 <small >
                                     ({calculatePositionPrice({
-                                        price: prices.brot,
+                                        price: prices[season].brot,
                                         solidar: formDataState.brotSolidar,
                                     })} EUR / pro Anteil)
                                 </small>
@@ -160,7 +159,7 @@ export const MemberSelfManagementPageInternal = () => {
                                 value={String(calculatePositionSum({
                                     amount: formDataState.brotMenge,
                                     solidar: formDataState.brotSolidar,
-                                    price: prices.brot,
+                                    price: prices[season].brot,
                                 }))}
                                 disabled={true}
                                 maxlen={4}
@@ -191,7 +190,7 @@ export const MemberSelfManagementPageInternal = () => {
                             }}>
                                 <small >
                                     ({calculatePositionPrice({
-                                        price: prices.fleisch,
+                                        price: prices[season].fleisch,
                                         solidar: formDataState.fleischSolidar,
                                     })} EUR / pro Anteil)
                                 </small>
@@ -201,7 +200,7 @@ export const MemberSelfManagementPageInternal = () => {
                                 value={String(calculatePositionSum({
                                     amount: formDataState.fleischMenge,
                                     solidar: formDataState.fleischSolidar,
-                                    price: prices.fleisch,
+                                    price: prices[season].fleisch,
                                 }))}
                                 disabled={true}
                                 maxlen={4}
@@ -226,7 +225,7 @@ export const MemberSelfManagementPageInternal = () => {
                                 flexGrow: 1,
                             }}>
                                 <small>(nur zusammen mit Fleisch, keine Solidarmöglichkeit, {calculatePositionPrice({
-                                    price: prices.milch,
+                                    price: prices[season].milch,
                                     solidar: formDataState.milchSolidar,
                                 })} EUR / pro Anteil)
                                 </small>
@@ -236,7 +235,7 @@ export const MemberSelfManagementPageInternal = () => {
                                 value={String(calculatePositionSum({
                                     amount: formDataState.milchMenge,
                                     solidar: formDataState.milchSolidar,
-                                    price: prices.milch,
+                                    price: prices[season].milch,
                                 }))}
                                 disabled={true}
                                 maxlen={4}
@@ -267,7 +266,7 @@ export const MemberSelfManagementPageInternal = () => {
                             }}>
                                 <small >
                                     ({calculatePositionPrice({
-                                        price: prices.veggie,
+                                        price: prices[season].veggie,
                                         solidar: formDataState.veggieSolidar,
                                     })} EUR / pro Anteil)
                                 </small>
@@ -277,7 +276,7 @@ export const MemberSelfManagementPageInternal = () => {
                                 value={String(calculatePositionSum({
                                     amount: formDataState.veggieMenge,
                                     solidar: formDataState.veggieSolidar,
-                                    price: prices.veggie,
+                                    price: prices[season].veggie,
                                 }))}
                                 disabled={true}
                                 maxlen={4}
@@ -286,10 +285,10 @@ export const MemberSelfManagementPageInternal = () => {
                             />
                         </Horizontal>
                         <br />
-                        {calculateMemberTotalSum(formDataState) > 0
+                        {calculateMemberTotalSum(formDataState, season) > 0
                             && <p className="alert">
                                 In Summe werde ich dann ab April 2023 bis einschließlich März 2024 zum Anfang jeden
-                                Monats <b>{calculateMemberTotalSum(formDataState)},-&nbsp;EUR</b> bezahlen.
+                                Monats <b>{calculateMemberTotalSum(formDataState, season)},-&nbsp;EUR</b> bezahlen.
                             </p>
                         }
                         <br />
