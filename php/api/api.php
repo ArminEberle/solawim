@@ -315,7 +315,7 @@ function getAllMemberData($season)
             m.content as membership,
             mandateDate.mandateDate
     FROM    {$wpdb->prefix}users u
-            INNER JOIN {$membershipTable} m on u.ID = m.user_id
+            LEFT JOIN {$membershipTable} m on u.ID = m.user_id
             LEFT JOIN (
                 SELECT 	c.user_id as user_id,
                         coalesce(min(h.createdAt), c.createdAt) as mandateDate

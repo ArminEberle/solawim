@@ -12,7 +12,7 @@
 			"jest"
 		],
 
-		"rootDir": ".",
+		"rootDir": "./",
         "baseUrl": "./",
 		"outDir": ".build-tmp/tsc",
 

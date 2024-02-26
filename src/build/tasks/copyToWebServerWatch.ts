@@ -5,8 +5,11 @@ import { copyFile, copyFolderRecursive } from 'src/utils/copyFiles';
 import fs from 'fs/promises';
 import path from 'path';
 import { clearInterval } from 'timers';
+import { getDefaultTaskProperties } from '../utils/getDefaultTaskProperties';
+import { BuildTask } from '../types/BuildTask';
 
 export default {
+    ...getDefaultTaskProperties(__filename),
     action: () => {
         const delay = 200;
         const filesToCopy = new Set<string>();
@@ -75,4 +78,4 @@ export default {
             await copyFolderRecursive('php', localWebServerPath);
         });
     },
-};
+} satisfies BuildTask;

@@ -1,7 +1,7 @@
 import glob from 'glob';
 import path from 'path';
 import baseConfig from 'src/build/config/vite.base.config';
-import type { UserConfig } from 'vite';
+import type { UserConfig, } from 'vite';
 
 export default {
     ...baseConfig,

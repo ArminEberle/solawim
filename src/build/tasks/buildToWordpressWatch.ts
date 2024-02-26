@@ -1,10 +1,13 @@
+import react from '@vitejs/plugin-react';
 import cloneDeep from 'lodash.clonedeep';
-import { localWebServerPath } from 'src/build/config/buildConfig';
-import type { UserConfig } from 'vite';
-import react from '@vitejs/plugin-react'
+import { localWebServerPath, } from 'src/build/config/buildConfig';
+import type { BuildTask, } from 'src/build/types/BuildTask';
+import { getDefaultTaskProperties, } from 'src/build/utils/getDefaultTaskProperties';
+import type { UserConfig, } from 'vite';
 
 export default {
-    action: async (): Promise<void> => {
+    ...getDefaultTaskProperties(__filename),
+    action: async(): Promise<void> => {
         const [
             vite,
             buildConfigModule,
@@ -23,7 +26,7 @@ export default {
             // };
             buildConfig.plugins = [react({
                 jsxRuntime: 'classic',
-            })];
+            }), ];
             // buildConfig.plugins = [react({
             //     babel: {
             //         plugins: [
@@ -65,5 +68,4 @@ export default {
         ]);
         // await vite.build(config);
     },
-    desc: '',
-};
+} satisfies BuildTask;

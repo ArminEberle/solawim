@@ -1,7 +1,9 @@
-import type { Task } from 'src/build/types/Task';
 import type { UserConfig } from 'vite';
+import { getDefaultTaskProperties } from '../utils/getDefaultTaskProperties';
+import { BuildTask } from 'src/build/types/BuildTask';
 
 export default {
+    ...getDefaultTaskProperties(__filename),
     action: async() => {
         const [
             vite,
@@ -16,5 +18,4 @@ export default {
 
         server.printUrls();
     },
-    desc: 'This my description',
-} as Task;
+} satisfies BuildTask;

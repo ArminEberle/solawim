@@ -4,9 +4,10 @@ import type { MemberData } from 'src/members/types/MemberData';
 import { MemberDataAdmin } from 'src/members/types/MemberDataAdmin';
 
 
-export function setMemberData(data: MemberDataAdmin | null): Promise<MemberData> {
+export function setMemberData(data: MemberDataAdmin | null, season: number): Promise<MemberData> {
+    let queryString = season ? ('?season=' + season) : ''
     return getJsonBody(
-        fetch(apiBaseUrl + 'membership-admin', {
+        fetch(apiBaseUrl + 'membership-admin' + queryString, {
             method: 'POST',
             headers: {
                 Accept: 'application/json',

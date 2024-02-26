@@ -132,7 +132,7 @@ export const MemberDetailMolecule = (props: MemberDetailMoleculeProps) => {
                         await setMemberData({
                             targetUserId: props.data.id,
                             memberData: memberData,
-                        })
+                        }, season)
                         props.reloadCb();
                     }}
                 />

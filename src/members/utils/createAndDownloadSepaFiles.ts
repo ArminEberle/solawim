@@ -1,16 +1,16 @@
-import { calculateMemberTotalSum } from "src/members/utils/calculateMemberTotalSum";
 import SEPA from 'sepa';
-import { calculatePositionSum } from "src/members/utils/calculatePositionSum";
-import { prices } from "src/utils/prices";
-import { download } from "src/members/utils/download";
-import { getBankingData } from "src/api/getBankingData";
-import { computeSepaMandateId } from "./computeSepaMandateId";
-import { replaceCharsToSepaChars } from "src/members/utils/replaceCharsToSepaChars";
-import { findNextRemittanceDate } from "src/utils/findNextRemittanceDate";
-import { AllMembersData } from "../types/AllMembersData";
-import { BankingData } from "../types/BankingData";
+import { getBankingData, } from 'src/api/getBankingData';
+import type { AllMembersData, } from 'src/members/types/AllMembersData';
+import type { BankingData, } from 'src/members/types/BankingData';
+import { calculateMemberTotalSum, } from 'src/members/utils/calculateMemberTotalSum';
+import { calculatePositionSum, } from 'src/members/utils/calculatePositionSum';
+import { computeSepaMandateId, } from 'src/members/utils/computeSepaMandateId';
+import { download, } from 'src/members/utils/download';
+import { replaceCharsToSepaChars, } from 'src/members/utils/replaceCharsToSepaChars';
+import { findNextRemittanceDate, } from 'src/utils/findNextRemittanceDate';
+import { prices, } from 'src/utils/prices';
 
-export const createAndDownloadSepaFiles = async (memberData: AllMembersData, season: number): Promise<void> => {
+export const createAndDownloadSepaFiles = async(memberData: AllMembersData, season: number): Promise<void> => {
     try {
         const bankingData = await getBankingData();
         if (!bankingData) {
@@ -18,7 +18,7 @@ export const createAndDownloadSepaFiles = async (memberData: AllMembersData, sea
             return;
         }
 
-        const summaryHeaders = `User-Id;Vorname;Nachname;Kontoinhaber;IBAN;BIC;Mandatsreferenz;Mandatsdatum;SEPA-End2EndId;Brot Betrag;Veggie Betrag;Fleisch Betrag;Milch Betrag;Gesamtbetrag;Fehler`;
+        const summaryHeaders = 'User-Id;Vorname;Nachname;Kontoinhaber;IBAN;BIC;Mandatsreferenz;Mandatsdatum;SEPA-End2EndId;Brot Betrag;Veggie Betrag;Fleisch Betrag;Milch Betrag;Gesamtbetrag;Fehler';
 
         const date = new Date();
         const monthPadded = String(date.getMonth() + 1).padStart(2, '0');
@@ -69,7 +69,7 @@ export const createAndDownloadSepaFiles = async (memberData: AllMembersData, sea
             transactionList,
             excludedList,
             season,
-        })
+        });
 
         const errorCount = errorList.length;
         if (errorCount === 0) {
@@ -92,7 +92,7 @@ export const createAndDownloadSepaFiles = async (memberData: AllMembersData, sea
             '',
             'Fehlerliste - Nicht enthalten in SEPA-Datei:',
             '',
-            ...errorList
+            ...errorList,
         ].join('\r\n');
 
         download(`Solawi_Sammellastschrift_${year}_${monthPadded}_Fleisch_SEPA.xml`,
@@ -114,7 +114,7 @@ export const createAndDownloadSepaFiles = async (memberData: AllMembersData, sea
         alert('Ein Problem ist aufgetreten siehe console.log: ' + String(e));
         console.log(e);
     }
-}
+};
 
 type SepaDocTopic = 'FM' | 'B' | 'V';
 
@@ -199,7 +199,7 @@ function createSepaDoc({
                     amount: m.veggieMenge,
                     solidar: m.veggieSolidar,
                     price: prices[season].veggie,
-                })
+                });
                 topicNice = 'Veggie ' + amount.toFixed();
                 break;
         }
@@ -234,7 +234,6 @@ function createSepaDoc({
                 console.log(msg);
             }
         }
-
     }
     const sepaDoc = doc.toString()
         .replace('encoding="null"', 'encoding="UTF-8"');
@@ -302,7 +301,5 @@ function fillTransactionList({
         } else {
             excludedList.push(reportRow);
         }
-
     }
 }
-

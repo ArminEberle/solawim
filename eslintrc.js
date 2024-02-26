@@ -31,8 +31,7 @@ module.exports = {
     extends: [
         'plugin:react-hooks/recommended',
         'plugin:@typescript-eslint/recommended', 
-        'prettier/react',
-        'prettier/standard',
+        'prettier',
         // Uses the recommended rules from
         // the
         // @typescript-eslint/eslint-plugin
@@ -174,7 +173,6 @@ module.exports = {
         'no-self-assign': [ERROR],
         'no-useless-return': [ERROR],
         'yoda': [ERROR],
-        'array-bracket-spacing': [ERROR],
         'block-spacing': [ERROR, 'always'],
         '@typescript-eslint/brace-style': [ERROR, '1tbs', { allowSingleLine: true }],
         'computed-property-spacing': [ERROR],
