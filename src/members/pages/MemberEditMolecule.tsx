@@ -104,7 +104,7 @@ export const MemberEditMolecule = (props: MemberEditProps) => {
         </Horizontal>
 
         <Horizontal>
-            <h3 className="min-w-8 max-w-8">Fleich / Käse</h3>
+            <h3 className="min-w-8 max-w-8">Fleisch / Käse</h3>
             <Select
                 label="Anzahl"
                 options={amountsToBook}
