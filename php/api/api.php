@@ -15,28 +15,21 @@ $dbInitialized = false;
 
 add_role('vereinsverwaltung', 'Vereinsverwaltung');
 
-$seasons = [2024, 2023];
+$seasons = [2024];
 $defaultSeason = 2024;
 
 $seasonToMembership = array(
-    2023 => array(
-        "membership" => "{$wpdb->prefix}solawim_2023",
-        "hist" =>  "{$wpdb->prefix}solawim_2023_hist"
-    ),
     2024 => array(
         "membership" => "{$wpdb->prefix}solawim_2024",
         "hist" =>  "{$wpdb->prefix}solawim_2024_hist"
     ),
 );
 
-$masterdataTable = "{$wpdb->prefix}solawim_masterdata_2023";
-
 function ensureDBInitialized()
 {
     global $wpdb;
     global $dbInitialized;
     global $seasons;
-    global $masterdataTable;
 
     if ($dbInitialized) {
         return;
@@ -46,7 +39,6 @@ function ensureDBInitialized()
         $wpdb->get_results("CREATE TABLE IF NOT EXISTS `{$tablename}` (user_id INT PRIMARY KEY, content JSON, createdAt DATETIME, createdBy varchar(255));", ARRAY_A);
         $wpdb->get_results("CREATE TABLE IF NOT EXISTS `{$tablename}_hist` (user_id INT, content JSON, createdAt DATETIME, createdBy varchar(255));", ARRAY_A);
     }
-    $wpdb->get_results("CREATE TABLE IF NOT EXISTS `{$masterdataTable}` (user_id INT, content JSON, createdAt DATETIME, createdBy varchar(255));", ARRAY_A);
     $dbInitialized = true;
     return;
 }
@@ -98,9 +90,11 @@ function getBankingData()
 {
     ensureDBInitialized();
     global $wpdb;
-    global $masterdataTable;
+    global $seasonToMembership;
+    global $defaultSeason;
+    $membershipTable = $seasonToMembership[$defaultSeason]["membership"];
     $results = $wpdb->get_results(
-        $wpdb->prepare("SELECT content FROM {$masterdataTable} WHERE user_id = %d", 0),
+        $wpdb->prepare("SELECT content FROM {$membershipTable} WHERE user_id = %d", 0),
         ARRAY_A
     );
     if (count($results) === 0) {
