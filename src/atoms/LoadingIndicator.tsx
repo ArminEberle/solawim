@@ -1,4 +1,5 @@
-import '/src/atoms/LoadingIndicator.css';
+// import '/src/atoms/LoadingIndicator.css';
+import './LoadingIndicator.css';
 
 import React from 'react';
 

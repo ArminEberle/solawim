@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 export async function copyFile(source: string, target: string): Promise<void> {
-    await fs.promises.mkdir(path.dirname(target), {recursive: true});
+    await fs.promises.mkdir(path.dirname(target), { recursive: true });
     if (fs.existsSync(target)) {
         if ((await fs.promises.lstat(target))
             .isDirectory()) {
@@ -12,6 +12,15 @@ export async function copyFile(source: string, target: string): Promise<void> {
 
     await fs.promises.writeFile(target, await fs.promises.readFile(source));
     // console.log('copied to file ' + target);
+}
+
+export async function copyFolderRecursiveAndWatch(source: string, target: string): Promise<void> {
+    await copyFolderRecursive(source, target);
+    fs.watch(source, { recursive: true }, async (eventType, filename) => {
+        if (eventType === 'change') {
+            await copyFile(path.join(source, filename), path.join(target, filename));
+        }
+    });
 }
 
 export async function copyFolderRecursive(source: string, target: string): Promise<void> {
@@ -25,7 +34,7 @@ export async function copyFolderRecursive(source: string, target: string): Promi
         .isDirectory()) {
         files = await fs.promises.readdir(source);
         await Promise.all(
-            files.map(file => (async function() {
+            files.map(file => (async function () {
                 const curSource = path.join(source, file);
                 const targetPath = path.join(target, file);
                 if ((await fs.promises.lstat(curSource))

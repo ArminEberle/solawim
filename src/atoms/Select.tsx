@@ -1,4 +1,5 @@
-import '/src/atoms/Select.css';
+// import '/src/atoms/Select.css';
+import './Select.css';
 
 import React from 'react';
 import type { FormInputBaseProps } from 'src/atoms/types/FormInputBaseProps';

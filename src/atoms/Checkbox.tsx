@@ -1,4 +1,5 @@
-import '/src/atoms/Checkbox.css';
+// import '/src/atoms/Checkbox.css';
+import './Checkbox.css';
 
 import React, { useRef } from 'react';
 import type { FormInputBaseProps } from 'src/atoms/types/FormInputBaseProps';

@@ -17,9 +17,13 @@ export const SeasonSelect = (props: SeasonSelectProps) => {
     return <>
         {seasonsQuery.isFetched && (
             <select name={props.name}
-                onChange={(event) => seasonContext.setSeason?.(Number.parseInt(event.target.value))}>
+                onChange={(event) => seasonContext.setSeason?.(Number.parseInt(event.target.value))}
+                value={seasonContext.season}
+            >
                 {seasonsQuery.data?.map((season) => <option
-                    value={season} {...(seasonContext.season === season) ? { selected: true } : {}}
+                    key={season}
+                    value={season} 
+                    // {...(seasonContext.season === season) ? { selected: true } : {}}
                 >{season}</option>)}
             </select>
         )}

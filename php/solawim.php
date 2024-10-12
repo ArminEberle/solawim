@@ -10,15 +10,15 @@
 
 function solawim_membership($atts)
 {
-    wp_enqueue_style('solawim_member_css', plugin_dir_url(__FILE__) . 'member/solawim_member.css');
-    wp_enqueue_script('solawim_member', plugin_dir_url(__FILE__) . 'member/solawim_member.js');
+    wp_enqueue_style('solawim_member_css', plugin_dir_url(__FILE__) . 'solawim_member/solawim_member.css');
+    wp_enqueue_script('solawim_member', plugin_dir_url(__FILE__) . 'solawim_member/solawim_member.js');
     return '<div id="solawim_membership"></div>';
 }
 
 function solawim_manage($atts)
 {
-    wp_enqueue_style('solawim_manage_css', plugin_dir_url(__FILE__) . 'manage/solawim_manage.css');
-    wp_enqueue_script('solawim_manage', plugin_dir_url(__FILE__) . 'manage/solawim_manage.js');
+    wp_enqueue_style('solawim_manage_css', plugin_dir_url(__FILE__) . 'solawim_manage/solawim_manage.css');
+    wp_enqueue_script('solawim_manage', plugin_dir_url(__FILE__) . 'solawim_manage/solawim_manage.js');
     return '<div id="solawim_manage"></div>';
 }
 

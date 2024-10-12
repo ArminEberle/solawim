@@ -9,7 +9,7 @@ import { SumState } from 'src/members/pages/emptySumState';
 import { createAndDownloadSepaFiles } from 'src/members/utils/createAndDownloadSepaFiles';
 import { preventDefault } from 'src/utils/preventDefault';
 
-export function VereinsverwaltungSums(props: {
+export function  VereinsverwaltungSums(props: {
     sumState: SumState;
 }) {
     const memberdataQuery = useGetAllMemberData();

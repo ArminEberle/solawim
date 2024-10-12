@@ -12,7 +12,9 @@ export type CollapsibleSectionProps = {
 }
 
 export const CollapsibleSection = (props: CollapsibleSectionProps) => {
-    const [collapsed, setCollapsed] = useState(props.initiallyCollapsed ?? props.stateHandler?.[0] ?? false);
+    const privateStateHandler = useState(props.initiallyCollapsed ?? false);
+    const stateHandler = props.stateHandler ?? privateStateHandler;
+    const [collapsed, setCollapsed] = stateHandler;
     return <div>
         <h3>
         <Checkbox value={!collapsed} 

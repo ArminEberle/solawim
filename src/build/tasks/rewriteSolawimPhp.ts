@@ -8,8 +8,8 @@ import { getDefaultTaskProperties, } from 'src/build/utils/getDefaultTaskPropert
 export default {
     ...getDefaultTaskProperties(__filename),
     action: () => {
-        const memberFiles = findPageFiles('member');
-        const manageFiles = findPageFiles('manage');
+        const memberFiles = findPageFiles('solawim_member');
+        const manageFiles = findPageFiles('solawim_manage');
 
         const solawimPhpPath = path.resolve(finalPluginPath, 'solawim.php');
         let fileText = fs.readFileSync(solawimPhpPath)
@@ -20,20 +20,20 @@ export default {
         fileText = fileText.replace(/versionqualifier/g, dStamp);
 
 
-        fileText = fileText.replace(/member\/solawim_member\.css/g, `member/${memberFiles.cssFile}`);
-        fileText = fileText.replace(/member\/solawim_member\.js/g, `member/${memberFiles.jsFile}`);
-        fileText = fileText.replace(/manage\/solawim_manage\.css/g, `manage/${manageFiles.cssFile}`);
-        fileText = fileText.replace(/manage\/solawim_manage\.js/g, `manage/${manageFiles.jsFile}`);
+        fileText = fileText.replace(/solawim_member\/solawim_member\.css/g, `solawim_member/${memberFiles.cssFile}`);
+        fileText = fileText.replace(/solawim_member\/solawim_member\.js/g, `solawim_member/${memberFiles.jsFile}`);
+        fileText = fileText.replace(/solawim_manage\/solawim_manage\.css/g, `solawim_manage/${manageFiles.cssFile}`);
+        fileText = fileText.replace(/solawim_manage\/solawim_manage\.js/g, `solawim_manage/${manageFiles.jsFile}`);
         fs.writeFileSync(solawimPhpPath, fileText);
 
         // copy the assets to the target
-        const memberDir = path.resolve(path.join(finalPluginPath, 'member'));
+        const memberDir = path.resolve(path.join(finalPluginPath, 'solawim_member'));
         console.log('copying assets to ' + memberDir);
         fs.mkdirSync(memberDir, { recursive: true, });
         fs.copyFileSync(memberFiles.jsFullPath, path.join(memberDir, memberFiles.jsFile));
         fs.copyFileSync(memberFiles.cssFullPath, path.join(memberDir, memberFiles.cssFile));
 
-        const manageDir = path.resolve(path.join(finalPluginPath, 'manage'));
+        const manageDir = path.resolve(path.join(finalPluginPath, 'solawim_manage'));
         console.log('copying assets to ' + manageDir);
         console.log('from ', manageFiles.jsFullPath);
         fs.mkdirSync(manageDir, { recursive: true, });

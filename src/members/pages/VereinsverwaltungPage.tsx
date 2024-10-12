@@ -1,5 +1,4 @@
 import React, { useMemo, useState } from 'react';
-import 'react-tabs/style/react-tabs.css';
 import { useGetAllMemberData } from 'src/api/getAllMemberData';
 import { ButtonLink } from 'src/atoms/ButtonLink';
 import 'src/css/form.css';
@@ -36,6 +35,9 @@ const VereinsverwaltungPageInternal = () => {
 
     const [updatingMailingLists, setUpdatingMailingLists] = useState(false);
 
+    const historyStateHandler = useState(true);
+    const [historyCollapsed, setHistoryCollapsed] = historyStateHandler;
+
     const season = useSeason();
 
     // const [membersCollapsed, setMembersCollapsed] = useState(true);
@@ -71,11 +73,11 @@ const VereinsverwaltungPageInternal = () => {
             </CollapsibleSection>
             <br />
             <CollapsibleSection title='Übersicht nach Abholraum' stateHandler={useState(true)}>
-                {abholraumOptions.map(option => <>
+                {abholraumOptions.map(option => <div key={option.value} >
                     <br />
                     <h3>{option.display}</h3>
                     <VereinsverwaltungSums sumState={overallSumState[option.value]} />
-                </>)}
+                </div>)}
             </CollapsibleSection>
             <br />
             <CollapsibleSection
@@ -98,8 +100,8 @@ const VereinsverwaltungPageInternal = () => {
                     }
                 </Vertical>
             </CollapsibleSection>
-            <CollapsibleSection title='Änderungshistorie' stateHandler={useState(false)}>
-                <VereinsverwaltungHistory updateTimestamp={updateTimestamp} />
+            <CollapsibleSection title='Änderungshistorie' stateHandler={historyStateHandler}>
+                {!historyCollapsed && <VereinsverwaltungHistory updateTimestamp={updateTimestamp} />}
             </CollapsibleSection>
         </Page>
     </div >;
