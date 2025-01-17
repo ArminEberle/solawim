@@ -70,6 +70,7 @@ export const productionConfig: esbuild.BuildOptions = {
     metafile: false,
     // // We'll set this to `true` to make @jgoz/esbuild-plugin-livereload work
     // write: true,
+    logLevel: 'debug',
 };
 
 export const developmentConfig: esbuild.BuildOptions = cloneDeep(productionConfig);

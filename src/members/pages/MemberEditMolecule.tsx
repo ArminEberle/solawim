@@ -20,6 +20,7 @@ import { ibanValidator } from "src/validators/ibanValidator";
 import isEqual from 'lodash.isequal';
 import toNumber from "lodash/toNumber";
 import { useSeason } from "src/atoms/SeasonSelect";
+import { has } from "src/utils/has";
 
 
 export type MemberEditProps = {
@@ -51,7 +52,7 @@ export const MemberEditMolecule = (props: MemberEditProps) => {
     return <form className="pure-form" onSubmit={handleSubmit}>
         <Horizontal jc="space-between">
             <Checkbox {...register('member')}>
-                Ja ich möchte dabei sein in der Saison April 2023 / März 2024
+                Ja ich möchte dabei sein in der Saison April {season} / März {season+1}
             </Checkbox>
             <Checkbox {...register('member')} negate={true}>
                 Nein, ich bin nicht dabei.
@@ -232,7 +233,7 @@ export const MemberEditMolecule = (props: MemberEditProps) => {
         <br />
         {calculateMemberTotalSum(formDataState, season) > 0
             && <p className="alert">
-                In Summe werde ich dann ab April 2023 bis einschließlich März 2024 zum Anfang jeden
+                In Summe werde ich dann ab April {season} bis einschließlich März {season+1} zum Anfang jeden
                 Monats <b>{calculateMemberTotalSum(formDataState, season)},-&nbsp;EUR</b> bezahlen.
             </p>
         }

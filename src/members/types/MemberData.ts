@@ -12,7 +12,7 @@ export const emptyMemberData = (): MemberData => {
         veggieMenge: '0',
         veggieSolidar: '0',
 
-        abholraum: 'hutzelberghof',
+        abholraum: undefined,
 
         firstname: '',
         lastname: '',
@@ -53,7 +53,7 @@ export type MemberData = {
     veggieMenge: ZeroTo30;
     veggieSolidar: Solidar;
 
-    abholraum: Abholraum;
+    abholraum?: Abholraum;
 
     firstname: string;
     lastname: string;

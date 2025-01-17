@@ -9,9 +9,11 @@ import { copyFolderRecursiveAndWatch } from 'src/utils/copyFiles';
 export default {
     ...getDefaultTaskProperties(__filename),
     action: async (): Promise<void> => {
-        copyFolderRecursiveAndWatch('php', localWebServerPath)
+        copyFolderRecursiveAndWatch('php', localWebServerPath);
+        console.log('php folder copied to ' + localWebServerPath);
         developmentConfig.outdir = localWebServerPath;
         const context = await esbuild.context(developmentConfig);
+        console.log('Watching for changes, building to ' + developmentConfig.outdir);
         await context.watch();
     },
 } satisfies BuildTask;

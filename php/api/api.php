@@ -15,13 +15,17 @@ $dbInitialized = false;
 
 add_role('vereinsverwaltung', 'Vereinsverwaltung');
 
-$seasons = [2024];
-$defaultSeason = 2024;
+$seasons = [2024, 2025];
+$defaultSeason = 2025;
 
 $seasonToMembership = array(
     2024 => array(
         "membership" => "{$wpdb->prefix}solawim_2024",
         "hist" =>  "{$wpdb->prefix}solawim_2024_hist"
+    ),
+    2025 => array(
+        "membership" => "{$wpdb->prefix}solawim_2025",
+        "hist" =>  "{$wpdb->prefix}solawim_2025_hist"
     ),
 );
 

@@ -73,7 +73,7 @@ const VereinsverwaltungPageInternal = () => {
             </CollapsibleSection>
             <br />
             <CollapsibleSection title='Übersicht nach Abholraum' stateHandler={useState(true)}>
-                {abholraumOptions.map(option => <div key={option.value} >
+                {abholraumOptions.map(option => <div key={option.value ?? 'none'} >
                     <br />
                     <h3>{option.display}</h3>
                     <VereinsverwaltungSums sumState={overallSumState[option.value]} />

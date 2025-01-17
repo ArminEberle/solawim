@@ -1,4 +1,5 @@
 import React, { PropsWithChildren, createContext, useMemo, useState } from "react";
+import { useGetCurrentSeason } from "src/api/useGetSeasons";
 
 export type SeasonContextType = {
     season: number;
@@ -6,12 +7,13 @@ export type SeasonContextType = {
 }
 
 export const SeasonContext = createContext<SeasonContextType>({
-    season: 2024,
+    season: 2025,
     setSeason: undefined,
 });
 
 export const SeasonScope = (props: PropsWithChildren) => {
-    const [season, setSeason] = useState(2024);
+    const currentSeason = useGetCurrentSeason();
+    const [season, setSeason] = useState(currentSeason);
     const seasonContextMemo = useMemo(() => ({
         season,
         setSeason,

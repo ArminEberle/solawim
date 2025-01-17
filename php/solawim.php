@@ -1,11 +1,11 @@
 <?php
 /**
 * Plugin Name: solawim
-* Plugin URI: https://www.yourwebsiteurl.com/
-* Description: This is the very first plugin I ever created.
+* Plugin URI: https://github.com/ArminEberle/solawim
+* Description: Wordpress Plugin for managing a Solawi
 * Version: 1.0-versionqualifier
 * Author: Armin Groll
-* Author URI: http://yourwebsiteurl.com/
+* Author URI: https://github.com/ArminEberle/solawim
 **/
 
 function solawim_membership($atts)

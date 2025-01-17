@@ -2,6 +2,7 @@ import { AllMembersData } from 'src/members/types/AllMembersData';
 import { calculatePositionSum } from 'src/members/utils/calculatePositionSum';
 import { prices } from 'src/utils/prices';
 import { emptyOverallSumState } from './emptyOverallSumState';
+import { has } from 'src/utils/has';
 
 export function computeAllMembersSums(allMembers: AllMembersData, season: number) {
     const newSumState = emptyOverallSumState();
@@ -11,6 +12,10 @@ export function computeAllMembersSums(allMembers: AllMembersData, season: number
         }
         const membership = member.membership;
         const abholraum = member.membership.abholraum;
+        if(!has(abholraum)) {
+            console.log('Kein Abholraum festgelegt für Mitglied ' + member.user_nicename);
+            continue;
+        }
 
         const fleischCount = Number.parseInt(membership?.fleischMenge) ?? 0;
         newSumState.total.fleisch.count += fleischCount;

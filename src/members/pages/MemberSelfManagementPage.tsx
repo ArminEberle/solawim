@@ -34,8 +34,9 @@ import { amountsToBook } from 'src/utils/amountsToBook';
 import { calculateMemberTotalSum } from 'src/members/utils/calculateMemberTotalSum';
 import toNumber from 'lodash/toNumber';
 import { showAlertWithBackdrop } from 'src/atoms/AlertWithBackdrop';
-import { useGetSeasons } from 'src/api/useGetSeasons';
+import { useGetCurrentSeason, useGetSeasons } from 'src/api/useGetSeasons';
 import { RootContext } from 'src/contexts/RootContext';
+import { has } from 'src/utils/has';
 
 const required = true;
 
@@ -73,6 +74,10 @@ export const MemberSelfManagementPageInternal = () => {
             }
         },
         onSubmit: async (data, setData) => {
+            if(!has(data.abholraum)) {
+                void showAlertWithBackdrop('Bitte wähle noch den Abholraum aus.');
+                return;      
+            }
             await uploadMyData(data);
             setData(data);
             await showAlertWithBackdrop('Deine Daten sind jetzt gespeichert und werden so verwendet, wenn Du sie nicht mehr änderst.');
@@ -94,7 +99,9 @@ export const MemberSelfManagementPageInternal = () => {
         setReloadState(false);
     };
 
-    const season = useGetSeasons().data?.[0];
+    const season = useGetCurrentSeason();
+
+    const abholraumClassName = formDataState.member && !has(formDataState.abholraum)? 'red' : '';
 
     const isDirty = !isEqual(formDataState, serverState);
     globalDirty = isDirty;
@@ -126,7 +133,6 @@ export const MemberSelfManagementPageInternal = () => {
                         <br />
 
                         <h3>Deine Anteile</h3>
-                        <div><p className="alert">Die angezeigten Preise werden aktuell überarbeitet und können sich aufgrund gestiegener Energie- und Lohnkosten bis zum 24.02.24 geringfügig nach oben verändern.</p></div>
                         <Horizontal>
                             <h3 className="min-w-8 max-w-8">Brot</h3>
                             <Select
@@ -287,7 +293,7 @@ export const MemberSelfManagementPageInternal = () => {
                         <br />
                         {calculateMemberTotalSum(formDataState, season) > 0
                             && <p className="alert">
-                                In Summe werde ich dann ab April 2023 bis einschließlich März 2024 zum Anfang jeden
+                                In Summe werde ich dann ab April {season} bis einschließlich März {season+1} zum Anfang jeden
                                 Monats <b>{calculateMemberTotalSum(formDataState, season)},-&nbsp;EUR</b> bezahlen.
                             </p>
                         }
@@ -299,6 +305,7 @@ export const MemberSelfManagementPageInternal = () => {
                             options={abholraumOptions}
                             required={required}
                             disabled={!formDataState.member}
+                            className={abholraumClassName}
                             {...register('abholraum')}
                         />
 

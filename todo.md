@@ -1,0 +1,4 @@
+- jahreswechsel
+- woher kennst du uns -> liste von david
+- abholraum kein default
+- mailinglisten für mitteilnehmer

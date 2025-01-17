@@ -6,13 +6,13 @@ export type PricesType = Record<number, {
 }>
 
 export const prices: PricesType = {
-    2023: {
-        fleisch: 97,
+    2024: {
+        fleisch: 105,
         milch: 2,
         brot: 25,
-        veggie: 97,
+        veggie: 105,
     },
-    2024: {
+    2025: {
         fleisch: 105,
         milch: 2,
         brot: 25,
