@@ -114,7 +114,7 @@ export const MemberSelfManagementPageInternal = () => {
                     <MemberSelfManagementPageInto />
                     <MemberSelfManagementPageYesIWant />
                     <MemberSelfManagementPageConditions />
-                    <MemberSelfManagementPagePassiveHint />
+                    <MemberSelfManagementPagePassiveHint active={formDataState.active} />
                     <br />
 
                     {isDirty && <div><Alert>Bitte speichern (ganz unten) nicht vergessen</Alert><br /></div>}

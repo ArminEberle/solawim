@@ -6,11 +6,13 @@ import { useSeason } from 'src/atoms/SeasonSelect';
 import { Horizontal } from 'src/layout/Horizontal';
 import { Vertical } from 'src/layout/Vertical';
 import { SumState } from 'src/members/pages/emptySumState';
+import { createAndDownloadCSVFile } from 'src/members/utils/createAndDownloadCSVFile';
 import { createAndDownloadSepaFiles } from 'src/members/utils/createAndDownloadSepaFiles';
 import { preventDefault } from 'src/utils/preventDefault';
 
 export function  VereinsverwaltungSums(props: {
     sumState: SumState;
+    withButtons?: boolean;
 }) {
     const memberdataQuery = useGetAllMemberData();
 
@@ -19,6 +21,11 @@ export function  VereinsverwaltungSums(props: {
     const createSepaFiles = useCallback(async () => {
         await memberdataQuery.refetch();
         await createAndDownloadSepaFiles(memberdataQuery.data, season);
+    }, [memberdataQuery]);
+
+    const createCSV = useCallback(async () => {
+        await memberdataQuery.refetch();
+        await createAndDownloadCSVFile(memberdataQuery.data, season);
     }, [memberdataQuery]);
 
     const fleischSoldarStyle: CSSProperties = props.sumState.fleisch.reduziert > props.sumState.fleisch.solidar ?
@@ -41,9 +48,10 @@ export function  VereinsverwaltungSums(props: {
                     textDecoration: 'underline',
                 }} label="Totale Summe (EUR)" value={String(props.sumState.totalSum)} />
             </Horizontal>
-            {memberdataQuery.data &&
+            {memberdataQuery.data && props.withButtons &&
                 <Horizontal jc="flex-end" >
                     <Button onClick={createSepaFiles} >SEPA Lastschrift Datei herunterladen</Button>
+                    <Button onClick={createCSV} >CSV Datei herunterladen</Button>
                 </Horizontal>
             }
             <b>Brot</b>

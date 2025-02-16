@@ -56,11 +56,11 @@ export const MemberSelfManagementPageConditions = () =>
         </p>
     </section>;
 
-export const MemberSelfManagementPagePassiveHint = () =>
-    <section>
+export const MemberSelfManagementPagePassiveHint = ({ active = false }: { active: boolean; }) =>{
+    return <section>
         <p>
-            Du wirst als passives Mitglied geführt. Wenn du dich aktiv an der Hofarbeit, Gremien und/oder Aktionen
-            beteiligen willst, melde Dich bei uns.
+            {active && 'Du bist als aktives Mitglied registriert.' }
+            {!active && 'Du bist als passives Mitglied registriert. Wenn du dich aktiv an der Hofarbeit, Gremien und/oder Aktionen beteiligen willst, melde Dich bei uns.'}
         </p>
-
     </section>;
+}

@@ -36,11 +36,9 @@ const VereinsverwaltungPageInternal = () => {
     const [updatingMailingLists, setUpdatingMailingLists] = useState(false);
 
     const historyStateHandler = useState(true);
-    const [historyCollapsed, setHistoryCollapsed] = historyStateHandler;
+    const [historyCollapsed] = historyStateHandler;
 
     const season = useSeason();
-
-    // const [membersCollapsed, setMembersCollapsed] = useState(true);
 
     const allMembersQuery = useGetAllMemberData();
 
@@ -69,15 +67,17 @@ const VereinsverwaltungPageInternal = () => {
             >{updatingMailingLists ? 'Mailing Listen werden upgedatet, Seite nicht verlassen...' : 'Mailing Listen updaten'}
             </Button>
             <CollapsibleSection title='Übersicht' stateHandler={useState(false)}>
-                <VereinsverwaltungSums sumState={overallSumState.total} />
+                <VereinsverwaltungSums sumState={overallSumState.total} withButtons={true}/>
             </CollapsibleSection>
             <br />
             <CollapsibleSection title='Übersicht nach Abholraum' stateHandler={useState(true)}>
-                {abholraumOptions.map(option => <div key={option.value ?? 'none'} >
+                {abholraumOptions.map(option => {
+                    return <div key={option.value ?? 'none'} >
                     <br />
                     <h3>{option.display}</h3>
-                    <VereinsverwaltungSums sumState={overallSumState[option.value]} />
-                </div>)}
+                    <VereinsverwaltungSums sumState={overallSumState[option.value]} withButtons={false}/>
+                </div>;}
+                )}
             </CollapsibleSection>
             <br />
             <CollapsibleSection
@@ -86,17 +86,17 @@ const VereinsverwaltungPageInternal = () => {
             >
                 <Vertical>
                     {
-                        allMembersQuery.data.map(memberRow => <>
-                            <MemberDetailMolecule
+                        allMembersQuery.data.map(memberRow => {
+                        return  <div key={memberRow.id} className='mb-3'>
+                            <MemberDetailMolecule 
                                 key={memberRow.id}
                                 data={memberRow}
                                 reloadCb={() => {
                                     allMembersQuery.refetch()
                                 }}
                             />
-                            <br />
-                        </>
-                        )
+                        </div>;
+                        })
                     }
                 </Vertical>
             </CollapsibleSection>

@@ -48,14 +48,14 @@ export const VereinsverwaltungHistory = ({updateTimestamp}: VereinsverwaltungHis
 
     return <div className="pl-3">
         <CollapsibleSection title='Änderungshistorie Chronologisch' stateHandler={useState(true)}>
-            {chronologically.map(entry => <div key={entry.id + '_' + entry.createdAt}>
+            {chronologically.map((entry, index) => <div key={entry.id + '_' + entry.createdAt + '_' + index}>
                 <HistoryEntry withName={true} entry={entry} />
             </div>)}
         </CollapsibleSection>
         <CollapsibleSection title='Änderungshistorie nach Mitglied' stateHandler={useState(true)}>
-            {Object.values(byUser).map(histEntryAr => <div className="pl-3" key={histEntryAr[0].id}>
+            {Object.values(byUser).map((histEntryAr, index) => <div className="pl-3" key={histEntryAr[0].id + '_' + index}>
                     <CollapsibleSection initiallyCollapsed={true} title={memberlabel(histEntryAr[0])}>
-                        {histEntryAr.map(entry => <div key={entry.id + '_' + entry.createdAt}>
+                        {histEntryAr.map((entry, index) => <div key={entry.id + '_' + entry.createdAt + '_' + index}>
                 <HistoryEntry withName={false} entry={entry} />
             </div>)}                        
                     </CollapsibleSection>
@@ -73,7 +73,7 @@ const HistoryEntry = (props: {
 }) => <>
     <div>{props.entry.createdAt} Änderung durch {props.entry.createdBy} {props.withName && <b>Mitglied {memberlabel(props.entry)}</b>}</div>
     <div className="mb-3 dfv">
-        {props.entry.changes && props.entry.changes.map(changeEntry => <div>
+        {props.entry.changes && props.entry.changes.map(changeEntry => <div key={changeEntry.field}>
             <b>{changeEntry.field}</b>: {changeEntry.old} =&gt; {changeEntry.new}
         </div>)}
         {!props.entry.changes && <b>Erstanlage</b>}

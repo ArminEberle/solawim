@@ -6,14 +6,14 @@ import rewriteSolawimPhp from 'src/build/tasks/rewriteSolawimPhp';
 import type { BuildTask, } from 'src/build/types/BuildTask';
 import { getDefaultTaskProperties, } from 'src/build/utils/getDefaultTaskProperties';
 import esbuild from 'esbuild';
-import { developmentConfig, productionConfig } from 'src/build/config/esbuild-config';
+import { developmentConfig, esBuildConfig } from 'src/build/config/esbuild-config';
 
 
 export default {
     ...getDefaultTaskProperties(__filename),
     action: async () => {
         clean.action();
-        await esbuild.build(productionConfig);
+        await esbuild.build(esBuildConfig(true));
         // await build.action();
         await copyPhpCode.action();
         rewriteSolawimPhp.action();

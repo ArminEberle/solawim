@@ -1,9 +1,7 @@
-import cssModulesPlugin from 'esbuild-css-modules-plugin';
 import esbuild from 'esbuild';
-import { cloneDeep } from 'lodash';
 import postcss2 from 'esbuild-plugin-postcss2';
 
-export const productionConfig: esbuild.BuildOptions = {
+export const esBuildConfig = (production = true): esbuild.BuildOptions => { return {
     entryPoints: [
         'src/members/entrypoints/solawim_manage.tsx',
         'src/members/entrypoints/solawim_member.tsx',
@@ -11,11 +9,11 @@ export const productionConfig: esbuild.BuildOptions = {
     bundle: true,
     platform: 'browser',
     outdir: '.build-tmp/site',
-    minify: true,
+    minify: production,
     assetNames: '[name]/[name]-[hash]',
     chunkNames: '[name]/[name]-[hash]',
     entryNames: '[name]/[name]-[hash]',
-    treeShaking: true,
+    treeShaking: production,
     mainFields: ['browser', 'module', 'main'],
     // Splitting will take up more space, but will allow for better caching
     // When developing, we don't want to use this, as it will cause the runtime to lag
@@ -43,7 +41,7 @@ export const productionConfig: esbuild.BuildOptions = {
     },
     // Source maps are only generated in development mode as they take up a lot of space and slow down the runtime
     // Each time an error is thrown, the source map is loaded and parsed
-    sourcemap: 'linked',
+    sourcemap: production ? undefined : 'linked',
     // The format is set to 'esm' by default, as this is the most modern format
     // For certain scenarios, the format can be set to 'iife' or 'cjs' (in tests for example)
     format: 'esm',
@@ -71,9 +69,9 @@ export const productionConfig: esbuild.BuildOptions = {
     // // We'll set this to `true` to make @jgoz/esbuild-plugin-livereload work
     // write: true,
     logLevel: 'debug',
-};
+};};
 
-export const developmentConfig: esbuild.BuildOptions = cloneDeep(productionConfig);
+export const developmentConfig: esbuild.BuildOptions = esBuildConfig(false);
 
 developmentConfig.minify = false;
 developmentConfig.sourcemap = 'inline';

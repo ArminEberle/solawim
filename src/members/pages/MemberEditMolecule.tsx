@@ -20,8 +20,6 @@ import { ibanValidator } from "src/validators/ibanValidator";
 import isEqual from 'lodash.isequal';
 import toNumber from "lodash/toNumber";
 import { useSeason } from "src/atoms/SeasonSelect";
-import { has } from "src/utils/has";
-
 
 export type MemberEditProps = {
     data: MemberData | undefined;
@@ -56,6 +54,11 @@ export const MemberEditMolecule = (props: MemberEditProps) => {
             </Checkbox>
             <Checkbox {...register('member')} negate={true}>
                 Nein, ich bin nicht dabei.
+            </Checkbox>
+        </Horizontal>
+        <Horizontal jc="space-between">
+            <Checkbox {...register('active')} negate={false}>
+                Arbeit gegen Anteile
             </Checkbox>
         </Horizontal>
 

@@ -11,18 +11,21 @@ import { Checkbox } from 'src/atoms/Checkbox';
 import { MemberEditMolecule } from 'src/members/pages/MemberEditMolecule';
 import { setMemberData } from 'src/api/setMemberData';
 import { useSeason } from 'src/atoms/SeasonSelect';
+import { has } from 'src/utils/has';
 
 export type MemberDetailMoleculeProps = {
     data: SingleMemberData;
-    key: string;
     reloadCb: () => void;
 }
 
 export const MemberDetailMolecule = (props: MemberDetailMoleculeProps) => {
     const [editState, setEditState] = useState(false);
     const season = useSeason();
+    const usesSEPA = has(props.data.membership) && (props.data.membership?.useSepa ?? true);
+    const isActive = has(props.data.membership) && (props.data.membership?.active ?? false);
+    const warnColorBecauseSepaAndActive = usesSEPA && isActive ? { color: 'red' } : {};
 
-    return <Vertical key={props.key} className="dl-container">
+    return <Vertical className="dl-container">
         <Horizontal>
             <b style={{ fontSize: '1.1em' }}>{props.data.membership?.firstname} {props.data.membership?.lastname} ({props.data.user_nicename})</b>
             <Checkbox kind="toggle" className="fg-0" value={editState} onChange={ev => setEditState(ev.target.checked)}>Ändern</Checkbox>
@@ -39,7 +42,8 @@ export const MemberDetailMolecule = (props: MemberDetailMoleculeProps) => {
                     <DataElement label="Tel">{props.data.membership.tel}</DataElement>
                 </Horizontal>
                 <br />
-                <DataElement label="Lastschriftverfahren" className="fg-0">{(props.data.membership && (props.data.membership.useSepa ?? true) && <b>JA</b>) || "NEIN"}</DataElement>
+                <DataElement label="Arbeit gegen Anteile" className="fg-0" style={warnColorBecauseSepaAndActive}>{isActive ? <b>JA</b> : <b>NEIN</b>}</DataElement>
+                <DataElement label="Lastschriftverfahren" className="fg-0" style={warnColorBecauseSepaAndActive}>{usesSEPA ? <b>JA</b> : <b>NEIN</b>}</DataElement>
                 {
                     (props.data.membership.useSepa ?? true) &&
                     <>
