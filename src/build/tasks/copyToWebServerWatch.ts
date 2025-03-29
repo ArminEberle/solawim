@@ -1,12 +1,12 @@
-import chokidar from 'chokidar';
 import { Stats } from 'fs';
-import { localWebServerPath } from 'src/build/config/buildConfig';
-import { copyFile, copyFolderRecursive } from 'src/utils/copyFiles';
-import fs from 'fs/promises';
 import path from 'path';
 import { clearInterval } from 'timers';
-import { getDefaultTaskProperties } from '../utils/getDefaultTaskProperties';
+import chokidar from 'chokidar';
+import fs from 'fs/promises';
+import { localWebServerPath } from 'src/build/config/buildConfig';
+import { copyFile, copyFolderRecursive } from 'src/utils/copyFiles';
 import { BuildTask } from '../types/BuildTask';
+import { getDefaultTaskProperties } from '../utils/getDefaultTaskProperties';
 
 export default {
     ...getDefaultTaskProperties(__filename),
@@ -31,18 +31,20 @@ export default {
                     for (const filePath of filesToDelete) {
                         const targetPath = path.join(localWebServerPath, filePath);
                         console.log('deleting ' + targetPath);
-                        workerPromises.push(fs.lstat(targetPath).then(async stat => {
-                            if (stat.isDirectory()) {
-                                await fs.rmdir(targetPath);
-                            } else {
-                                await fs.rm(targetPath);
-                            }
-                        }));
+                        workerPromises.push(
+                            fs.lstat(targetPath).then(async stat => {
+                                if (stat.isDirectory()) {
+                                    await fs.rmdir(targetPath);
+                                } else {
+                                    await fs.rm(targetPath);
+                                }
+                            }),
+                        );
                     }
                     filesToDelete.clear();
                 }
                 await Promise.all(workerPromises);
-                if(filesToCopy.size === 0 && filesToDelete.size === 0) {
+                if (filesToCopy.size === 0 && filesToDelete.size === 0) {
                     clearInterval(interval as NodeJS.Timer);
                     interval = null;
                 }
@@ -53,7 +55,7 @@ export default {
                 awaitWriteFinish: true,
                 atomic: true,
                 ignoreInitial: true,
-                cwd: 'php'
+                cwd: 'php',
             });
             const addAction = async (path: string, stats: Stats) => {
                 if (stats.isDirectory()) {

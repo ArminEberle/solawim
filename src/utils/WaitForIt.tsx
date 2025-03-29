@@ -5,8 +5,8 @@ import { LoadingIndicator } from 'src/atoms/LoadingIndicator';
 export type WaitForItProps<C extends ReactNode | undefined> = {
     redo?: boolean;
     callback: () => Promise<void>;
-    children?: C
-} ;
+    children?: C;
+};
 
 export function WaitForIt<C extends ReactNode | undefined>(options: WaitForItProps<C>): JSX.Element {
     useEffect(() => {
@@ -18,7 +18,5 @@ export function WaitForIt<C extends ReactNode | undefined>(options: WaitForItPro
             }
         }
     }, [options.redo]);
-    return options.redo
-        ? <LoadingIndicator /> as JSX.Element
-        : options.children as JSX.Element ;
+    return options.redo ? ((<LoadingIndicator />) as JSX.Element) : (options.children as JSX.Element);
 }

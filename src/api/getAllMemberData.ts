@@ -7,7 +7,7 @@ import { useLoggedIn } from 'src/hooks/useLoggedIn';
 import type { AllMembersData } from 'src/members/types/AllMembersData';
 
 export async function getAllMemberData(season?: number): Promise<AllMembersData> {
-    let queryString = season ? ('?season=' + season) : ''
+    let queryString = season ? '?season=' + season : '';
     try {
         const fetchResult = await fetch(apiBaseUrl + 'members' + queryString);
         return await getJsonBody(fetchResult);
@@ -18,7 +18,6 @@ export async function getAllMemberData(season?: number): Promise<AllMembersData>
 }
 
 const ALL_MEMBER_DATA_QK = ['allMemberData'];
-
 
 export const useGetAllMemberData = () => {
     const season = useContext(SeasonContext).season;
@@ -36,5 +35,5 @@ export const useGetAllMemberData = () => {
             }
             return [];
         },
-    })
-}
+    });
+};

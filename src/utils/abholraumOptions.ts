@@ -1,5 +1,5 @@
-import { SelectOption } from "src/atoms/Select";
-import { Abholraum } from "src/members/types/MemberData";
+import { SelectOption } from 'src/atoms/Select';
+import { Abholraum } from 'src/members/types/MemberData';
 
 export const abholraumOptions: SelectOption<Abholraum>[] = [
     {

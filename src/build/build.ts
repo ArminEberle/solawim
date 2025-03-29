@@ -1,8 +1,8 @@
 /* eslint-disable no-await-in-loop */
 import fs from 'fs';
 import path from 'path';
-import type { BuildTask, BuildTaskLog } from 'src/build/types/BuildTask';
 import url from 'url';
+import type { BuildTask, BuildTaskLog } from 'src/build/types/BuildTask';
 
 /**
  * This is the main build script. It is called from the command line and
@@ -93,16 +93,12 @@ let buildMode: 'prod' | 'dev' | 'watch';
 
 const labelledConsoleLog = (label: string, text: string | Error, isError?: boolean, skipEmptyLines?: boolean) => {
     console.log(label + ': ' + text);
-}
+};
 
 import { ALL_BUILD_SWITCHES } from 'src/build/buildSwitches';
 
 const taskLogFunction = (taskName: string) => {
-    return ((
-        text: string | Error,
-        isError?: boolean,
-        skipEmptyLines?: boolean,
-    ): void => {
+    return ((text: string | Error, isError?: boolean, skipEmptyLines?: boolean): void => {
         labelledConsoleLog(taskName, text, isError, skipEmptyLines);
     }) satisfies BuildTaskLog;
 };
@@ -111,8 +107,9 @@ const log = taskLogFunction('build.ts');
 
 export const executeBuildTask = (task: BuildTask): PromiseLike<void> | void => {
     if (!taskToPromises.has(task)) {
-        taskToPromises.set(task,
-            (async() => {
+        taskToPromises.set(
+            task,
+            (async () => {
                 const taskLog = taskLogFunction(task.name);
                 try {
                     // first execute pre dependency action if there is one
@@ -124,9 +121,11 @@ export const executeBuildTask = (task: BuildTask): PromiseLike<void> | void => {
 
                     // execute dependencies
                     if (task.dependencies && buildWithDependencies) {
-                        await Promise.all(task.dependencies.map(async(t) => {
-                            await executeBuildTask(t);
-                        }));
+                        await Promise.all(
+                            task.dependencies.map(async t => {
+                                await executeBuildTask(t);
+                            }),
+                        );
                     }
 
                     // execute the task itself
@@ -138,24 +137,26 @@ export const executeBuildTask = (task: BuildTask): PromiseLike<void> | void => {
                     }
                 } catch (e) {
                     log(`Task ${task.name} failed with error:`, true);
-                    String(e).split('\n').forEach((line) => {
-                        log(line, true);
-                    });
-                    String((e as Error).stack).split('\n').forEach((line) => {
-                        log(line, true);
-                    });
+                    String(e)
+                        .split('\n')
+                        .forEach(line => {
+                            log(line, true);
+                        });
+                    String((e as Error).stack)
+                        .split('\n')
+                        .forEach(line => {
+                            log(line, true);
+                        });
                     process.exit(1);
                 }
-            })()
+            })(),
         );
     }
     return taskToPromises.get(task);
 };
 
-const main = async() => {
-    const {
-        buildSwitches, calledBuildTasks,
-    } = processCommandLineArgs();
+const main = async () => {
+    const { buildSwitches, calledBuildTasks } = processCommandLineArgs();
 
     processBuildSwitches(buildSwitches);
 
@@ -169,7 +170,6 @@ const main = async() => {
     log('Build Mode: ' + buildMode);
     log('Build Dependencies: ' + buildWithDependencies);
     log('Args to the build task: ' + buildTaskArgs.join(' '));
-
 
     for (const arg of calledBuildTasks) {
         const taskModulePath = url.pathToFileURL(path.resolve(process.cwd(), 'src/build/tasks/' + arg + '.ts'));
@@ -187,9 +187,7 @@ const processCommandLineArgs = (): {
     buildSwitches: Set<string>;
     calledBuildTasks: Set<string>;
 } => {
-    const myIndex = process.argv
-        .map(a => a.replace(/[\\]/g, '/'))
-        .findIndex(a => a.endsWith('/build.ts'));
+    const myIndex = process.argv.map(a => a.replace(/[\\]/g, '/')).findIndex(a => a.endsWith('/build.ts'));
 
     // separate the arguments to the build task from the arguments to the build script
     const myArgsAfterBuildTs = process.argv.slice(myIndex + 1);
@@ -208,7 +206,11 @@ const processCommandLineArgs = (): {
 
         let taskName = arg;
         if (arg.endsWith('.ts')) {
-            taskName = arg.substring(0, arg.length - 3).split(/[\\/]/).pop() ?? '???';
+            taskName =
+                arg
+                    .substring(0, arg.length - 3)
+                    .split(/[\\/]/)
+                    .pop() ?? '???';
         }
         if (fs.existsSync(path.resolve(process.cwd(), 'src/build/tasks/' + taskName + '.ts'))) {
             calledBuildTasks.add(taskName);

@@ -7,7 +7,11 @@ export type HorizontalProps = {
     className?: string;
 } & JustifyContentProp;
 
-
-export const Horizontal = (props: HorizontalProps) =>
-    <div className={('dfh jc-' + (props.jc ?? 'center')) + ' ' + (props.className ?? '')} 
-     style={props.style}>{props.children}</div>;
+export const Horizontal = (props: HorizontalProps) => (
+    <div
+        className={'dfh jc-' + (props.jc ?? 'center') + ' ' + (props.className ?? '')}
+        style={props.style}
+    >
+        {props.children}
+    </div>
+);

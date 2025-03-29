@@ -1,9 +1,12 @@
-export type PricesType = Record<number, {
-    fleisch: number;
-    milch: number;
-    brot: number;
-    veggie: number;
-}>
+export type PricesType = Record<
+    number,
+    {
+        fleisch: number;
+        milch: number;
+        brot: number;
+        veggie: number;
+    }
+>;
 
 export const prices: PricesType = {
     2024: {
@@ -17,5 +20,5 @@ export const prices: PricesType = {
         milch: 2,
         brot: 25,
         veggie: 105,
-    }
+    },
 };

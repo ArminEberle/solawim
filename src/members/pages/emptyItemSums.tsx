@@ -1,4 +1,3 @@
-
 export type ItemSums = {
     count: number;
     sum: number;

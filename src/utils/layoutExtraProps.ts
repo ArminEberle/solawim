@@ -7,7 +7,5 @@ export const layoutExtraProps = (props: LayoutExtraProps) => {
             className: 'max-w-' + props.maxWidth,
         };
     }
-    return {
-
-    };
+    return {};
 };

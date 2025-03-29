@@ -18,25 +18,24 @@
     text-align: center;
 }
 
-.loader 
-{
-  position: relative;
-  top: 50px;
-  left: 6px;
-  z-index: 1;
-  border: 16px solid var(--color-form-background);
-  border-top: 16px solid var(--color-bold);
-  border-radius: 50%;
-  width: 120px;
-  height: 120px;
-  animation: spin 1.5s ease-in-out infinite;
+.loader {
+    position: relative;
+    top: 50px;
+    left: 6px;
+    z-index: 1;
+    border: 16px solid var(--color-form-background);
+    border-top: 16px solid var(--color-bold);
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    animation: spin 1.5s ease-in-out infinite;
 }
 
 @keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }

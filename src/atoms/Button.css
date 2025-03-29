@@ -23,7 +23,8 @@ button.btn:disabled {
     color: var(--color-bold-light);
 }
 
-button.btn:hover:not(:disabled), button.btn:focus:not(:disabled) {
+button.btn:hover:not(:disabled),
+button.btn:focus:not(:disabled) {
     background-color: var(--color-bold);
     border: solid 3px black;
     color: var(--color-white);

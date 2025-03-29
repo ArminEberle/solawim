@@ -2,16 +2,15 @@
 import './Checkbox.css';
 
 import React, { useRef } from 'react';
-import type { FormInputBaseProps } from 'src/atoms/types/FormInputBaseProps';
+import { BsToggleOff, BsToggleOn } from 'react-icons/bs';
 import { RxTriangleDown, RxTriangleRight } from 'react-icons/rx';
-import { BsToggleOn, BsToggleOff } from 'react-icons/bs'
+import type { FormInputBaseProps } from 'src/atoms/types/FormInputBaseProps';
 export type CheckboxOptions = {
     negate?: boolean;
     kind?: 'normal' | 'tree' | 'toggle';
     className?: string;
-} &
-    FormInputBaseProps<HTMLInputElement, boolean>
-    & React.PropsWithChildren;
+} & FormInputBaseProps<HTMLInputElement, boolean> &
+    React.PropsWithChildren;
 
 export const Checkbox = (props: CheckboxOptions) => {
     let className = 'checkbox';
@@ -26,48 +25,40 @@ export const Checkbox = (props: CheckboxOptions) => {
     }
     const ref = useRef<HTMLInputElement>(null);
     const isChecked = props.negate ? !ref.current?.checked : ref.current?.checked;
-    return <div className={className} onClick={event => {
-        if (event.target === ref.current) {
-            return;
-        }
-        event.stopPropagation();
-        ref.current?.click();
-    }}>
-        <input type="checkbox"
-            name={props.name}
-            checked={props.negate ? !props.value : props.value}
-            onChange={(event) => {
-                if (props.negate) {
-                    event.target.checked = !event.target.checked;
+    return (
+        <div
+            className={className}
+            onClick={event => {
+                if (event.target === ref.current) {
+                    return;
                 }
-                props?.onChange?.(event);
+                event.stopPropagation();
+                ref.current?.click();
             }}
-            ref={ref}
-            onBlur={(event) => {
-                if (props.negate) {
-                    event.target.checked = !event.target.checked;
-                }
-                props?.onBlur?.(event);
-            }}
-            className="i"
-            onLoad={props.onLoad}
-        />
-        {
-            props.kind === 'tree' &&
-            (isChecked
-                ? <RxTriangleDown />
-                : <RxTriangleRight />
-            )
-        }
-        {
-            props.kind === 'toggle' &&
-            (isChecked
-                ? <BsToggleOn />
-                : <BsToggleOff />
-            )
-        }
-        <div>
-            {props.children}
+        >
+            <input
+                type="checkbox"
+                name={props.name}
+                checked={props.negate ? !props.value : props.value}
+                onChange={event => {
+                    if (props.negate) {
+                        event.target.checked = !event.target.checked;
+                    }
+                    props?.onChange?.(event);
+                }}
+                ref={ref}
+                onBlur={event => {
+                    if (props.negate) {
+                        event.target.checked = !event.target.checked;
+                    }
+                    props?.onBlur?.(event);
+                }}
+                className="i"
+                onLoad={props.onLoad}
+            />
+            {props.kind === 'tree' && (isChecked ? <RxTriangleDown /> : <RxTriangleRight />)}
+            {props.kind === 'toggle' && (isChecked ? <BsToggleOn /> : <BsToggleOff />)}
+            <div>{props.children}</div>
         </div>
-    </div>;
+    );
 };

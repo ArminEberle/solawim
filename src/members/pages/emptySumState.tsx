@@ -1,4 +1,4 @@
-import { emptyItemSums, ItemSums } from "./emptyItemSums";
+import { ItemSums, emptyItemSums } from './emptyItemSums';
 
 export type SumState = {
     fleisch: ItemSums;

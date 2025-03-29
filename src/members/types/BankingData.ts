@@ -3,7 +3,7 @@ export type BankingData = {
     iban: string;
     bic: string;
     creditorId: string;
-}
+};
 
 // const example: BankingData = {
 //     "holder": "Bla",
@@ -11,5 +11,3 @@ export type BankingData = {
 //     "bic": "KARSDEXXX",
 //     "creditorId": "asdfsadf"
 // };
-
-

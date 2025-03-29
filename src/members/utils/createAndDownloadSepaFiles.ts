@@ -1,16 +1,16 @@
 import SEPA from 'sepa';
-import { getBankingData, } from 'src/api/getBankingData';
-import type { AllMembersData, } from 'src/members/types/AllMembersData';
-import type { BankingData, } from 'src/members/types/BankingData';
-import { calculateMemberTotalSum, } from 'src/members/utils/calculateMemberTotalSum';
-import { calculatePositionSum, } from 'src/members/utils/calculatePositionSum';
-import { computeSepaMandateId, } from 'src/members/utils/computeSepaMandateId';
-import { download, } from 'src/members/utils/download';
-import { replaceCharsToSepaChars, } from 'src/members/utils/replaceCharsToSepaChars';
-import { findNextRemittanceDate, } from 'src/utils/findNextRemittanceDate';
-import { prices, } from 'src/utils/prices';
+import { getBankingData } from 'src/api/getBankingData';
+import type { AllMembersData } from 'src/members/types/AllMembersData';
+import type { BankingData } from 'src/members/types/BankingData';
+import { calculateMemberTotalSum } from 'src/members/utils/calculateMemberTotalSum';
+import { calculatePositionSum } from 'src/members/utils/calculatePositionSum';
+import { computeSepaMandateId } from 'src/members/utils/computeSepaMandateId';
+import { download } from 'src/members/utils/download';
+import { replaceCharsToSepaChars } from 'src/members/utils/replaceCharsToSepaChars';
+import { findNextRemittanceDate } from 'src/utils/findNextRemittanceDate';
+import { prices } from 'src/utils/prices';
 
-export const createAndDownloadSepaFiles = async(memberData: AllMembersData, season: number): Promise<void> => {
+export const createAndDownloadSepaFiles = async (memberData: AllMembersData, season: number): Promise<void> => {
     try {
         const bankingData = await getBankingData();
         if (!bankingData) {
@@ -18,7 +18,8 @@ export const createAndDownloadSepaFiles = async(memberData: AllMembersData, seas
             return;
         }
 
-        const summaryHeaders = 'User-Id;Vorname;Nachname;Kontoinhaber;IBAN;BIC;Mandatsreferenz;Mandatsdatum;SEPA-End2EndId;Brot Betrag;Veggie Betrag;Fleisch Betrag;Milch Betrag;Gesamtbetrag;Fehler';
+        const summaryHeaders =
+            'User-Id;Vorname;Nachname;Kontoinhaber;IBAN;BIC;Mandatsreferenz;Mandatsdatum;SEPA-End2EndId;Brot Betrag;Veggie Betrag;Fleisch Betrag;Milch Betrag;Gesamtbetrag;Fehler';
 
         const date = new Date();
         const monthPadded = String(date.getMonth() + 1).padStart(2, '0');
@@ -95,15 +96,9 @@ export const createAndDownloadSepaFiles = async(memberData: AllMembersData, seas
             ...errorList,
         ].join('\r\n');
 
-        download(`Solawi_Sammellastschrift_${year}_${monthPadded}_Fleisch_SEPA.xml`,
-            fleischSepaDoc
-        );
-        download(`Solawi_Sammellastschrift_${year}_${monthPadded}_Brot_SEPA.xml`,
-            brotSepaDoc
-        );
-        download(`Solawi_Sammellastschrift_${year}_${monthPadded}_Veggie_SEPA.xml`,
-            veggieSepaDoc
-        );
+        download(`Solawi_Sammellastschrift_${year}_${monthPadded}_Fleisch_SEPA.xml`, fleischSepaDoc);
+        download(`Solawi_Sammellastschrift_${year}_${monthPadded}_Brot_SEPA.xml`, brotSepaDoc);
+        download(`Solawi_Sammellastschrift_${year}_${monthPadded}_Veggie_SEPA.xml`, veggieSepaDoc);
 
         const summaryFilename = `Solawi_Sammellastschrift_${year}_${monthPadded}_Uebersicht.csv`;
         download(summaryFilename, summaryDoc, 'text/csv');
@@ -235,8 +230,7 @@ function createSepaDoc({
             }
         }
     }
-    const sepaDoc = doc.toString()
-        .replace('encoding="null"', 'encoding="UTF-8"');
+    const sepaDoc = doc.toString().replace('encoding="null"', 'encoding="UTF-8"');
     return sepaDoc;
 }
 

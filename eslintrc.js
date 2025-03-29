@@ -21,16 +21,10 @@ module.exports = {
     //     'simple-import-sort': (require('eslint-plugin-simple-import-sort')) as any,
     //     'regex': (require('eslint-plugin-regex')) as any,
     // },
-    plugins: [
-        '@typescript-eslint',
-        'unused-imports',
-        'no-relative-import-paths',
-        'simple-import-sort',
-        'regex',
-    ],
+    plugins: ['@typescript-eslint', 'unused-imports', 'no-relative-import-paths', 'simple-import-sort', 'regex'],
     extends: [
         'plugin:react-hooks/recommended',
-        'plugin:@typescript-eslint/recommended', 
+        'plugin:@typescript-eslint/recommended',
         'prettier',
         // Uses the recommended rules from
         // the
@@ -42,14 +36,15 @@ module.exports = {
         project: ['./tsconfig.json'],
     },
     env: {
-        browser: true, node: true,
+        browser: true,
+        node: true,
     },
     rules: {
         // Place to specify ESLint rules. Can be used to overwrite rules
         // specified from the extended configs e.g.
         // '@typescript-eslint/explicit-function-return-type': 'off',
         'prefer-const': [ERROR],
-        'eqeqeq': [ERROR],
+        eqeqeq: [ERROR],
         '@typescript-eslint/explicit-module-boundary-types': [WARN],
         '@typescript-eslint/no-var-requires': [WARN],
         '@typescript-eslint/no-use-before-define': [OFF],
@@ -60,9 +55,12 @@ module.exports = {
         '@typescript-eslint/ban-types': [ERROR],
         '@typescript-eslint/consistent-type-imports': [ERROR],
         'for-direction': [ERROR],
-        'max-statements': [WARN, {
-            max: 100,
-        }],
+        'max-statements': [
+            WARN,
+            {
+                max: 100,
+            },
+        ],
         'max-depth': [WARN],
         'no-nested-ternary': [ERROR],
         'no-mixed-operators': [WARN],
@@ -95,7 +93,10 @@ module.exports = {
         'no-import-assign': [ERROR],
         'no-inner-declarations': [ERROR],
         'no-invalid-regexp': [ERROR],
-        'no-irregular-whitespace': [ERROR, { skipStrings: false, skipComments: false, skipRegExps: false, skipTemplates: false }],
+        'no-irregular-whitespace': [
+            ERROR,
+            { skipStrings: false, skipComments: false, skipRegExps: false, skipTemplates: false },
+        ],
         'no-misleading-character-class': [ERROR],
         'no-obj-calls': [ERROR],
         // set this to ERROR when all PRs are switched to this eslint
@@ -124,11 +125,15 @@ module.exports = {
         // Off because we use interfaces for objects that come directly
         // from sql databases which are usually not  camel cased.
         '@typescript-eslint/camelcase': [OFF],
-        '@typescript-eslint/member-ordering': [WARN, {
-            'default': ['field', 'constructor', 'method'],
-        }], // Only FIXME and XXX are forbidden. TODO is still allowed
+        '@typescript-eslint/member-ordering': [
+            WARN,
+            {
+                default: ['field', 'constructor', 'method'],
+            },
+        ], // Only FIXME and XXX are forbidden. TODO is still allowed
         '@typescript-eslint/interface-name-prefix': [OFF],
-        '@typescript-eslint/naming-convention': [ERROR,
+        '@typescript-eslint/naming-convention': [
+            ERROR,
             {
                 selector: 'default',
                 format: ['camelCase', 'PascalCase'],
@@ -153,15 +158,15 @@ module.exports = {
                 format: ['PascalCase', 'UPPER_CASE'],
             },
         ],
-        'no-warning-comments': [ERROR, { 'terms': ['fixme', 'xxx'], 'location': 'start' }],
-        'max-len': [ERROR, 200, { 'ignoreTemplateLiterals': true }],
+        'no-warning-comments': [ERROR, { terms: ['fixme', 'xxx'], location: 'start' }],
+        'max-len': [ERROR, 200, { ignoreTemplateLiterals: true }],
         '@typescript-eslint/semi': [ERROR],
         '@typescript-eslint/comma-dangle': [ERROR, 'always'],
         '@typescript-eslint/comma-spacing': [ERROR],
         'comma-style': [ERROR],
         'no-trailing-spaces': [ERROR],
         '@typescript-eslint/keyword-spacing': [ERROR],
-        'curly': [ERROR],
+        curly: [ERROR],
         'dot-location': [ERROR, 'property'],
         'dot-notation': [ERROR],
         'no-else-return': [ERROR],
@@ -172,7 +177,7 @@ module.exports = {
         'no-multi-spaces': [ERROR],
         'no-self-assign': [ERROR],
         'no-useless-return': [ERROR],
-        'yoda': [ERROR],
+        yoda: [ERROR],
         'block-spacing': [ERROR, 'always'],
         '@typescript-eslint/brace-style': [ERROR, '1tbs', { allowSingleLine: true }],
         'computed-property-spacing': [ERROR],
@@ -205,23 +210,25 @@ module.exports = {
         // 'sort-imports': [ERROR, {ignoreCase: true}],
         'no-unused-vars': 'off',
         'regex/invalid': [
-            'error', [
+            'error',
+            [
                 {
                     // prevent loading lodash completely
-                    regex: 'from \'lodash\';',
-                    message: 'Please only import from lodash with direct imports, e.g. `import exists from \'lodash/exists\';`',
+                    regex: "from 'lodash';",
+                    message:
+                        "Please only import from lodash with direct imports, e.g. `import exists from 'lodash/exists';`",
                 },
             ],
         ],
         'unused-imports/no-unused-imports': 'error',
         'unused-imports/no-unused-vars': [
             'warn',
-            { 'vars': 'all', 'varsIgnorePattern': '^_', 'args': 'after-used', 'argsIgnorePattern': '^_' },
+            { vars: 'all', varsIgnorePattern: '^_', args: 'after-used', argsIgnorePattern: '^_' },
         ],
         'no-relative-import-paths/no-relative-import-paths': [
             ERROR,
             {
-                'allowSameFolder': false,
+                allowSameFolder: false,
             },
         ],
         'simple-import-sort/imports': 'error',

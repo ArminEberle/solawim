@@ -1,10 +1,9 @@
-import { localWebServerPath, } from 'src/build/config/buildConfig';
-import type { BuildTask, } from 'src/build/types/BuildTask';
-import { getDefaultTaskProperties, } from 'src/build/utils/getDefaultTaskProperties';
 import esbuild from 'esbuild';
+import { localWebServerPath } from 'src/build/config/buildConfig';
 import { developmentConfig } from 'src/build/config/esbuild-config';
+import type { BuildTask } from 'src/build/types/BuildTask';
+import { getDefaultTaskProperties } from 'src/build/utils/getDefaultTaskProperties';
 import { copyFolderRecursiveAndWatch } from 'src/utils/copyFiles';
-
 
 export default {
     ...getDefaultTaskProperties(__filename),

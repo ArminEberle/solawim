@@ -1,9 +1,7 @@
+import { useQuery } from '@tanstack/react-query';
 import isEqual from 'lodash.isequal';
 import { apiBaseUrl } from 'src/api/apiBaseUrl';
 import { getJsonBody } from 'src/api/getJsonBody';
-import {
-    useQuery,
-} from '@tanstack/react-query'
 import { has } from 'src/utils/has';
 
 export const getSeasons = async (): Promise<number[]> => {
@@ -12,24 +10,23 @@ export const getSeasons = async (): Promise<number[]> => {
         return [];
     }
     return serverResult;
-}
+};
 
 export const useGetSeasons = () => {
     return useQuery({
         queryKey: ['seasons'],
         queryFn: getSeasons,
-        initialData: [new Date().getFullYear()]
-    })
-}
+        initialData: [new Date().getFullYear()],
+    });
+};
 
 export const useGetCurrentSeason = (): number => {
     const seasons = useGetSeasons().data;
     let season: number;
-    if(has(seasons) && seasons.length > 0) {
+    if (has(seasons) && seasons.length > 0) {
         season = seasons[seasons.length - 1];
     } else {
         season = new Date().getFullYear();
     }
     return season;
-}
-
+};

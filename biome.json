@@ -1,0 +1,99 @@
+{
+    "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+    "files": {
+        "ignore": ["package.json", "**/*.md", "**/*.css", "php/api/vendor/**", "yarn.lock", ".vscode/**"],
+        "maxSize": 15728640
+    },
+    "formatter": {
+        "attributePosition": "multiline",
+        "enabled": true,
+        "indentStyle": "space",
+        "indentWidth": 4,
+        "lineWidth": 120
+    },
+    "javascript": {
+        "formatter": {
+            "arrowParentheses": "asNeeded",
+            "bracketSameLine": false,
+            "bracketSpacing": true,
+            "jsxQuoteStyle": "double",
+            "lineWidth": 120,
+            "quoteProperties": "asNeeded",
+            "quoteStyle": "single",
+            "semicolons": "always",
+            "trailingCommas": "all"
+        },
+        "parser": {
+            "unsafeParameterDecoratorsEnabled": true
+        }
+    },
+    "linter": {
+        "enabled": false,
+        "include": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"],
+        "rules": {
+            "complexity": {
+                "noBannedTypes": "error",
+                "noMultipleSpacesInRegularExpressionLiterals": "error",
+                "noUselessLabel": "error",
+                "noUselessTernary": "error",
+                "useArrowFunction": "off",
+                "useLiteralKeys": "error"
+            },
+            "correctness": {
+                "noConstantCondition": "error",
+                "noEmptyCharacterClassInRegex": "error",
+                "noGlobalObjectCalls": "error",
+                "noInnerDeclarations": "error",
+                "noSelfAssign": "error",
+                "noUnreachable": "warn",
+                "noUnsafeFinally": "error",
+                "noUnusedImports": "error",
+                "noUnusedLabels": "error",
+                "noUnusedVariables": "warn",
+                "useExhaustiveDependencies": "error",
+                "useIsNan": "error",
+                "useValidForDirection": "error"
+            },
+            "recommended": false,
+            "style": {
+                "noArguments": "warn",
+                "noInferrableTypes": "off",
+                "noUselessElse": "warn",
+                "useBlockStatements": "error",
+                "useCollapsedElseIf": "error",
+                "useConst": "error",
+                "useImportType": "error"
+            },
+            "suspicious": {
+                "noAsyncPromiseExecutor": "warn",
+                "noCatchAssign": "error",
+                "noConsoleLog": "warn",
+                "noControlCharactersInRegex": "error",
+                "noDebugger": "error",
+                "noDoubleEquals": "error",
+                "noDuplicateCase": "error",
+                "noDuplicateObjectKeys": "error",
+                "noDuplicateParameters": "error",
+                "noEmptyBlockStatements": "warn",
+                "noExplicitAny": "warn",
+                "noFunctionAssign": "error",
+                "noImportAssign": "error",
+                "noMisleadingCharacterClass": "error",
+                "noPrototypeBuiltins": "warn",
+                "noUnsafeNegation": "error",
+                "useAwait": "error",
+                "useValidTypeof": "error"
+            }
+        }
+    },
+    "organizeImports": {
+        "enabled": true,
+        "include": ["**/*.ts", "**/*.tsx"]
+    },
+    "vcs": {
+        "clientKind": "git",
+        "defaultBranch": "master",
+        "enabled": true,
+        "useIgnoreFile": true
+    }
+}

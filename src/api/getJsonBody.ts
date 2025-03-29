@@ -1,5 +1,4 @@
-export async function getJsonBody(
-    response: Response | Promise<Response>): Promise<any> {
+export async function getJsonBody(response: Response | Promise<Response>): Promise<any> {
     const resolvedResponse = await response;
     let content = await resolvedResponse.json();
     if (typeof content === 'string') {

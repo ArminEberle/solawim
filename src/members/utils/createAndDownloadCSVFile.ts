@@ -1,7 +1,7 @@
-import { getBankingData, } from 'src/api/getBankingData';
-import type { AllMembersData, } from 'src/members/types/AllMembersData';
+import { getBankingData } from 'src/api/getBankingData';
+import type { AllMembersData } from 'src/members/types/AllMembersData';
 import { calculatePositionSum } from 'src/members/utils/calculatePositionSum';
-import { download, } from 'src/members/utils/download';
+import { download } from 'src/members/utils/download';
 import { prices } from 'src/utils/prices';
 
 const csvHeaders: string[] = [
@@ -26,9 +26,10 @@ const csvHeaders: string[] = [
 ];
 
 const stringWrap = (str: string): string => `"${str}"`;
-const numberToGermanString = (num: number): string => num.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const numberToGermanString = (num: number): string =>
+    num.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-export const createAndDownloadCSVFile = async(memberData: AllMembersData, season: number): Promise<void> => {
+export const createAndDownloadCSVFile = async (memberData: AllMembersData, season: number): Promise<void> => {
     try {
         const date = new Date();
         const year = date.getFullYear();
@@ -40,8 +41,8 @@ export const createAndDownloadCSVFile = async(memberData: AllMembersData, season
 
         const csvLines: string[] = [];
         csvLines.push(csvHeaders.join(';'));
-        for(const member of memberData) {
-            if(!member.membership || !member.membership.member) {
+        for (const member of memberData) {
+            if (!member.membership || !member.membership.member) {
                 continue;
             }
             const veggieSum = calculatePositionSum({
@@ -87,7 +88,11 @@ export const createAndDownloadCSVFile = async(memberData: AllMembersData, season
             csvLines.push(line);
         }
 
-        download(`Solawi_Daten_${year}_${monthPadded}_${dayPadded}_${hourPadded}${minutePadded}${secondPadded}.csv`, csvLines.join('\r\n'), 'text/csv');
+        download(
+            `Solawi_Daten_${year}_${monthPadded}_${dayPadded}_${hourPadded}${minutePadded}${secondPadded}.csv`,
+            csvLines.join('\r\n'),
+            'text/csv',
+        );
     } catch (e) {
         alert('Ein Problem ist aufgetreten siehe console.log: ' + String(e));
         console.log(e);

@@ -6,12 +6,12 @@ import type { TabIndexProp } from 'src/atoms/types/TabIndexProp';
 
 export type ButtonLinkOptions = React.PropsWithChildren & ButtonStyleProp & HrefProp & TabIndexProp;
 
-export const ButtonLink = (options: ButtonLinkOptions
-) =>
+export const ButtonLink = (options: ButtonLinkOptions) => (
     <Button
         buttonType={options.buttonType}
-        onClick={() => window.location.href = options.href}
+        onClick={() => (window.location.href = options.href)}
         tabIndex={options.tabIndex}
     >
         {options.children}
-    </Button>;
+    </Button>
+);

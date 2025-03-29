@@ -1,7 +1,7 @@
-import { execSync, } from 'child_process';
+import { execSync } from 'child_process';
 import build from 'src/build/tasks/build';
-import type { BuildTask, } from 'src/build/types/BuildTask';
-import { getDefaultTaskProperties, } from 'src/build/utils/getDefaultTaskProperties';
+import type { BuildTask } from 'src/build/types/BuildTask';
+import { getDefaultTaskProperties } from 'src/build/utils/getDefaultTaskProperties';
 
 export default {
     ...getDefaultTaskProperties(__filename),
@@ -11,5 +11,5 @@ export default {
             stdio: 'inherit',
         });
     },
-    dependencies: [build, ],
+    dependencies: [build],
 } satisfies BuildTask;

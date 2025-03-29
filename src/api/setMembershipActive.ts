@@ -1,7 +1,6 @@
 import { apiBaseUrl } from 'src/api/apiBaseUrl';
 import { getJsonBody } from 'src/api/getJsonBody';
 
-
 export function setMembershipActive(targetUserId: string, activeMembership: boolean): Promise<void> {
     return getJsonBody(
         fetch(apiBaseUrl + 'membershipactive', {
@@ -14,6 +13,6 @@ export function setMembershipActive(targetUserId: string, activeMembership: bool
                 targetUserId,
                 activeMembership,
             }),
-        })
+        }),
     );
 }

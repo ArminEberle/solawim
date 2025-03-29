@@ -20,26 +20,12 @@ const baseOutPath = '.build-tmp/test';
 const jestConfig: JestConfig = {
     roots: ['<rootDir>'],
     modulePaths: [tsconfig.compilerOptions.baseUrl],
-    moduleFileExtensions: [
-        'ts',
-        'tsx',
-        'js',
-        'json',
-    ],
-    moduleDirectories: [
-        __dirname,
-        'node_modules',
-    ],
+    moduleFileExtensions: ['ts', 'tsx', 'js', 'json'],
+    moduleDirectories: [__dirname, 'node_modules'],
     injectGlobals: true,
     testRegex: 'src/(.+/)*.+\\.test\\.tsx?$',
-    modulePathIgnorePatterns: [
-        '<rootDir>/depot/',
-        '<rootDir>/.build-tmp/',
-    ],
-    testPathIgnorePatterns: [
-        '/node_modules/',
-        '<rootDir>/.build-tmp/',
-    ],
+    modulePathIgnorePatterns: ['<rootDir>/depot/', '<rootDir>/.build-tmp/'],
+    testPathIgnorePatterns: ['/node_modules/', '<rootDir>/.build-tmp/'],
     testEnvironment: 'node',
     collectCoverage: false,
     collectCoverageFrom: undefined,

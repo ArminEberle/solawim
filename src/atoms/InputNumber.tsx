@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 export type InputNumberProps = {
@@ -7,7 +6,7 @@ export type InputNumberProps = {
     max: number;
 };
 
-export const InputNumber = (options: InputNumberProps) =>
+export const InputNumber = (options: InputNumberProps) => (
     <div className="box">
         <div className="input-wrapper">
             <input
@@ -20,6 +19,12 @@ export const InputNumber = (options: InputNumberProps) =>
                 width={5}
                 step={1}
             />
-            <label htmlFor="input" className="control-label">{options.label}</label>
+            <label
+                htmlFor="input"
+                className="control-label"
+            >
+                {options.label}
+            </label>
         </div>
-    </div>;
+    </div>
+);

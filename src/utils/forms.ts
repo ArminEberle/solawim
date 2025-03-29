@@ -5,11 +5,9 @@ import type {
     FocusEvent,
     FocusEventHandler,
     FormEvent,
-    FormEventHandler
+    FormEventHandler,
 } from 'react';
-import {
-    useState
-} from 'react';
+import { useState } from 'react';
 
 export type FormMeOptions<T extends Record<string, unknown>> = {
     data: T;
@@ -22,20 +20,21 @@ export type FormMeOptions<T extends Record<string, unknown>> = {
  * If it returns a value, this will be taken instead of the given form data.
  * But you can also just return undefined and modify the value instead.
  */
-export type WatchCallback<T extends Record<string, unknown>> = ((formdata: T) => T | undefined | void);
+export type WatchCallback<T extends Record<string, unknown>> = (formdata: T) => T | undefined | void;
 
 export type FormMeReturn<T extends Record<string, unknown>> = {
-    register: <K extends keyof T>(propName: K,
-        valueTransformer?: ((value: T[K]) => T[K])) =>
-        {
-            value: T[K];
-            onChange: ChangeEventHandler;
-            onBlur: FocusEventHandler;
-            name: string,
-        },
+    register: <K extends keyof T>(
+        propName: K,
+        valueTransformer?: (value: T[K]) => T[K],
+    ) => {
+        value: T[K];
+        onChange: ChangeEventHandler;
+        onBlur: FocusEventHandler;
+        name: string;
+    };
     handleSubmit: FormEventHandler;
-    state: T,
-    setState: React.Dispatch<React.SetStateAction<T>>,
+    state: T;
+    setState: React.Dispatch<React.SetStateAction<T>>;
 };
 
 export const formMe = <T extends Record<string, unknown>>(options: FormMeOptions<T>): FormMeReturn<T> => {
@@ -43,7 +42,7 @@ export const formMe = <T extends Record<string, unknown>>(options: FormMeOptions
     const { watch } = options;
 
     return {
-        register: <K extends keyof T>(propName: K, valueTransformer?: ((value: T[K]) => T[K])) => {
+        register: <K extends keyof T>(propName: K, valueTransformer?: (value: T[K]) => T[K]) => {
             return {
                 value: stateData[propName],
                 onChange: (event: ChangeEvent<HTMLInputElement>) => {
@@ -77,4 +76,4 @@ export const formMe = <T extends Record<string, unknown>>(options: FormMeOptions
         state: stateData,
         setState: setStateData,
     };
-}
+};

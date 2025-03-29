@@ -7,7 +7,7 @@ export type CalculatePositionSumParams = {
 };
 
 export function calculatePositionSum({ amount, solidar, price }: CalculatePositionSumParams): number {
-    if(!amount) return 0;
+    if (!amount) return 0;
     solidar = solidar ?? '0';
     let amountNumber = Number.parseFloat(String(amount));
     if (Number.isNaN(amountNumber)) {

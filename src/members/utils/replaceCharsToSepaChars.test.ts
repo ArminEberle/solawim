@@ -3,4 +3,4 @@ import { replaceCharsToSepaChars } from 'src/members/utils/replaceCharsToSepaCha
 
 test('replaceCharsToSepaChars', () => {
     expect(replaceCharsToSepaChars('äÄüÜöÖßá&')).toBe('aeAeueUeoeOess  ');
-})
+});

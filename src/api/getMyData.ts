@@ -5,9 +5,9 @@ import { isDeveloping } from 'src/api/isDeveloping';
 import type { MemberData } from 'src/members/types/MemberData';
 import { emptyMemberData } from 'src/members/types/MemberData';
 
-export const getMyData = async(): Promise<MemberData> => {
+export const getMyData = async (): Promise<MemberData> => {
     if (isDeveloping) {
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             setTimeout(() => {
                 resolve({
                     ...emptyMemberData(),
@@ -26,7 +26,6 @@ export const getMyData = async(): Promise<MemberData> => {
                     accountownerStreet: 'asdfwerew',
                     bic: '12345678',
                     bank: 'Sparkasse',
-
                 });
             }, 500);
         });

@@ -9,5 +9,4 @@ export const download = (filename: string, content: string, mimeType = 'applicat
     element.click();
 
     document.body.removeChild(element);
-}
-
+};

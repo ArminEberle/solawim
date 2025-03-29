@@ -10,8 +10,12 @@ export type DataElementProps = {
     style?: React.CSSProperties;
 };
 
-export const DataElement = (props: DataElementProps) => 
-<Horizontal className={'dl-el ' +(props.className ?? '')} style={props.style}>
-    <div className="dl-el-la">{props.label}</div>
-    {props.children}
-</Horizontal> 
+export const DataElement = (props: DataElementProps) => (
+    <Horizontal
+        className={'dl-el ' + (props.className ?? '')}
+        style={props.style}
+    >
+        <div className="dl-el-la">{props.label}</div>
+        {props.children}
+    </Horizontal>
+);
