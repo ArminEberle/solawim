@@ -3,13 +3,9 @@ import { SumState, emptySumState } from './emptySumState';
 
 export type OverallSumState = {
     total: SumState;
-} & {
-    hutzelberghof: SumState;
-    witzenhausen: SumState;
-    gertenbach: SumState;
-};
+} & Record<Abholraum, SumState>;
 
-export function emptyOverallSumState(): OverallSumState {
+export const emptyOverallSumState = (): OverallSumState => {
     return {
         total: emptySumState(),
         witzenhausen: emptySumState(),
@@ -18,4 +14,4 @@ export function emptyOverallSumState(): OverallSumState {
     } as { total: SumState } & {
         [key in Abholraum]: SumState;
     };
-}
+};

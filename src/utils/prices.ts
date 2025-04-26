@@ -17,7 +17,7 @@ export const prices: PricesType = {
     },
     2025: {
         fleisch: 105,
-        milch: 2,
+        milch: 8,
         brot: 25,
         veggie: 105,
     },

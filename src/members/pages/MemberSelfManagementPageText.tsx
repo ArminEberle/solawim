@@ -2,7 +2,7 @@ import React from 'react';
 
 export const MemberSelfManagementPageInto = () => (
     <section>
-        <h3>Hallo, schön dass Du in der Kollektiv Solawi Mitglied werden möchtest oder schon bist!</h3>
+        <h3>Hallo, schön dass Du beim Höhberg Kollektiv Mitglied werden möchtest oder schon bist!</h3>
         <p>
             Mit deinem Beitreten wirst du Teil von unserem Verein. Dein Mitgliedsbeitrag entspricht deinem Anteil an
             produzierten Gütern.
@@ -58,7 +58,12 @@ export const MemberSelfManagementPagePassiveHint = ({ active = false }: { active
     return (
         <section>
             <p>
-                {active && 'Du bist als aktives Mitglied registriert.'}
+                {active && (
+                    <b>
+                        Du wirst als aktives Mitglied geführt. D.h. du bezahlst nichts und arbeitest für deine Anteile
+                        mit.
+                    </b>
+                )}
                 {!active &&
                     'Du bist als passives Mitglied registriert. Wenn du dich aktiv an der Hofarbeit, Gremien und/oder Aktionen beteiligen willst, melde Dich bei uns.'}
             </p>

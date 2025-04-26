@@ -1,6 +1,5 @@
 import esbuild from 'esbuild';
-import { developmentConfig, esBuildConfig } from 'src/build/config/esbuild-config';
-import build from 'src/build/tasks/build';
+import { esBuildConfig } from 'src/build/config/esbuild-config';
 import clean from 'src/build/tasks/clean';
 import copyPhpCode from 'src/build/tasks/copyPhpCode';
 import rewriteSolawimPhp from 'src/build/tasks/rewriteSolawimPhp';

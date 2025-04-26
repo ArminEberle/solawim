@@ -6,9 +6,17 @@ import { useSeason } from 'src/atoms/SeasonSelect';
 import { Horizontal } from 'src/layout/Horizontal';
 import { Vertical } from 'src/layout/Vertical';
 import { SumState } from 'src/members/pages/emptySumState';
+import { Product } from 'src/members/types/Product';
 import { createAndDownloadCSVFile } from 'src/members/utils/createAndDownloadCSVFile';
 import { createAndDownloadSepaFiles } from 'src/members/utils/createAndDownloadSepaFiles';
 import { preventDefault } from 'src/utils/preventDefault';
+
+const productToText: Record<Product, string> = {
+    fleisch: 'Fleisch',
+    milch: 'Milch',
+    brot: 'Brot',
+    veggie: 'Gemüse',
+};
 
 export function VereinsverwaltungSums(props: {
     sumState: SumState;
@@ -28,12 +36,6 @@ export function VereinsverwaltungSums(props: {
         await createAndDownloadCSVFile(memberdataQuery.data, season);
     }, [memberdataQuery]);
 
-    const fleischSoldarStyle: CSSProperties =
-        props.sumState.fleisch.reduziert > props.sumState.fleisch.solidar ? { color: 'red' } : {};
-    const brotSoldarStyle: CSSProperties =
-        props.sumState.brot.reduziert > props.sumState.brot.solidar ? { color: 'red' } : {};
-    const veggieSoldarStyle: CSSProperties =
-        props.sumState.veggie.reduziert > props.sumState.veggie.solidar ? { color: 'red' } : {};
     return (
         <form onSubmit={preventDefault}>
             <Vertical>
@@ -43,6 +45,11 @@ export function VereinsverwaltungSums(props: {
                         style={{ fontSize: '1.3em', fontWeight: 'bolder' }}
                         label="Anzahl konsumierende Accounts"
                         value={String(props.sumState.members)}
+                    />
+                    <Output
+                        style={{ fontSize: '1.3em', fontWeight: 'bolder' }}
+                        label="Anzahl Anteile gegen Mitarbeit"
+                        value={String(props.sumState.activeCount)}
                     />
                     <Output
                         style={{
@@ -60,113 +67,61 @@ export function VereinsverwaltungSums(props: {
                         <Button onClick={createCSV}>CSV Datei herunterladen</Button>
                     </Horizontal>
                 )}
-                <b>Brot</b>
-                <Horizontal style={{ gap: 0 }}>
-                    <Output
-                        style={{}}
-                        label="Accounts"
-                        value={String(props.sumState.brot.accountCount)}
+                {Object.values(Product).map(product => (
+                    <ProductSums
+                        key={product}
+                        product={product}
+                        sums={props.sumState}
                     />
-                    <Output
-                        style={{}}
-                        label="Anteile insgesamt"
-                        value={String(props.sumState.brot.count)}
-                    />
-                    <Output
-                        style={brotSoldarStyle}
-                        label="Reduzierte Sechstel"
-                        value={String(props.sumState.brot.reduziert)}
-                    />
-                    <Output
-                        style={brotSoldarStyle}
-                        label="Erhöhte Sechstel"
-                        value={String(props.sumState.brot.solidar)}
-                    />
-                    <Output
-                        style={{ fontSize: '1.3em', fontWeight: 'bolder', textDecoration: 'underline' }}
-                        label="Summe (EUR)"
-                        value={String(props.sumState.brot.sum)}
-                    />
-                </Horizontal>
-                <b>Fleisch</b>
-                <Horizontal style={{ gap: 0 }}>
-                    <Output
-                        style={{}}
-                        label="Accounts"
-                        value={String(props.sumState.fleisch.accountCount)}
-                    />
-                    <Output
-                        style={{}}
-                        label="Anteile insgesamt"
-                        value={String(props.sumState.fleisch.count)}
-                    />
-                    <Output
-                        style={fleischSoldarStyle}
-                        label="Reduzierte Sechstel"
-                        value={String(props.sumState.fleisch.reduziert)}
-                    />
-                    <Output
-                        style={fleischSoldarStyle}
-                        label="Erhöhte Sechstel"
-                        value={String(props.sumState.fleisch.solidar)}
-                    />
-                    <Output
-                        style={{ fontSize: '1.3em', fontWeight: 'bolder', textDecoration: 'underline' }}
-                        label="Summe (EUR)"
-                        value={String(props.sumState.fleisch.sum)}
-                    />
-                </Horizontal>
-                <b>Milch</b>
-                <Horizontal style={{ gap: 0 }}>
-                    <Output
-                        style={{}}
-                        label="Accounts"
-                        value={String(props.sumState.milch.accountCount)}
-                    />
-                    <Output
-                        style={{}}
-                        label="Anteile insgesamt"
-                        value={String(props.sumState.milch.count)}
-                    />
-                    <div className="output-wrapper"></div>
-                    <div className="output-wrapper"></div>
-                    {/* <Output style={fleischSoldarStyle} label="Reduzierte Sechstel" value={0} />
-                <Output style={fleischSoldarStyle} label="Erhöhte Sechstel" value={0} /> */}
-                    <Output
-                        style={{ fontSize: '1.3em', fontWeight: 'bolder', textDecoration: 'underline' }}
-                        label="Summe (EUR)"
-                        value={String(props.sumState.milch.sum)}
-                    />
-                </Horizontal>
-                <b>Gemüse</b>
-                <Horizontal style={{ gap: 0 }}>
-                    <Output
-                        style={{}}
-                        label="Accounts"
-                        value={String(props.sumState.veggie.accountCount)}
-                    />
-                    <Output
-                        style={{}}
-                        label="Anteile insgesamt"
-                        value={String(props.sumState.veggie.count)}
-                    />
-                    <Output
-                        style={veggieSoldarStyle}
-                        label="Reduzierte Sechstel"
-                        value={String(props.sumState.veggie.reduziert)}
-                    />
-                    <Output
-                        style={veggieSoldarStyle}
-                        label="Erhöhte Sechstel"
-                        value={String(props.sumState.veggie.solidar)}
-                    />
-                    <Output
-                        style={{ fontSize: '1.3em', fontWeight: 'bolder', textDecoration: 'underline' }}
-                        label="Summe (EUR)"
-                        value={String(props.sumState.veggie.sum)}
-                    />
-                </Horizontal>
+                ))}
             </Vertical>
         </form>
     );
 }
+
+const ProductSums = ({
+    product,
+    sums,
+}: {
+    product: Product;
+    sums: SumState;
+}) => {
+    const style: CSSProperties = sums[product].reduziert > sums[product].solidar ? { color: 'red' } : {};
+    return (
+        <div>
+            <b>{productToText[product]}</b>
+            <Horizontal style={{ gap: 0 }}>
+                <Output
+                    style={{}}
+                    label="Accounts"
+                    value={String(sums[product].accountCount)}
+                />
+                <Output
+                    style={{}}
+                    label="Anteile insgesamt"
+                    value={String(sums[product].amount)}
+                />
+                <Output
+                    style={{}}
+                    label="Anteile gegen Mitarbeit"
+                    value={String(sums[product].activeCount)}
+                />
+                <Output
+                    style={style}
+                    label="Reduzierte Sechstel"
+                    value={String(sums[product].reduziert)}
+                />
+                <Output
+                    style={style}
+                    label="Erhöhte Sechstel"
+                    value={String(sums[product].solidar)}
+                />
+                <Output
+                    style={{ fontSize: '1.3em', fontWeight: 'bolder', textDecoration: 'underline' }}
+                    label="Summe (EUR)"
+                    value={String(sums[product].sum)}
+                />
+            </Horizontal>
+        </div>
+    );
+};

@@ -32,7 +32,7 @@ export const emptyMemberData = (): MemberData => {
     };
 };
 
-type ZeroTo30 =
+export type ZeroTo30 =
     | '0'
     | '1'
     | '2'
@@ -65,9 +65,13 @@ type ZeroTo30 =
     | '29'
     | '30';
 
-type Solidar = '-2' | '-1' | '0' | '1' | '2';
+export type Solidar = '-2' | '-1' | '0' | '1' | '2';
 
-export type Abholraum = 'hutzelberghof' | 'witzenhausen' | 'gertenbach';
+export enum Abholraum {
+    hutzelberghof = 'hutzelberghof',
+    witzenhausen = 'witzenhausen',
+    gertenbach = 'gertenbach',
+};
 
 export type MemberData = {
     member: boolean;

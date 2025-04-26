@@ -4,10 +4,13 @@
         "module": "commonjs",
         "moduleResolution": "node",
         "lib": ["ES2019", "DOM"],
-        "types": ["jake", "jest"],
+        "types": ["jest"],
 
-        "rootDir": "./",
-        "baseUrl": "./",
+        // "rootDir": "./",
+        "baseUrl": ".",
+        "paths": {
+            "src/*": ["src/*"]
+        },
         "outDir": ".build-tmp/tsc",
 
         "strict": true,

@@ -8,13 +8,14 @@ import { computeSepaMandateId } from 'src/members/utils/computeSepaMandateId';
 import { download } from 'src/members/utils/download';
 import { replaceCharsToSepaChars } from 'src/members/utils/replaceCharsToSepaChars';
 import { findNextRemittanceDate } from 'src/utils/findNextRemittanceDate';
+import { has } from 'src/utils/has';
 import { prices } from 'src/utils/prices';
 
 export const createAndDownloadSepaFiles = async (memberData: AllMembersData, season: number): Promise<void> => {
     try {
         const bankingData = await getBankingData();
-        if (!bankingData) {
-            alert('Es gab ein Problem beim Herunterladen der Stammdaten. Siehe Server-Log.');
+        if (!has(bankingData)) {
+            alert(`Es gab ein Problem beim Herunterladen der Stammdaten. Armin muss sich das angucken.`);
             return;
         }
 
@@ -158,6 +159,11 @@ function createSepaDoc({
     for (const member of memberData) {
         const m = member.membership;
         if (!m?.member) {
+            // does not take part
+            continue;
+        }
+        if (m.active) {
+            // works for the food, not paying
             continue;
         }
 

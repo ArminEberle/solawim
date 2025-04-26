@@ -25,7 +25,7 @@ import {
     MemberSelfManagementPagePassiveHint,
     MemberSelfManagementPageYesIWant,
 } from 'src/members/pages/MemberSelfManagementPageText';
-import { emptyMemberData } from 'src/members/types/MemberData';
+import { emptyMemberData, type ZeroTo30 } from 'src/members/types/MemberData';
 import { LoggedInScope } from 'src/members/utils/LoggedInScope';
 import { calculateMemberTotalSum } from 'src/members/utils/calculateMemberTotalSum';
 import { calculatePositionPrice } from 'src/members/utils/calculatePositionPrice';
@@ -37,6 +37,7 @@ import { formMe } from 'src/utils/forms';
 import { has } from 'src/utils/has';
 import { prices } from 'src/utils/prices';
 import { ibanValidator } from 'src/validators/ibanValidator';
+import { FlexGap } from 'src/atoms/FlexGap';
 
 const required = true;
 
@@ -109,6 +110,8 @@ export const MemberSelfManagementPageInternal = () => {
     const isDirty = !isEqual(formDataState, serverState);
     globalDirty = isDirty;
 
+    let activeMember = formDataState.active;
+
     // stopPropagation in next line is to prevent errors in elementor
     return (
         <div onKeyDown={e => e.stopPropagation()}>
@@ -160,7 +163,12 @@ export const MemberSelfManagementPageInternal = () => {
 
                             <h3>Deine Anteile</h3>
                             <Horizontal>
-                                <h3 className="min-w-8 max-w-8">Brot</h3>
+                                <h3
+                                    className="min-w-8 max-w-8"
+                                    style={{ marginBottom: '6px', alignSelf: 'end' }}
+                                >
+                                    Brot
+                                </h3>
                                 <Select
                                     label="Anzahl"
                                     options={amountsToBook}
@@ -169,134 +177,162 @@ export const MemberSelfManagementPageInternal = () => {
                                     maxWidth={6}
                                     {...register('brotMenge')}
                                 />
-                                <SolidaritaetSelect
-                                    required={required}
-                                    disabled={!formDataState.member}
-                                    {...register('brotSolidar')}
-                                />
-                                <div
-                                    style={{
-                                        alignSelf: 'flex-end',
-                                        paddingBottom: '1rem',
-                                        flexGrow: 1,
-                                    }}
-                                >
-                                    <small>
-                                        (
-                                        {calculatePositionPrice({
-                                            price: prices[season].brot,
-                                            solidar: formDataState.brotSolidar,
-                                        })}{' '}
-                                        EUR / pro Anteil)
-                                    </small>
-                                </div>
-                                <Input
-                                    label="Summe"
-                                    value={String(
-                                        calculatePositionSum({
-                                            amount: formDataState.brotMenge,
-                                            solidar: formDataState.brotSolidar,
-                                            price: prices[season].brot,
-                                        }),
-                                    )}
-                                    disabled={true}
-                                    maxlen={4}
-                                    maxWidth={4}
-                                    style={{ fontWeight: 'bold', textAlign: 'end', paddingRight: '1em' }}
-                                />
+                                {!activeMember && (
+                                    <>
+                                        <SolidaritaetSelect
+                                            required={required}
+                                            disabled={!formDataState.member}
+                                            {...register('brotSolidar')}
+                                        />
+                                        <div
+                                            style={{
+                                                alignSelf: 'flex-end',
+                                                paddingBottom: '1rem',
+                                                flexGrow: 1,
+                                            }}
+                                        >
+                                            <small>
+                                                (
+                                                {calculatePositionPrice({
+                                                    price: prices[season].brot,
+                                                    solidar: formDataState.brotSolidar,
+                                                })}{' '}
+                                                EUR / pro Anteil)
+                                            </small>
+                                        </div>
+                                        <Input
+                                            label="Summe"
+                                            value={String(
+                                                calculatePositionSum({
+                                                    amount: Number.parseInt(formDataState.brotMenge),
+                                                    solidar: formDataState.brotSolidar,
+                                                    price: prices[season].brot,
+                                                }),
+                                            )}
+                                            disabled={true}
+                                            maxlen={4}
+                                            maxWidth={4}
+                                            style={{ fontWeight: 'bold', textAlign: 'end', paddingRight: '1em' }}
+                                        />
+                                    </>
+                                )}
                             </Horizontal>
 
                             <Horizontal>
-                                <h3 className="min-w-8 max-w-8">Fleisch / Käse</h3>
+                                <h3
+                                    className="min-w-8 max-w-8"
+                                    style={{ marginBottom: '6px', alignSelf: 'end' }}
+                                >
+                                    Fleisch / Käse
+                                </h3>
                                 <Select
                                     label="Anzahl"
                                     options={amountsToBook}
-                                    maxWidth={6}
                                     required={required}
                                     disabled={!formDataState.member}
+                                    maxWidth={6}
                                     {...register('fleischMenge')}
                                 />
-                                <SolidaritaetSelect
-                                    required={required}
-                                    disabled={!formDataState.member}
-                                    {...register('fleischSolidar')}
-                                />
-                                <div
-                                    style={{
-                                        alignSelf: 'flex-end',
-                                        paddingBottom: '1rem',
-                                        flexGrow: 1,
-                                    }}
-                                >
-                                    <small>
-                                        (
-                                        {calculatePositionPrice({
-                                            price: prices[season].fleisch,
-                                            solidar: formDataState.fleischSolidar,
-                                        })}{' '}
-                                        EUR / pro Anteil)
-                                    </small>
-                                </div>
-                                <Input
-                                    label="Summe"
-                                    value={String(
-                                        calculatePositionSum({
-                                            amount: formDataState.fleischMenge,
-                                            solidar: formDataState.fleischSolidar,
-                                            price: prices[season].fleisch,
-                                        }),
-                                    )}
-                                    disabled={true}
-                                    maxlen={4}
-                                    maxWidth={4}
-                                    style={{ fontWeight: 'bold', textAlign: 'end', paddingRight: '1em' }}
-                                />
+                                {!activeMember && (
+                                    <>
+                                        <SolidaritaetSelect
+                                            required={required}
+                                            disabled={!formDataState.member}
+                                            {...register('fleischSolidar')}
+                                        />
+                                        <div
+                                            style={{
+                                                alignSelf: 'flex-end',
+                                                paddingBottom: '1rem',
+                                                flexGrow: 1,
+                                            }}
+                                        >
+                                            <small>
+                                                (
+                                                {calculatePositionPrice({
+                                                    price: prices[season].fleisch,
+                                                    solidar: formDataState.fleischSolidar,
+                                                })}{' '}
+                                                EUR / pro Anteil)
+                                            </small>
+                                        </div>
+                                        <Input
+                                            label="Summe"
+                                            value={String(
+                                                calculatePositionSum({
+                                                    amount: Number.parseInt(formDataState.fleischMenge),
+                                                    solidar: formDataState.fleischSolidar,
+                                                    price: prices[season].fleisch,
+                                                }),
+                                            )}
+                                            disabled={true}
+                                            maxlen={4}
+                                            maxWidth={4}
+                                            style={{ fontWeight: 'bold', textAlign: 'end', paddingRight: '1em' }}
+                                        />
+                                    </>
+                                )}
                             </Horizontal>
+                            {!activeMember && (
+                                <>
+                                    <Horizontal>
+                                        <h3
+                                            className="min-w-8 max-w-8"
+                                            style={{ marginBottom: '6px', alignSelf: 'end' }}
+                                        >
+                                            Milch
+                                        </h3>
+                                        <Select
+                                            label="Anzahl / Liter"
+                                            options={amountsToBook}
+                                            maxWidth={6}
+                                            required={required}
+                                            disabled={
+                                                !formDataState.member || toNumber(formDataState.fleischMenge) === 0
+                                            }
+                                            {...register('milchMenge')}
+                                        />
+                                        <div
+                                            style={{
+                                                alignSelf: 'flex-end',
+                                                paddingBottom: '1rem',
+                                                flexGrow: 1,
+                                            }}
+                                        >
+                                            <small>
+                                                (nur zusammen mit Fleisch, keine Solidarmöglichkeit,{' '}
+                                                {calculatePositionPrice({
+                                                    price: prices[season].milch,
+                                                    solidar: formDataState.milchSolidar,
+                                                })}{' '}
+                                                EUR / pro Anteil)
+                                            </small>
+                                        </div>
+                                        <Input
+                                            label="Summe"
+                                            value={String(
+                                                calculatePositionSum({
+                                                    amount: Number.parseInt(formDataState.milchMenge ?? '0'),
+                                                    solidar: formDataState.milchSolidar,
+                                                    price: prices[season].milch,
+                                                }),
+                                            )}
+                                            disabled={true}
+                                            maxlen={4}
+                                            maxWidth={4}
+                                            style={{ fontWeight: 'bold', textAlign: 'end', paddingRight: '1em' }}
+                                        />
+                                    </Horizontal>
+                                </>
+                            )}
 
                             <Horizontal>
-                                <h3 className="min-w-8 max-w-8">Milch</h3>
-                                <Select
-                                    label="Anzahl / Liter"
-                                    options={amountsToBook}
-                                    maxWidth={6}
-                                    required={required}
-                                    disabled={!formDataState.member || toNumber(formDataState.fleischMenge) === 0}
-                                    {...register('milchMenge')}
-                                />
-                                <div
-                                    style={{
-                                        alignSelf: 'flex-end',
-                                        paddingBottom: '1rem',
-                                        flexGrow: 1,
-                                    }}
+                                <h3
+                                    className="min-w-8 max-w-8"
+                                    style={{ marginBottom: '6px', alignSelf: 'end' }}
                                 >
-                                    <small>
-                                        (nur zusammen mit Fleisch, keine Solidarmöglichkeit,{' '}
-                                        {calculatePositionPrice({
-                                            price: prices[season].milch,
-                                            solidar: formDataState.milchSolidar,
-                                        })}{' '}
-                                        EUR / pro Anteil)
-                                    </small>
-                                </div>
-                                <Input
-                                    label="Summe"
-                                    value={String(
-                                        calculatePositionSum({
-                                            amount: formDataState.milchMenge,
-                                            solidar: formDataState.milchSolidar,
-                                            price: prices[season].milch,
-                                        }),
-                                    )}
-                                    disabled={true}
-                                    maxlen={4}
-                                    maxWidth={4}
-                                    style={{ fontWeight: 'bold', textAlign: 'end', paddingRight: '1em' }}
-                                />
-                            </Horizontal>
-
-                            <Horizontal>
-                                <h3 className="min-w-8 max-w-8">Gemüse</h3>
+                                    Gemüse
+                                </h3>
                                 <Select
                                     label="Anzahl"
                                     options={amountsToBook}
@@ -305,41 +341,45 @@ export const MemberSelfManagementPageInternal = () => {
                                     disabled={!formDataState.member}
                                     {...register('veggieMenge')}
                                 />
-                                <SolidaritaetSelect
-                                    required={required}
-                                    disabled={!formDataState.member}
-                                    {...register('veggieSolidar')}
-                                />
-                                <div
-                                    style={{
-                                        alignSelf: 'flex-end',
-                                        paddingBottom: '1rem',
-                                        flexGrow: 1,
-                                    }}
-                                >
-                                    <small>
-                                        (
-                                        {calculatePositionPrice({
-                                            price: prices[season].veggie,
-                                            solidar: formDataState.veggieSolidar,
-                                        })}{' '}
-                                        EUR / pro Anteil)
-                                    </small>
-                                </div>
-                                <Input
-                                    label="Summe"
-                                    value={String(
-                                        calculatePositionSum({
-                                            amount: formDataState.veggieMenge,
-                                            solidar: formDataState.veggieSolidar,
-                                            price: prices[season].veggie,
-                                        }),
-                                    )}
-                                    disabled={true}
-                                    maxlen={4}
-                                    maxWidth={4}
-                                    style={{ fontWeight: 'bold', textAlign: 'end', paddingRight: '1em' }}
-                                />
+                                {!activeMember && (
+                                    <>
+                                        <SolidaritaetSelect
+                                            required={required}
+                                            disabled={!formDataState.member}
+                                            {...register('veggieSolidar')}
+                                        />
+                                        <div
+                                            style={{
+                                                alignSelf: 'flex-end',
+                                                paddingBottom: '1rem',
+                                                flexGrow: 1,
+                                            }}
+                                        >
+                                            <small>
+                                                (
+                                                {calculatePositionPrice({
+                                                    price: prices[season].veggie,
+                                                    solidar: formDataState.veggieSolidar,
+                                                })}{' '}
+                                                EUR / pro Anteil)
+                                            </small>
+                                        </div>
+                                        <Input
+                                            label="Summe"
+                                            value={String(
+                                                calculatePositionSum({
+                                                    amount: Number.parseInt(formDataState.veggieMenge),
+                                                    solidar: formDataState.veggieSolidar,
+                                                    price: prices[season].veggie,
+                                                }),
+                                            )}
+                                            disabled={true}
+                                            maxlen={4}
+                                            maxWidth={4}
+                                            style={{ fontWeight: 'bold', textAlign: 'end', paddingRight: '1em' }}
+                                        />
+                                    </>
+                                )}
                             </Horizontal>
                             <br />
                             {calculateMemberTotalSum(formDataState, season) > 0 && (

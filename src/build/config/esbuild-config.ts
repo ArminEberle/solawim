@@ -1,5 +1,12 @@
 import esbuild from 'esbuild';
-import postcss2 from 'esbuild-plugin-postcss2';
+// import postcss2 from 'esbuild-plugin-postcss2';
+import autoprefixer from 'autoprefixer';
+import postCssPlugin from '@deanc/esbuild-plugin-postcss';
+import postCssAdvancedVariables from 'postcss-advanced-variables';
+import postCssNested from 'postcss-nested';
+import cssNano from 'cssnano';
+import path from 'path';
+import fs from 'fs';
 
 export const esBuildConfig = (production = true): esbuild.BuildOptions => {
     return {
@@ -24,17 +31,16 @@ export const esBuildConfig = (production = true): esbuild.BuildOptions => {
         // plugins,
         // banner,
         // inject,
-        // The `loader` settings will be kept in sync with the file extensions in `src/ui/resourceTypes.d.ts`
         loader: {
-            '.png': 'file',
-            '.jpg': 'file',
-            '.jpeg': 'file',
-            '.gif': 'file',
-            '.svg': 'file',
-            '.ico': 'file',
-            '.pdf': 'file',
-            '.js': 'jsx',
-            '.json': 'json',
+            // '.png': 'file',
+            // '.jpg': 'file',
+            // '.jpeg': 'file',
+            // '.gif': 'file',
+            // '.svg': 'file',
+            // '.ico': 'file',
+            // '.pdf': 'file',
+            // '.js': 'jsx',
+            // '.json': 'json',
             '.css': 'css',
         },
         // Source maps are only generated in development mode as they take up a lot of space and slow down the runtime
@@ -46,15 +52,32 @@ export const esBuildConfig = (production = true): esbuild.BuildOptions => {
         // Adjust the targets according to the requirements of the project
         target: ['es2022', 'chrome80', 'edge80', 'firefox72', 'safari14'],
         plugins: [
-            postcss2(),
-            // cssModulesPlugin({
-            //     force: true,
-            //     emitDeclarationFile: false,
-            //     localsConvention: 'camelCaseOnly',
-            //     namedExports: true,
-            //     inject: false,
-            // })
+            postCssPlugin({
+                plugins: [
+                    postCssAdvancedVariables({
+                        // importPaths: [process.cwd()],
+                        importResolve: async (id: string, cwd: string) => {
+                            const file = path.join(process.cwd(), id);
+                            const contents = await fs.promises.readFile(file, 'utf-8');
+                            return {
+                                file,
+                                contents,
+                            };
+                        },
+                    }),
+                    postCssNested,
+                    autoprefixer,
+                    cssNano({
+                        preset: 'default',
+                    }),
+                ],
+            }),
         ],
+
+        alias: {
+            src: path.join(process.cwd(), 'src'), // Map "src/" to the "src" directory
+        },
+        resolveExtensions: ['.js', '.jsx', '.ts', '.tsx', '.json', '.css'],
         // We'll always have to generate a metafile to be able to analyze the build
         // This is necessary to generate the license reports
         metafile: false,

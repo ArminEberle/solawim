@@ -90,25 +90,6 @@ function getUserData(
     return $results;
 }
 
-function getBankingData()
-{
-    ensureDBInitialized();
-    global $wpdb;
-    global $seasonToMembership;
-    global $defaultSeason;
-    $membershipTable = $seasonToMembership[$defaultSeason]["membership"];
-    $results = $wpdb->get_results(
-        $wpdb->prepare("SELECT content FROM {$membershipTable} WHERE user_id = %d", 0),
-        ARRAY_A
-    );
-    if (count($results) === 0) {
-        $results = null;
-    } else {
-        $results = json_decode($results[0]['content'], false);
-    }
-    return $results;
-}
-
 // $accountId is the requestor, $userId is the user for which we are storing the data
 function setUserData(string $tablename, object $content, string $accountId, string $userId)
 {
@@ -573,7 +554,7 @@ $app->get('/bankingdata', function (Request $request, Response $response, array 
     if (!is_null($checkResult)) {
         return $checkResult;
     }
-    $response->getBody()->write(json_encode(getBankingData()));
+    $response->getBody()->write('{ "holder": "Anbaustelle e.V.", "iban": "DE94522500300050033976", "bic": "HELADEF1ESW", "creditorId": "DE20ZZZ00002458365" }');
     return $response->withStatus(200);
 });
 

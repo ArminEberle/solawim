@@ -42,28 +42,29 @@ export const createAndDownloadCSVFile = async (memberData: AllMembersData, seaso
         const csvLines: string[] = [];
         csvLines.push(csvHeaders.join(';'));
         for (const member of memberData) {
-            if (!member.membership || !member.membership.member) {
+            if (!member?.membership?.member) {
                 continue;
             }
+            const activeMembership = member.membership.active;
             const veggieSum = calculatePositionSum({
                 solidar: member.membership?.veggieSolidar,
                 price: prices[season].veggie,
-                amount: member.membership?.veggieMenge,
+                amount: activeMembership ? 0 : Number.parseInt(member.membership?.veggieMenge),
             });
             const brotSum = calculatePositionSum({
                 solidar: member.membership?.brotSolidar,
                 price: prices[season].brot,
-                amount: member.membership?.brotMenge,
+                amount: activeMembership ? 0 : Number.parseInt(member.membership?.brotMenge),
             });
             const fleischSum = calculatePositionSum({
                 solidar: member.membership?.fleischSolidar,
                 price: prices[season].fleisch,
-                amount: member.membership?.fleischMenge,
+                amount: activeMembership ? 0 : Number.parseInt(member.membership?.fleischMenge),
             });
             const milchSum = calculatePositionSum({
                 solidar: member.membership?.milchSolidar,
                 price: prices[season].milch,
-                amount: member.membership?.milchMenge,
+                amount: activeMembership ? 0 : Number.parseInt(member.membership?.milchMenge ?? '0'),
             });
             const line = [
                 member.id,
