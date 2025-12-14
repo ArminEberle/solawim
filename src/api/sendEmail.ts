@@ -5,7 +5,7 @@ export type SendEmailResponse = {
     status: string;
 };
 
-export async function sendEmail(emailData: EmailData): Promise<SendEmailResponse> {
+export const sendEmail = async (emailData: EmailData): Promise<SendEmailResponse> => {
     const response = await fetch(apiBaseUrl + 'email', {
         method: 'POST',
         headers: {
@@ -36,4 +36,4 @@ export async function sendEmail(emailData: EmailData): Promise<SendEmailResponse
     }
 
     return parsedBody;
-}
+};

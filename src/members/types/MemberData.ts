@@ -74,7 +74,13 @@ export enum Abholraum {
 }
 
 export type MemberData = {
+    /**
+     * If the member has an active membership
+     */
     member: boolean;
+    /**
+     * If the member is a working member instead of a regular (paying) member
+     */
     active: boolean;
 
     brotMenge: ZeroTo30;

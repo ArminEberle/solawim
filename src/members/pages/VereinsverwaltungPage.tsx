@@ -15,6 +15,7 @@ import { abholraumOptions } from 'src/utils/abholraumOptions';
 import { VereinsverwaltungSums } from './VereinsverwaltungSums';
 import { computeAllMembersSums } from './computeAllMembersSums';
 import { emptyOverallSumState } from './emptyOverallSumState';
+import { Mailing } from 'src/members/pages/Mailing';
 
 export const VereinsverwaltungPage = () => {
     return (
@@ -40,6 +41,9 @@ const VereinsverwaltungPageInternal = () => {
     const [updateTimestamp] = useState(new Date().getTime());
     const [activeTab, setActiveTab] = useState<'verwaltung' | 'mailing'>('verwaltung');
 
+    const overviewStateHandler = useState(false);
+    const abholraumStateHandler = useState(true);
+    const membersStateHandler = useState(true);
     const historyStateHandler = useState(true);
     const [historyCollapsed] = historyStateHandler;
 
@@ -91,7 +95,7 @@ const VereinsverwaltungPageInternal = () => {
                     <>
                         <CollapsibleSection
                             title="Übersicht"
-                            stateHandler={useState(false)}
+                            stateHandler={overviewStateHandler}
                         >
                             <VereinsverwaltungSums
                                 sumState={overallSumState.total}
@@ -101,7 +105,7 @@ const VereinsverwaltungPageInternal = () => {
                         <br />
                         <CollapsibleSection
                             title="Übersicht nach Abholraum"
-                            stateHandler={useState(true)}
+                            stateHandler={abholraumStateHandler}
                         >
                             {abholraumOptions.map(option => {
                                 return (
@@ -119,7 +123,7 @@ const VereinsverwaltungPageInternal = () => {
                         <br />
                         <CollapsibleSection
                             title="Mitglieder"
-                            stateHandler={useState(true)}
+                            stateHandler={membersStateHandler}
                         >
                             <Vertical>
                                 {allMembersQuery.data.map(memberRow => {
@@ -149,8 +153,10 @@ const VereinsverwaltungPageInternal = () => {
                     </>
                 ) : (
                     <>
-                        <h3>Some other content</h3>
-                        {/* <Mailing /> */}
+                        <Mailing
+                            members={allMembersQuery.data}
+                            isMembersLoading={allMembersQuery.isFetching}
+                        />
                     </>
                 )}
             </Page>

@@ -1,9 +1,18 @@
 import { MemberData } from 'src/members/types/MemberData';
 
 export type SingleMemberData = {
+    /**
+     * User ID in wordpress database
+     */
     id: string;
     user_nicename: string;
+    /**
+     * The Wordpress user's email address
+     */
     user_email: string;
+    /**
+     * Our custom membership data
+     */
     membership?: MemberData;
 };
 
