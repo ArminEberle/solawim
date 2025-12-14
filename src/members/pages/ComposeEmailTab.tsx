@@ -3,6 +3,7 @@ import { type FormEvent, useMemo, useState } from 'react';
 import { sendEmail } from 'src/api/sendEmail';
 import { Alert } from 'src/atoms/Alert';
 import { Button } from 'src/atoms/Button';
+import { Checkbox } from 'src/atoms/Checkbox';
 import { Input } from 'src/atoms/Input';
 import { useSeason } from 'src/atoms/SeasonSelect';
 import { MailRecipientsSelect } from 'src/members/pages/MailRecipientsSelect';
@@ -27,6 +28,7 @@ export const ComposeEmailTab = ({ members, isMembersLoading, onEmailSent }: Comp
     });
     const [subject, setSubject] = useState('');
     const [body, setBody] = useState('');
+    const [isTestEmail, setIsTestEmail] = useState(false);
 
     const sendEmailMutation = useMutation({
         mutationFn: sendEmail,
@@ -114,10 +116,12 @@ export const ComposeEmailTab = ({ members, isMembersLoading, onEmailSent }: Comp
                     body: body.trim(),
                     additionalRecipients: additionalRecipientEmails,
                     selection,
+                    emailTest: isTestEmail,
                 },
             });
             setSubject('');
             setBody('');
+            setIsTestEmail(false);
             onEmailSent();
         } catch (err) {
             // handled by mutation state
@@ -181,6 +185,13 @@ export const ComposeEmailTab = ({ members, isMembersLoading, onEmailSent }: Comp
                         required={true}
                     />
                 </div>
+                <Checkbox
+                    value={isTestEmail}
+                    onChange={event => setIsTestEmail(event.target.checked)}
+                >
+                    <strong>Testversand</strong> – E-Mail nur an die konfigurierte Absender-Adresse senden und
+                    Empfängerliste an die Nachricht anhängen.
+                </Checkbox>
             </div>
             {errorMessage && <Alert>Fehler beim Senden: {errorMessage}</Alert>}
             {sendEmailMutation.isSuccess && <p>E-Mail wurde erfolgreich versendet.</p>}

@@ -566,6 +566,73 @@ function solawim_handle_email_sending(int $emailId): void
     $successfulRecipients = solawim_parse_recipient_list($row['successful_recipients'] ?? '');
     $failedRecipients = solawim_parse_recipient_list($row['failed_recipients'] ?? '');
 
+    $content = json_decode((string) ($row['content'] ?? ''), true);
+    if (!is_array($content)) {
+        $content = [];
+    }
+
+    $isTestEmail = false;
+    if (isset($content['emailTest'])) {
+        $emailTestValue = $content['emailTest'];
+        if (is_bool($emailTestValue)) {
+            $isTestEmail = $emailTestValue;
+        } elseif (is_string($emailTestValue)) {
+            $isTestEmail = filter_var($emailTestValue, FILTER_VALIDATE_BOOLEAN);
+        } elseif (is_numeric($emailTestValue)) {
+            $isTestEmail = ((int) $emailTestValue) === 1;
+        }
+    }
+
+    $subject = isset($content['subject']) ? (string) $content['subject'] : '';
+    $body = isset($content['body']) ? (string) $content['body'] : '';
+
+    global $SOLAWI_SETTINGS;
+    $senderAddress = $SOLAWI_SETTINGS['EmailSenderAddress'] ?? '';
+    $senderIsValid = is_string($senderAddress) && filter_var($senderAddress, FILTER_VALIDATE_EMAIL);
+
+    if ($isTestEmail) {
+        if (!$senderIsValid) {
+            solawim_mark_email_as_failed($emailId, 'Testversand nicht möglich: Keine gültige Absender-Adresse konfiguriert.');
+            return;
+        }
+
+        $headers = ['From: ' . $senderAddress];
+        $bodyWithRecipients = $body;
+        if (count($effectiveRecipients) > 0) {
+            $bodyWithRecipients .= "\r\n\r\n" . implode("\r\n", $effectiveRecipients);
+        }
+
+        $sendResult = wp_mail($senderAddress, $subject, $bodyWithRecipients, $headers);
+
+        if ($sendResult) {
+            $wpdb->update(
+                $emailsTable,
+                [
+                    'status' => 'success',
+                    'successful_recipients' => solawim_format_recipient_list([$senderAddress]),
+                    'failed_recipients' => '',
+                    'failure_reason' => '',
+                ],
+                ['id' => $emailId],
+                ['%s', '%s', '%s', '%s'],
+                ['%d']
+            );
+        } else {
+            $wpdb->update(
+                $emailsTable,
+                [
+                    'status' => 'failed',
+                    'failed_recipients' => solawim_format_recipient_list([$senderAddress]),
+                    'failure_reason' => 'Testversand konnte nicht zugestellt werden.',
+                ],
+                ['id' => $emailId],
+                ['%s', '%s', '%s'],
+                ['%d']
+            );
+        }
+        return;
+    }
+
     $sentOrFailed = array_merge($successfulRecipients, $failedRecipients);
     $remainingRecipients = array_values(array_diff($effectiveRecipients, $sentOrFailed));
 
@@ -586,18 +653,8 @@ function solawim_handle_email_sending(int $emailId): void
 
     $nextRecipient = array_shift($remainingRecipients);
 
-    $content = json_decode((string) ($row['content'] ?? ''), true);
-    if (!is_array($content)) {
-        $content = [];
-    }
-
-    $subject = isset($content['subject']) ? (string) $content['subject'] : '';
-    $body = isset($content['body']) ? (string) $content['body'] : '';
-
     $headers = [];
-    global $SOLAWI_SETTINGS;
-    $senderAddress = $SOLAWI_SETTINGS['EmailSenderAddress'] ?? '';
-    if (is_string($senderAddress) && filter_var($senderAddress, FILTER_VALIDATE_EMAIL)) {
+    if ($senderIsValid) {
         $headers[] = 'From: ' . $senderAddress;
     }
 

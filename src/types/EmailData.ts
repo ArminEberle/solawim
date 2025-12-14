@@ -5,10 +5,10 @@ import type { MailRecipientsSelection } from 'src/members/types/MailRecipientsSe
  */
 export type EmailData = {
     /**
-     * If set, the email will be sent only to this address for testing purposes.
-     * It will contain all intended recipients in the body of the email, below the main content.
+     * Marks the email as a test. In test mode the message is only sent to the configured sender address
+     * and appends the list of intended recipients at the end of the body.
      */
-    testReceiver?: string;
+    emailTest?: boolean;
     /**
      * List of email recipients, as user IDs in the system.
      * Only active users will receive the email.

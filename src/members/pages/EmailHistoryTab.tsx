@@ -127,7 +127,7 @@ export const EmailHistoryTab = ({ isActive, page, onPageChange, refreshToken }: 
                             <th style={{ padding: '0.75rem' }}>Erstellt am</th>
                             <th style={{ padding: '0.75rem' }}>Betreff</th>
                             <th style={{ padding: '0.75rem', textAlign: 'center' }}>Empfänger (IDs)</th>
-                            <th style={{ padding: '0.75rem' }}>Test-E-Mail</th>
+                            <th style={{ padding: '0.75rem' }}>Testversand</th>
                             <th style={{ padding: '0.75rem' }}>Status</th>
                             <th style={{ padding: '0.75rem' }}>Auswahl</th>
                             <th style={{ padding: '0.75rem', textAlign: 'center' }}>Versandfortschritt</th>
@@ -159,16 +159,17 @@ export const EmailHistoryTab = ({ isActive, page, onPageChange, refreshToken }: 
                             const selectionText = selectionLabels.length > 0 ? selectionLabels.join(', ') : '–';
                             const subject = entry.content?.subject?.trim() ?? '–';
                             const recipientCount = entry.content?.recipients?.length ?? 0;
-                            const testReceiver = entry.content?.testReceiver;
-                            const testText = testReceiver ? `Ja (${testReceiver})` : 'Nein';
+                            const isTestEmail = entry.content?.emailTest === true;
+                            const testText = isTestEmail ? 'Ja' : 'Nein';
                             const statusText = STATUS_LABELS[entry.status] ?? entry.status;
                             const totalRecipients = entry.effectiveRecipients.length;
                             const sentCount = entry.successfulRecipients.length;
                             const failedCount = entry.failedRecipients.length;
-                            const progressText =
-                                failedCount > 0
-                                    ? `${sentCount}/${totalRecipients} (${failedCount} Fehler)`
-                                    : `${sentCount}/${totalRecipients}`;
+                            const progressText = isTestEmail
+                                ? 'Test'
+                                : failedCount > 0
+                                  ? `${sentCount}/${totalRecipients} (${failedCount} Fehler)`
+                                  : `${sentCount}/${totalRecipients}`;
 
                             return (
                                 <tr
@@ -287,7 +288,7 @@ export const EmailHistoryTab = ({ isActive, page, onPageChange, refreshToken }: 
                                     : 'Keine'}
                             </p>
                             <p>
-                                <strong>Test-Empfänger:</strong> {selectedEmail.content?.testReceiver ?? 'Nein'}
+                                <strong>Testmodus:</strong> {selectedEmail.content?.emailTest ? 'Ja' : 'Nein'}
                             </p>
                             <p>
                                 <strong>Effektive Empfänger ({selectedEmail.effectiveRecipients.length}):</strong>{' '}
