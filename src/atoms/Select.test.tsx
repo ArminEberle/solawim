@@ -1,5 +1,4 @@
 import { fireEvent, render, screen, within } from '@testing-library/react';
-import type { ChangeEvent } from 'react';
 import { Select } from 'src/atoms/Select';
 import { describe, expect, test, vi } from 'vitest';
 

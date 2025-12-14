@@ -1,15 +1,9 @@
 import type { ChangeEvent } from 'react';
 import { Checkbox } from 'src/atoms/Checkbox';
-import { abholraumOptions } from 'src/utils/abholraumOptions';
+import type { MailRecipientsSelection } from 'src/members/pages/MailRecipientsSelection';
 import type { Abholraum } from 'src/members/types/MemberData';
 import { Product } from 'src/members/types/Product';
-
-export type MailRecipientsSelection = {
-    abholraeume: Abholraum[];
-    products: Product[];
-    activeMembers: boolean;
-    allMembers: boolean;
-};
+import { abholraumOptions } from 'src/utils/abholraumOptions';
 
 const PRODUCT_OPTIONS: { value: Product; label: string }[] = [
     {

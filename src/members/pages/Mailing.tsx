@@ -1,25 +1,17 @@
-import { useMemo, useState, type FormEvent } from 'react';
 import { useMutation } from '@tanstack/react-query';
+import { type FormEvent, useMemo, useState } from 'react';
 import { sendEmail } from 'src/api/sendEmail';
+import { Alert } from 'src/atoms/Alert';
 import { Button } from 'src/atoms/Button';
 import { Input } from 'src/atoms/Input';
-import { Alert } from 'src/atoms/Alert';
-import type { AllMembersData } from 'src/members/types/AllMembersData';
-import type { MemberData } from 'src/members/types/MemberData';
-import { Product } from 'src/members/types/Product';
-import type { MailRecipientsSelection } from 'src/members/pages/MailRecipientsSelect';
 import { MailRecipientsSelect } from 'src/members/pages/MailRecipientsSelect';
+import { computeMailRecipientUserIdsFromMailRecipientsSelection } from 'src/members/pages/computeMailRecipientUserIdsFromMailRecipientsSelection';
+import type { AllMembersData } from 'src/members/types/AllMembersData';
+import type { MailRecipientsSelection } from './MailRecipientsSelection';
 
 type MailingProps = {
     members: AllMembersData;
     isMembersLoading: boolean;
-};
-
-const PRODUCT_AMOUNT_FIELD_MAP: Record<Product, keyof MemberData> = {
-    [Product.BROT]: 'brotMenge',
-    [Product.FLEISCH]: 'fleischMenge',
-    [Product.MILCH]: 'milchMenge',
-    [Product.VEGGIE]: 'veggieMenge',
 };
 
 export const Mailing = ({ members, isMembersLoading }: MailingProps) => {
@@ -37,43 +29,7 @@ export const Mailing = ({ members, isMembersLoading }: MailingProps) => {
     });
 
     const recipientIds = useMemo(() => {
-        if (selection.allMembers) {
-            return members.filter(member => member.membership?.member).map(member => member.id);
-        }
-
-        if (selection.abholraeume.length === 0 && selection.products.length === 0 && !selection.activeMembers) {
-            return [];
-        }
-
-        return members
-            .filter(member => {
-                const membership = member.membership;
-                if (!membership?.member) {
-                    return false;
-                }
-
-                const matchesAbholraum =
-                    selection.abholraeume.length > 0 &&
-                    membership.abholraum !== undefined &&
-                    selection.abholraeume.includes(membership.abholraum);
-
-                const matchesActive = selection.activeMembers && membership.active === true;
-
-                const matchesProduct = selection.products.some(product => {
-                    const fieldName = PRODUCT_AMOUNT_FIELD_MAP[product];
-                    const amount = membership[fieldName];
-                    if (typeof amount === 'string') {
-                        return amount !== '0';
-                    }
-                    if (typeof amount === 'number') {
-                        return amount > 0;
-                    }
-                    return amount !== undefined && amount !== null;
-                });
-
-                return matchesActive || matchesAbholraum || matchesProduct;
-            })
-            .map(member => member.id);
+        return computeMailRecipientUserIdsFromMailRecipientsSelection(members, selection);
     }, [members, selection]);
 
     const canSend =

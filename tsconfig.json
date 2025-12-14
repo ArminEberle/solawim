@@ -4,7 +4,7 @@
         "module": "commonjs",
         "moduleResolution": "node",
         "lib": ["ES2019", "DOM"],
-        "types": ["jest", "react"],
+        "types": ["react"],
 
         // "rootDir": "./",
         "baseUrl": ".",

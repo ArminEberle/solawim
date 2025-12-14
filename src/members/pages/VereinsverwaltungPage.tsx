@@ -7,6 +7,7 @@ import { SeasonSelect, useSeason } from 'src/atoms/SeasonSelect';
 import { RootContext } from 'src/contexts/RootContext';
 import { Page } from 'src/layout/Page';
 import { Vertical } from 'src/layout/Vertical';
+import { Mailing } from 'src/members/pages/Mailing';
 import { MemberDetailMolecule } from 'src/members/pages/MemberDetailMolecule';
 import { VereinsverwaltungHistory } from 'src/members/pages/VereinsverwaltungHistory';
 import { LoggedInScope } from 'src/members/utils/LoggedInScope';
@@ -15,7 +16,6 @@ import { abholraumOptions } from 'src/utils/abholraumOptions';
 import { VereinsverwaltungSums } from './VereinsverwaltungSums';
 import { computeAllMembersSums } from './computeAllMembersSums';
 import { emptyOverallSumState } from './emptyOverallSumState';
-import { Mailing } from 'src/members/pages/Mailing';
 
 export const VereinsverwaltungPage = () => {
     return (

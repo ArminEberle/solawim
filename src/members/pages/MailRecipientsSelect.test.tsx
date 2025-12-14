@@ -1,9 +1,10 @@
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { afterEach, describe, expect, it } from 'vitest';
 import { useState } from 'react';
-import { MailRecipientsSelect, type MailRecipientsSelection } from 'src/members/pages/MailRecipientsSelect';
-import { abholraumOptions } from 'src/utils/abholraumOptions';
+import { MailRecipientsSelect } from 'src/members/pages/MailRecipientsSelect';
 import { Product } from 'src/members/types/Product';
+import { abholraumOptions } from 'src/utils/abholraumOptions';
+import { afterEach, describe, expect, it } from 'vitest';
+import { type MailRecipientsSelection } from './MailRecipientsSelection';
 
 const INITIAL_SELECTION: MailRecipientsSelection = {
     abholraeume: [],
