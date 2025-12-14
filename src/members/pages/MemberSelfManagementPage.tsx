@@ -25,8 +25,10 @@ import {
     MemberSelfManagementPagePassiveHint,
     MemberSelfManagementPageYesIWant,
 } from 'src/members/pages/MemberSelfManagementPageText';
+import { MultiEmailInput } from 'src/members/pages/MultiEmailInput';
 import { emptyMemberData } from 'src/members/types/MemberData';
 import { LoggedInScope } from 'src/members/utils/LoggedInScope';
+import { sanitizeAdditionalEmailReceipients } from 'src/members/utils/additionalEmailReceipients';
 import { calculateMemberTotalSum } from 'src/members/utils/calculateMemberTotalSum';
 import { calculatePositionPrice } from 'src/members/utils/calculatePositionPrice';
 import { calculatePositionSum } from 'src/members/utils/calculatePositionSum';
@@ -37,8 +39,6 @@ import { formMe } from 'src/utils/forms';
 import { has } from 'src/utils/has';
 import { prices } from 'src/utils/prices';
 import { ibanValidator } from 'src/validators/ibanValidator';
-import { MultiEmailInput } from 'src/members/pages/MultiEmailInput';
-import { sanitizeAdditionalEmailReceipients } from 'src/members/utils/additionalEmailReceipients';
 
 const required = true;
 

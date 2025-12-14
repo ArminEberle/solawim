@@ -11,7 +11,9 @@ import { Select } from 'src/atoms/Select';
 import { SolidaritaetSelect } from 'src/atoms/SolidaritaetSelect';
 import { Horizontal } from 'src/layout/Horizontal';
 import { Vertical } from 'src/layout/Vertical';
+import { MultiEmailInput } from 'src/members/pages/MultiEmailInput';
 import { MemberData, emptyMemberData } from 'src/members/types/MemberData';
+import { sanitizeAdditionalEmailReceipients } from 'src/members/utils/additionalEmailReceipients';
 import { calculateMemberTotalSum } from 'src/members/utils/calculateMemberTotalSum';
 import { calculatePositionPrice } from 'src/members/utils/calculatePositionPrice';
 import { calculatePositionSum } from 'src/members/utils/calculatePositionSum';
@@ -20,8 +22,6 @@ import { amountsToBook } from 'src/utils/amountsToBook';
 import { formMe } from 'src/utils/forms';
 import { prices } from 'src/utils/prices';
 import { ibanValidator } from 'src/validators/ibanValidator';
-import { sanitizeAdditionalEmailReceipients } from 'src/members/utils/additionalEmailReceipients';
-import { MultiEmailInput } from 'src/members/pages/MultiEmailInput';
 
 export type MemberEditProps = {
     data: MemberData | undefined;

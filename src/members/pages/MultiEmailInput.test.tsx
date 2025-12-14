@@ -1,7 +1,7 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import type { ComponentProps } from 'react';
-import { afterEach, describe, expect, it, vi } from 'vitest';
 import { MultiEmailInput } from 'src/members/pages/MultiEmailInput';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 const renderComponent = (props?: Partial<ComponentProps<typeof MultiEmailInput>>) => {
     const defaultProps = {

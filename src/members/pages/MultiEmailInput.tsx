@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import type { KeyboardEvent } from 'react';
-import validator from 'validator';
 import {
-    sanitizeAdditionalEmailReceipients,
     parseAdditionalEmailReceipients,
+    sanitizeAdditionalEmailReceipients,
 } from 'src/members/utils/additionalEmailReceipients';
+import validator from 'validator';
 
 export type MultiEmailInputProps = {
     label: string;
