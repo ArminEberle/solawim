@@ -12,6 +12,12 @@
 - Use `fetch` with proper headers and JSON serialization.
 - When creating functions, always use arrow functions whenever possible.
 
+### Typescript testing
+- Use `vitest` for new tests, following the existing test structure.
+- Use `describe`, `it`, and `expect` from `vitest` for structuring tests and assertions.
+- Mock external dependencies and isolate the unit under test.
+- Place test files alongside the files they test, using the `.test.ts` suffix.
+
 ## PHP
 - Interact with WordPress data through `$wpdb->prepare` to avoid SQL injection.
 - Reuse shared helpers declared in `php/api/api.php` where possible.
