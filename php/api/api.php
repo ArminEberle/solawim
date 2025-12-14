@@ -12,6 +12,9 @@ require_once(__DIR__ . '/../../../../wp-load.php');
 
 global $wpdb;
 $dbInitialized = false;
+$SOLAWI_SETTINGS = [
+    'EmailSenderAddress' => '',
+];
 
 add_role('vereinsverwaltung', 'Vereinsverwaltung');
 
@@ -73,9 +76,45 @@ function ensureDBInitialized()
             $wpdb->get_results($alterSql, ARRAY_A);
         }
     }
+
+    $settingsTable = "{$wpdb->prefix}solawim_settings";
+    $wpdb->get_results(
+        "CREATE TABLE IF NOT EXISTS `{$settingsTable}` (
+            `key` VARCHAR(191) PRIMARY KEY,
+            `value` TEXT
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
+        ARRAY_A
+    );
     $dbInitialized = true;
     return;
 }
+
+function loadSolawiSettings(): void
+{
+    global $wpdb;
+    global $SOLAWI_SETTINGS;
+
+    ensureDBInitialized();
+
+    $settingsTable = "{$wpdb->prefix}solawim_settings";
+    $rows = $wpdb->get_results("SELECT `key`, `value` FROM `{$settingsTable}`", ARRAY_A);
+    if (!is_array($rows)) {
+        return;
+    }
+
+    foreach ($rows as $row) {
+        $key = $row['key'] ?? null;
+        if (!is_string($key)) {
+            continue;
+        }
+        if (!array_key_exists($key, $SOLAWI_SETTINGS)) {
+            continue;
+        }
+        $SOLAWI_SETTINGS[$key] = $row['value'] ?? '';
+    }
+}
+
+loadSolawiSettings();
 
 function reportError(string $message, Response $response, $status = 404)
 {
@@ -524,6 +563,63 @@ $app->post('/email', function (Request $request, Response $response, array $args
 
     $response->getBody()->write('{"status": "OK"}');
     return $response->withStatus(202);
+});
+
+$app->get('/emails', function (Request $request, Response $response, array $args) {
+    $accountId = getUserId();
+    if (!($accountId > 0)) {
+        return reportError('Please login before proceeding', $response, 401);
+    }
+    $checkResult = checkUserIsVereinsverwaltung($request, $response);
+    if (!is_null($checkResult)) {
+        return $checkResult;
+    }
+
+    $query = $request->getQueryParams();
+    $page = isset($query['page']) ? (int) $query['page'] : 1;
+    if ($page < 1) {
+        $page = 1;
+    }
+    $pageSize = isset($query['pageSize']) ? (int) $query['pageSize'] : 25;
+    if ($pageSize < 1) {
+        $pageSize = 1;
+    }
+    if ($pageSize > 100) {
+        $pageSize = 100;
+    }
+
+    ensureDBInitialized();
+    global $wpdb;
+    $emailsTable = "{$wpdb->prefix}solawim_emails";
+
+    $offset = ($page - 1) * $pageSize;
+
+    $items = $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT id, createdBy, createdAt, status, failure_reason, effective_recipients, season, content
+            FROM {$emailsTable}
+            ORDER BY createdAt DESC
+            LIMIT %d OFFSET %d",
+            $pageSize,
+            $offset,
+        ),
+        ARRAY_A
+    );
+    if (!is_array($items)) {
+        $items = [];
+    }
+
+    $total = (int) $wpdb->get_var("SELECT COUNT(*) FROM {$emailsTable}");
+
+    $result = [
+        'page' => $page,
+        'pageSize' => $pageSize,
+        'total' => $total,
+        'items' => $items,
+    ];
+
+    $response->getBody()->write(json_encode($result));
+    return $response->withStatus(200);
 });
 
 $app->get('/loggedin', function (Request $request, Response $response, array $args) {

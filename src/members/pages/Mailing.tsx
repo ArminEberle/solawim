@@ -1,15 +1,12 @@
-import { useMutation } from '@tanstack/react-query';
-import { type FormEvent, useMemo, useState } from 'react';
-import { sendEmail } from 'src/api/sendEmail';
-import { Alert } from 'src/atoms/Alert';
-import { Button } from 'src/atoms/Button';
-import { Input } from 'src/atoms/Input';
-import { useSeason } from 'src/atoms/SeasonSelect';
-import { MailRecipientsSelect } from 'src/members/pages/MailRecipientsSelect';
-import { computeMailRecipientUserIdsFromMailRecipientsSelection } from 'src/members/pages/computeMailRecipientUserIdsFromMailRecipientsSelection';
+import { useState } from 'react';
+import { ComposeEmailTab } from 'src/members/pages/ComposeEmailTab';
+import { EmailHistoryTab } from 'src/members/pages/EmailHistoryTab';
 import type { AllMembersData } from 'src/members/types/AllMembersData';
-import type { MailRecipientsSelection } from 'src/members/types/MailRecipientsSelection';
-import { CollapsibleSection } from 'src/molecules/CollapsibleSection';
+
+const TAB_COMPOSE = 'compose';
+const TAB_HISTORY = 'history';
+
+type TabKey = typeof TAB_COMPOSE | typeof TAB_HISTORY;
 
 type MailingProps = {
     members: AllMembersData;
@@ -17,179 +14,65 @@ type MailingProps = {
 };
 
 export const Mailing = ({ members, isMembersLoading }: MailingProps) => {
-    const season = useSeason();
-    const [selection, setSelection] = useState<MailRecipientsSelection>({
-        abholraeume: [],
-        products: [],
-        activeMembers: false,
-        allMembers: false,
-    });
-    const [subject, setSubject] = useState('');
-    const [body, setBody] = useState('');
+    const [activeTab, setActiveTab] = useState<TabKey>(TAB_COMPOSE);
+    const [historyPage, setHistoryPage] = useState(1);
+    const [historyRefreshToken, setHistoryRefreshToken] = useState(0);
 
-    const sendEmailMutation = useMutation({
-        mutationFn: sendEmail,
-    });
-
-    const recipientIds = useMemo(() => {
-        return computeMailRecipientUserIdsFromMailRecipientsSelection(members, selection);
-    }, [members, selection]);
-
-    const additionalRecipientEmails = useMemo(() => {
-        if (recipientIds.length === 0) {
-            return [];
-        }
-        const selectedIds = new Set(recipientIds);
-        const collected: string[] = [];
-
-        members.forEach(member => {
-            if (!selectedIds.has(member.id)) {
-                return;
-            }
-            const extras = member.membership?.additionalEmailReceipients ?? [];
-            extras.forEach(email => {
-                if (typeof email !== 'string') {
-                    return;
-                }
-                const trimmed = email.trim();
-                if (trimmed.length === 0) {
-                    return;
-                }
-                collected.push(trimmed);
-            });
-        });
-
-        if (collected.length === 0) {
-            return [];
-        }
-
-        const uniqueMap: Record<string, string> = {};
-        collected.forEach(email => {
-            const lower = email.toLowerCase();
-            if (!uniqueMap[lower]) {
-                uniqueMap[lower] = email;
-            }
-        });
-        return Object.values(uniqueMap);
-    }, [members, recipientIds]);
-
-    const sortedMemberNames = useMemo(() => {
-        return members
-            .filter(member => member.membership)
-            .map(member => {
-                const firstname = member.membership?.firstname ?? '';
-                const lastname = member.membership?.lastname ?? '';
-                const primaryName = [firstname, lastname].filter(Boolean).join(' ');
-                const label = `${primaryName} (${member.user_nicename})`;
-                return {
-                    id: member.id,
-                    label,
-                };
-            })
-            .sort((a, b) => a.label.localeCompare(b.label, 'de', { sensitivity: 'base' }));
-    }, [members]);
-
-    const canSend =
-        recipientIds.length > 0 && subject.trim().length > 0 && body.trim().length > 0 && !sendEmailMutation.isPending;
-
-    const errorMessage = sendEmailMutation.error instanceof Error ? sendEmailMutation.error.message : undefined;
-
-    const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        if (!canSend) {
-            return;
-        }
-
-        if (!window.confirm('E-Mail jetzt senden? Diese Aktion kann nicht rückgängig gemacht werden.')) {
-            return;
-        }
-
-        try {
-            await sendEmailMutation.mutateAsync({
-                season,
-                emailData: {
-                    recipients: recipientIds,
-                    subject: subject.trim(),
-                    body: body.trim(),
-                    additionalRecipients: additionalRecipientEmails,
-                    selection,
-                },
-            });
-            setSubject('');
-            setBody('');
-        } catch (err) {
-            // handled by mutation state
-        }
+    const handleEmailSent = () => {
+        setHistoryRefreshToken(token => token + 1);
+        setHistoryPage(1);
     };
 
-    const memberListTitle =
-        additionalRecipientEmails.length > 0
-            ? `Ausgewählte Empfänger: ${recipientIds.length} Mitglieder (+${additionalRecipientEmails.length} zusätzliche E-Mail-Adressen)`
-            : `Ausgewählte Empfänger: ${recipientIds.length}`;
+    const tabButtonStyle = (tab: TabKey) => ({
+        backgroundColor: 'transparent',
+        border: 'none',
+        borderBottom: activeTab === tab ? '3px solid #0a6ebd' : '3px solid transparent',
+        padding: '0.75rem 1.5rem',
+        cursor: 'pointer',
+        fontWeight: activeTab === tab ? 600 : 400,
+        color: activeTab === tab ? '#202020' : '#555555',
+    });
 
     return (
-        <form
-            style={{ padding: '1rem 0', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}
-            onSubmit={handleSubmit}
-        >
-            <div>
-                <h3>Empfängergruppen wählen - mindestens eine</h3>
-                {isMembersLoading && <p>Daten werden geladen …</p>}
-                <MailRecipientsSelect
-                    value={selection}
-                    onChange={setSelection}
-                />
-                <CollapsibleSection
-                    title={memberListTitle}
-                    initiallyCollapsed={true}
+        <div>
+            <div
+                style={{
+                    display: 'flex',
+                    gap: '1rem',
+                    borderBottom: '1px solid #d0d0d0',
+                }}
+            >
+                <button
+                    type="button"
+                    style={tabButtonStyle(TAB_COMPOSE)}
+                    onClick={() => setActiveTab(TAB_COMPOSE)}
                 >
-                    <ul style={{ listStyle: 'none', paddingLeft: 0 }}>
-                        {sortedMemberNames.map(member => (
-                            <li key={member.id}>{member.label}</li>
-                        ))}
-                        {additionalRecipientEmails.length > 0 && (
-                            <>
-                                <li key="extra-heading">
-                                    <strong>Zusätzliche E-Mail-Empfänger*innen</strong>
-                                </li>
-                                {additionalRecipientEmails.map(email => (
-                                    <li key={`extra-${email}`}>{email}</li>
-                                ))}
-                            </>
-                        )}
-                    </ul>
-                </CollapsibleSection>
+                    Neue Email
+                </button>
+                <button
+                    type="button"
+                    style={tabButtonStyle(TAB_HISTORY)}
+                    onClick={() => setActiveTab(TAB_HISTORY)}
+                >
+                    Gesendete Emails
+                </button>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <Input
-                    label="Betreff"
-                    maxlen={120}
-                    value={subject}
-                    onChange={event => setSubject(event.target.value)}
-                    required={true}
-                />
-                <div className="input-wrapper">
-                    <label className="control-label">Nachricht</label>
-                    <textarea
-                        className="form-control"
-                        name="mail-body"
-                        value={body}
-                        onChange={event => setBody(event.target.value)}
-                        rows={8}
-                        required={true}
+            <div style={{ marginTop: '1.5rem' }}>
+                {activeTab === TAB_COMPOSE ? (
+                    <ComposeEmailTab
+                        members={members}
+                        isMembersLoading={isMembersLoading}
+                        onEmailSent={handleEmailSent}
                     />
-                </div>
+                ) : (
+                    <EmailHistoryTab
+                        isActive={activeTab === TAB_HISTORY}
+                        page={historyPage}
+                        onPageChange={setHistoryPage}
+                        refreshToken={historyRefreshToken}
+                    />
+                )}
             </div>
-            {errorMessage && <Alert>Fehler beim Senden: {errorMessage}</Alert>}
-            {sendEmailMutation.isSuccess && <p>E-Mail wurde erfolgreich versendet.</p>}
-            <div>
-                <Button
-                    type="submit"
-                    disabled={!canSend}
-                >
-                    Senden
-                </Button>
-            </div>
-        </form>
+        </div>
     );
 };
