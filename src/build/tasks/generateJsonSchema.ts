@@ -15,5 +15,6 @@ export default {
         execSync(
             'yarn typescript-json-schema src/members/types/BankingData.ts BankingData -o php/api/banking-data-schema.json',
         );
+        execSync('yarn typescript-json-schema src/types/EmailData.ts EmailData -o php/api/email-data-schema.json');
     },
 } satisfies BuildTask;

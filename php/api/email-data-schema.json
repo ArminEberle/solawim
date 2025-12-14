@@ -1,0 +1,27 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "description": "Represents the data required to send an email to multiple recipients.",
+    "properties": {
+        "body": {
+            "description": "The body of the email. Plain text only.",
+            "type": "string"
+        },
+        "recipients": {
+            "description": "List of email recipients, as user IDs in the system.\nOnly active users will receive the email.",
+            "items": {
+                "type": "string"
+            },
+            "type": "array"
+        },
+        "subject": {
+            "description": "The subject of the email. Plain text only.",
+            "type": "string"
+        },
+        "testReceiver": {
+            "description": "If set, the email will be sent only to this address for testing purposes.\nIt will contain all intended recipients in the body of the email, below the main content.",
+            "type": "string"
+        }
+    },
+    "type": "object"
+}
+

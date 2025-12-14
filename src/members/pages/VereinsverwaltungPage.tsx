@@ -2,8 +2,6 @@ import React, { useMemo, useState } from 'react';
 import { useGetAllMemberData } from 'src/api/getAllMemberData';
 import { ButtonLink } from 'src/atoms/ButtonLink';
 import 'src/css/form.css';
-import { updateMailingLists } from 'src/api/updateMailingLists';
-import { Button } from 'src/atoms/Button';
 import { SeasonSelect, useSeason } from 'src/atoms/SeasonSelect';
 import { RootContext } from 'src/contexts/RootContext';
 import { Page } from 'src/layout/Page';
@@ -40,8 +38,6 @@ const VereinsverwaltungPageInternal = () => {
     const [overallSumState, setOverallSumState] = useState(emptyOverallSumState());
     const [updateTimestamp] = useState(new Date().getTime());
 
-    const [updatingMailingLists, setUpdatingMailingLists] = useState(false);
-
     const historyStateHandler = useState(true);
     const [historyCollapsed] = historyStateHandler;
 
@@ -52,13 +48,6 @@ const VereinsverwaltungPageInternal = () => {
     useMemo(() => {
         setOverallSumState(computeAllMembersSums(allMembersQuery.data, season));
     }, [allMembersQuery.data]);
-
-    const updateMailingListsAction = () => {
-        setUpdatingMailingLists(true);
-        void updateMailingLists().then(() => {
-            setUpdatingMailingLists(false);
-        });
-    };
 
     return (
         <div
@@ -71,15 +60,6 @@ const VereinsverwaltungPageInternal = () => {
                     <SeasonSelect name="seasonselect" />
                 </div>
 
-                <Button
-                    buttonType="primary"
-                    disabled={updatingMailingLists}
-                    onClick={updateMailingListsAction}
-                >
-                    {updatingMailingLists
-                        ? 'Mailing Listen werden upgedatet, Seite nicht verlassen...'
-                        : 'Mailing Listen updaten'}
-                </Button>
                 <CollapsibleSection
                     title="Übersicht"
                     stateHandler={useState(false)}
