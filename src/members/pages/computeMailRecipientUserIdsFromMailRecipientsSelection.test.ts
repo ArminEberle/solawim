@@ -1,4 +1,4 @@
-import type { MailRecipientsSelection } from 'src/members/pages/MailRecipientsSelection';
+import type { MailRecipientsSelection } from 'src/members/types/MailRecipientsSelection';
 import { computeMailRecipientUserIdsFromMailRecipientsSelection } from 'src/members/pages/computeMailRecipientUserIdsFromMailRecipientsSelection';
 import type { AllMembersData } from 'src/members/types/AllMembersData';
 import { Abholraum } from 'src/members/types/MemberData';

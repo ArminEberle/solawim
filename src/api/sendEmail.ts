@@ -5,8 +5,15 @@ export type SendEmailResponse = {
     status: string;
 };
 
-export const sendEmail = async (emailData: EmailData): Promise<SendEmailResponse> => {
-    const response = await fetch(apiBaseUrl + 'email', {
+export type SendEmailPayload = {
+    season: number;
+    emailData: EmailData;
+};
+
+export const sendEmail = async ({ season, emailData }: SendEmailPayload): Promise<SendEmailResponse> => {
+    const url = `${apiBaseUrl}email?season=${encodeURIComponent(String(season))}`;
+
+    const response = await fetch(url, {
         method: 'POST',
         headers: {
             Accept: 'application/json',

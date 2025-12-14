@@ -50,10 +50,29 @@ function ensureDBInitialized()
             createdBy BIGINT UNSIGNED,
             content JSON,
             createdAt DATETIME,
+            effective_recipients TEXT,
+            status ENUM('stored', 'send', 'success', 'failed') DEFAULT 'stored',
+            failure_reason TEXT,
+            season INT,
             INDEX idx_solawim_emails_createdBy (createdBy)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
         ARRAY_A
-    );
+    ); 
+    $columnChecks = [
+        'effective_recipients' => "ALTER TABLE `{$emailsTable}` ADD COLUMN effective_recipients TEXT",
+        'status' => "ALTER TABLE `{$emailsTable}` ADD COLUMN status ENUM('stored', 'send', 'success', 'failed') DEFAULT 'stored'",
+        'failure_reason' => "ALTER TABLE `{$emailsTable}` ADD COLUMN failure_reason TEXT",
+        'season' => "ALTER TABLE `{$emailsTable}` ADD COLUMN season INT",
+    ];
+    foreach ($columnChecks as $columnName => $alterSql) {
+        $columnExists = $wpdb->get_results(
+            $wpdb->prepare("SHOW COLUMNS FROM `{$emailsTable}` LIKE %s", $columnName),
+            ARRAY_A
+        );
+        if (count($columnExists) === 0) {
+            $wpdb->get_results($alterSql, ARRAY_A);
+        }
+    }
     $dbInitialized = true;
     return;
 }
@@ -239,20 +258,84 @@ function getMembershipData(string $accountId, $season)
     return getUserData($membershipTable, (object) [], $accountId);
 }
 
-function storeEmailData(object $content, int $accountId)
+function getEffectiveRecipientEmails($recipientIds): array
+{
+    if (!is_array($recipientIds) || count($recipientIds) === 0) {
+        return [];
+    }
+
+    $normalizedIds = array_values(
+        array_unique(
+            array_filter(
+                array_map(
+                    static function ($id) {
+                        return (int) $id;
+                    },
+                    $recipientIds,
+                ),
+                static function ($id) {
+                    return $id > 0;
+                },
+            ),
+        ),
+    );
+
+    if (count($normalizedIds) === 0) {
+        return [];
+    }
+
+    global $wpdb;
+    $placeholders = implode(',', array_fill(0, count($normalizedIds), '%d'));
+    $query = "SELECT user_email FROM {$wpdb->prefix}users WHERE ID IN ({$placeholders})";
+    $results = $wpdb->get_results($wpdb->prepare($query, $normalizedIds), ARRAY_A);
+
+    if (!is_array($results)) {
+        return [];
+    }
+
+    $emails = array_map(
+        static function ($row) {
+            return $row['user_email'] ?? '';
+        },
+        $results
+    );
+
+    return array_values(
+        array_filter(
+            array_unique(
+                array_map(
+                    static function ($email) {
+                        return trim((string) $email);
+                    },
+                    $emails
+                ),
+            ),
+            static function ($email) {
+                return $email !== '';
+            }
+        ),
+    );
+}
+
+function storeEmailData(object $content, int $accountId, array $effectiveRecipients, int $season)
 {
     ensureDBInitialized();
     global $wpdb;
     $emailsTable = "{$wpdb->prefix}solawim_emails";
     $jsonContent = json_encode($content);
+    $effectiveRecipientsString = implode(',', $effectiveRecipients);
+    $seasonValue = (int) $season;
     $wpdb->get_results(
         $wpdb->prepare(
             "
-        INSERT INTO {$emailsTable} (content, createdBy, createdAt)
-        VALUES(%s, %d, NOW())
+        INSERT INTO {$emailsTable} (content, createdBy, createdAt, status, effective_recipients, season)
+        VALUES(%s, %d, NOW(), %s, %s, %d)
         ",
             $jsonContent,
-            $accountId
+            $accountId,
+            'stored',
+            $effectiveRecipientsString,
+            $seasonValue
         ),
         ARRAY_A
     );
@@ -390,6 +473,7 @@ $app->post('/membershipactive', function (Request $request, Response $response, 
 });
 
 $app->post('/email', function (Request $request, Response $response, array $args) {
+    $season = (int) getSeasonFromQueryString($request);
     $accountId = getUserId();
     if (!($accountId > 0)) {
         return reportError('Please login before proceeding', $response, 401);
@@ -414,7 +498,9 @@ $app->post('/email', function (Request $request, Response $response, array $args
         return reportError($validateResult, $response, 404);
     }
 
-    storeEmailData($content, (int) $accountId);
+    $effectiveRecipients = getEffectiveRecipientEmails($content->recipients ?? []);
+
+    storeEmailData($content, (int) $accountId, $effectiveRecipients, $season);
 
     $response->getBody()->write('{"status": "OK"}');
     return $response->withStatus(202);

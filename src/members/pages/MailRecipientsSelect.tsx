@@ -1,6 +1,6 @@
 import type { ChangeEvent } from 'react';
 import { Checkbox } from 'src/atoms/Checkbox';
-import type { MailRecipientsSelection } from 'src/members/pages/MailRecipientsSelection';
+import type { MailRecipientsSelection } from 'src/members/types/MailRecipientsSelection';
 import type { Abholraum } from 'src/members/types/MemberData';
 import { Product } from 'src/members/types/Product';
 import { abholraumOptions } from 'src/utils/abholraumOptions';

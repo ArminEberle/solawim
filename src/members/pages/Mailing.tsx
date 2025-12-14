@@ -4,10 +4,11 @@ import { sendEmail } from 'src/api/sendEmail';
 import { Alert } from 'src/atoms/Alert';
 import { Button } from 'src/atoms/Button';
 import { Input } from 'src/atoms/Input';
+import { useSeason } from 'src/atoms/SeasonSelect';
 import { MailRecipientsSelect } from 'src/members/pages/MailRecipientsSelect';
 import { computeMailRecipientUserIdsFromMailRecipientsSelection } from 'src/members/pages/computeMailRecipientUserIdsFromMailRecipientsSelection';
 import type { AllMembersData } from 'src/members/types/AllMembersData';
-import type { MailRecipientsSelection } from './MailRecipientsSelection';
+import type { MailRecipientsSelection } from 'src/members/types/MailRecipientsSelection';
 import { CollapsibleSection } from 'src/molecules/CollapsibleSection';
 
 type MailingProps = {
@@ -16,6 +17,7 @@ type MailingProps = {
 };
 
 export const Mailing = ({ members, isMembersLoading }: MailingProps) => {
+    const season = useSeason();
     const [selection, setSelection] = useState<MailRecipientsSelection>({
         abholraeume: [],
         products: [],
@@ -66,9 +68,13 @@ export const Mailing = ({ members, isMembersLoading }: MailingProps) => {
 
         try {
             await sendEmailMutation.mutateAsync({
-                recipients: recipientIds,
-                subject: subject.trim(),
-                body: body.trim(),
+                season,
+                emailData: {
+                    recipients: recipientIds,
+                    subject: subject.trim(),
+                    body: body.trim(),
+                    selection,
+                },
             });
             setSubject('');
             setBody('');

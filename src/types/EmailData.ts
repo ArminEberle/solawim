@@ -1,3 +1,5 @@
+import type { MailRecipientsSelection } from 'src/members/types/MailRecipientsSelection';
+
 /**
  * Represents the data required to send an email to multiple recipients.
  */
@@ -20,4 +22,8 @@ export type EmailData = {
      * The body of the email. Plain text only.
      */
     body: string;
+    /**
+     * Captures the selection parameters that produced the recipient list.
+     */
+    selection: MailRecipientsSelection;
 };

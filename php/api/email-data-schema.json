@@ -1,5 +1,24 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": {
+        "Abholraum": {
+            "enum": [
+                "gertenbach",
+                "hutzelberghof",
+                "witzenhausen"
+            ],
+            "type": "string"
+        },
+        "Product": {
+            "enum": [
+                "brot",
+                "fleisch",
+                "milch",
+                "veggie"
+            ],
+            "type": "string"
+        }
+    },
     "description": "Represents the data required to send an email to multiple recipients.",
     "properties": {
         "body": {
@@ -12,6 +31,30 @@
                 "type": "string"
             },
             "type": "array"
+        },
+        "selection": {
+            "description": "Captures the selection parameters that produced the recipient list.",
+            "properties": {
+                "abholraeume": {
+                    "items": {
+                        "$ref": "#/definitions/Abholraum"
+                    },
+                    "type": "array"
+                },
+                "activeMembers": {
+                    "type": "boolean"
+                },
+                "allMembers": {
+                    "type": "boolean"
+                },
+                "products": {
+                    "items": {
+                        "$ref": "#/definitions/Product"
+                    },
+                    "type": "array"
+                }
+            },
+            "type": "object"
         },
         "subject": {
             "description": "The subject of the email. Plain text only.",

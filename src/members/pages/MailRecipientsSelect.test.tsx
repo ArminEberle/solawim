@@ -1,10 +1,10 @@
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { useState } from 'react';
 import { MailRecipientsSelect } from 'src/members/pages/MailRecipientsSelect';
+import type { MailRecipientsSelection } from 'src/members/types/MailRecipientsSelection';
 import { Product } from 'src/members/types/Product';
 import { abholraumOptions } from 'src/utils/abholraumOptions';
 import { afterEach, describe, expect, it } from 'vitest';
-import { type MailRecipientsSelection } from './MailRecipientsSelection';
 
 const INITIAL_SELECTION: MailRecipientsSelection = {
     abholraeume: [],
