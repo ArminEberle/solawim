@@ -6,14 +6,10 @@ import { ButtonLink } from 'src/atoms/ButtonLink';
 import { SeasonSelect, useSeason } from 'src/atoms/SeasonSelect';
 import { RootContext } from 'src/contexts/RootContext';
 import { Page } from 'src/layout/Page';
-import { Vertical } from 'src/layout/Vertical';
 import { Mailing } from 'src/members/pages/Mailing';
-import { MemberDetailMolecule } from 'src/members/pages/MemberDetailMolecule';
-import { VereinsverwaltungHistory } from 'src/members/pages/VereinsverwaltungHistory';
+import { SettingsTab } from 'src/members/pages/SettingsTab';
+import { VereinsverwaltungTab } from 'src/members/pages/VereinsverwaltungTab';
 import { LoggedInScope } from 'src/members/utils/LoggedInScope';
-import { CollapsibleSection } from 'src/molecules/CollapsibleSection';
-import { abholraumOptions } from 'src/utils/abholraumOptions';
-import { VereinsverwaltungSums } from './VereinsverwaltungSums';
 import { computeAllMembersSums } from './computeAllMembersSums';
 import { emptyOverallSumState } from './emptyOverallSumState';
 
@@ -39,13 +35,7 @@ export const VereinsverwaltungPage = () => {
 const VereinsverwaltungPageInternal = () => {
     const [overallSumState, setOverallSumState] = useState(emptyOverallSumState());
     const [updateTimestamp] = useState(new Date().getTime());
-    const [activeTab, setActiveTab] = useState<'verwaltung' | 'mailing'>('verwaltung');
-
-    const overviewStateHandler = useState(false);
-    const abholraumStateHandler = useState(true);
-    const membersStateHandler = useState(true);
-    const historyStateHandler = useState(true);
-    const [historyCollapsed] = historyStateHandler;
+    const [activeTab, setActiveTab] = useState<'verwaltung' | 'mailing' | 'settings'>('verwaltung');
 
     const season = useSeason();
 
@@ -53,7 +43,7 @@ const VereinsverwaltungPageInternal = () => {
 
     useMemo(() => {
         setOverallSumState(computeAllMembersSums(allMembersQuery.data, season));
-    }, [allMembersQuery.data]);
+    }, [allMembersQuery.data, season]);
 
     return (
         <div
@@ -89,76 +79,34 @@ const VereinsverwaltungPageInternal = () => {
                         >
                             Mailing
                         </Button>
+                        <Button
+                            onClick={() => setActiveTab('settings')}
+                            aria-pressed={activeTab === 'settings'}
+                            style={{
+                                backgroundColor:
+                                    activeTab === 'settings' ? 'var(--color-primary, #008c45)' : 'transparent',
+                                color: activeTab === 'settings' ? '#fff' : 'inherit',
+                            }}
+                        >
+                            Einstellungen
+                        </Button>
                     </div>
                 </div>
-                {activeTab === 'verwaltung' ? (
-                    <>
-                        <CollapsibleSection
-                            title="Übersicht"
-                            stateHandler={overviewStateHandler}
-                        >
-                            <VereinsverwaltungSums
-                                sumState={overallSumState.total}
-                                withButtons={true}
-                            />
-                        </CollapsibleSection>
-                        <br />
-                        <CollapsibleSection
-                            title="Übersicht nach Abholraum"
-                            stateHandler={abholraumStateHandler}
-                        >
-                            {abholraumOptions.map(option => {
-                                return (
-                                    <div key={option.value ?? 'none'}>
-                                        <br />
-                                        <h3>{option.display}</h3>
-                                        <VereinsverwaltungSums
-                                            sumState={overallSumState[option.value]}
-                                            withButtons={false}
-                                        />
-                                    </div>
-                                );
-                            })}
-                        </CollapsibleSection>
-                        <br />
-                        <CollapsibleSection
-                            title="Mitglieder"
-                            stateHandler={membersStateHandler}
-                        >
-                            <Vertical>
-                                {allMembersQuery.data.map(memberRow => {
-                                    return (
-                                        <div
-                                            key={memberRow.id}
-                                            className="mb-3"
-                                        >
-                                            <MemberDetailMolecule
-                                                key={memberRow.id}
-                                                data={memberRow}
-                                                reloadCb={() => {
-                                                    allMembersQuery.refetch();
-                                                }}
-                                            />
-                                        </div>
-                                    );
-                                })}
-                            </Vertical>
-                        </CollapsibleSection>
-                        <CollapsibleSection
-                            title="Änderungshistorie"
-                            stateHandler={historyStateHandler}
-                        >
-                            {!historyCollapsed && <VereinsverwaltungHistory updateTimestamp={updateTimestamp} />}
-                        </CollapsibleSection>
-                    </>
-                ) : (
-                    <>
-                        <Mailing
-                            members={allMembersQuery.data}
-                            isMembersLoading={allMembersQuery.isFetching}
-                        />
-                    </>
+                {activeTab === 'verwaltung' && (
+                    <VereinsverwaltungTab
+                        overallSumState={overallSumState}
+                        members={allMembersQuery.data}
+                        updateTimestamp={updateTimestamp}
+                        onReloadMembers={allMembersQuery.refetch}
+                    />
                 )}
+                {activeTab === 'mailing' && (
+                    <Mailing
+                        members={allMembersQuery.data}
+                        isMembersLoading={allMembersQuery.isFetching}
+                    />
+                )}
+                {activeTab === 'settings' && <SettingsTab />}
             </Page>
         </div>
     );

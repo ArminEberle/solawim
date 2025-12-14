@@ -132,6 +132,49 @@ function loadSolawiSettings(): void
 
 loadSolawiSettings();
 
+function getSolawiSettings(): array
+{
+    ensureDBInitialized();
+    global $SOLAWI_SETTINGS;
+    return $SOLAWI_SETTINGS;
+}
+
+function saveSolawiSettings(array $newSettings): array
+{
+    ensureDBInitialized();
+    global $SOLAWI_SETTINGS;
+    global $wpdb;
+
+    $settingsTable = "{$wpdb->prefix}solawim_settings";
+
+    foreach ($SOLAWI_SETTINGS as $key => $currentValue) {
+        if (!array_key_exists($key, $newSettings)) {
+            continue;
+        }
+        $rawValue = $newSettings[$key];
+        if (is_array($rawValue) || is_object($rawValue)) {
+            $rawValue = '';
+        }
+        $value = (string) $rawValue;
+        if ($key === 'EmailSenderAddress') {
+            $value = sanitize_email($value);
+        } else {
+            $value = sanitize_text_field($value);
+        }
+        $SOLAWI_SETTINGS[$key] = $value;
+        $wpdb->replace(
+            $settingsTable,
+            [
+                'key' => $key,
+                'value' => $value,
+            ],
+            ['%s', '%s']
+        );
+    }
+
+    return $SOLAWI_SETTINGS;
+}
+
 function reportError(string $message, Response $response, $status = 404)
 {
     $response = $response->withStatus(401);
@@ -842,6 +885,50 @@ $app->get('/emails', function (Request $request, Response $response, array $args
     ];
 
     $response->getBody()->write(json_encode($result));
+    return $response->withStatus(200);
+});
+
+$app->get('/settings', function (Request $request, Response $response, array $args) {
+    $accountId = getUserId();
+    if (!($accountId > 0)) {
+        return reportError('Please login before proceeding', $response, 401);
+    }
+    $checkResult = checkUserIsVereinsverwaltung($request, $response);
+    if (!is_null($checkResult)) {
+        return $checkResult;
+    }
+
+    $settings = getSolawiSettings();
+    $response->getBody()->write(json_encode($settings));
+    return $response->withStatus(200);
+});
+
+$app->post('/settings', function (Request $request, Response $response, array $args) {
+    $accountId = getUserId();
+    if (!($accountId > 0)) {
+        return reportError('Please login before proceeding', $response, 401);
+    }
+    $checkResult = checkUserIsVereinsverwaltung($request, $response);
+    if (!is_null($checkResult)) {
+        return $checkResult;
+    }
+
+    $contentString = $request->getBody()->getContents();
+    if (strlen(trim((string) $contentString)) === 0) {
+        $response = $response->withStatus(400);
+        $response->getBody()->write(json_encode(['status' => 'FAIL', 'message' => 'Einstellungen dürfen nicht leer sein.']));
+        return $response;
+    }
+
+    $content = json_decode($contentString, true);
+    if (!is_array($content)) {
+        $response = $response->withStatus(400);
+        $response->getBody()->write(json_encode(['status' => 'FAIL', 'message' => 'Ungültiges JSON für Einstellungen.']));
+        return $response;
+    }
+
+    $updatedSettings = saveSolawiSettings($content);
+    $response->getBody()->write(json_encode($updatedSettings));
     return $response->withStatus(200);
 });
 
