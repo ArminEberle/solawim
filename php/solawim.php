@@ -25,6 +25,19 @@ function solawim_manage($atts)
 add_shortcode('solawim_membership', 'solawim_membership');
 add_shortcode('solawim_manage', 'solawim_manage');
 
+function solawim_register_cron_schedules($schedules)
+{
+    if (!isset($schedules['every_minute'])) {
+        $schedules['every_minute'] = array(
+            'interval' => 60,
+            'display' => 'Jede Minute',
+        );
+    }
+    return $schedules;
+}
+
+add_filter('cron_schedules', 'solawim_register_cron_schedules');
+
 function solawim_disable_wp_emojis()
 {
     remove_action('wp_head', 'print_emoji_detection_script', 7);

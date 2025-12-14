@@ -3,18 +3,27 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
-if (!function_exists('as_enqueue_async_action')) {
-    $actionSchedulerBootstrap = __DIR__ . '/vendor/woocommerce/action-scheduler/action-scheduler.php';
-    if (file_exists($actionSchedulerBootstrap)) {
-        require_once $actionSchedulerBootstrap;
-    }
-}
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use JsonSchema\Validator as Validator;
 use JsonSchema\Constraints\Constraint;
 
 require_once(__DIR__ . '/../../../../wp-load.php');
+
+if (!function_exists('as_enqueue_async_action')) {
+    $actionSchedulerBootstrap = __DIR__ . '/vendor/woocommerce/action-scheduler/action-scheduler.php';
+    if (file_exists($actionSchedulerBootstrap)) {
+        require_once $actionSchedulerBootstrap;
+        if (function_exists('action_scheduler_initialize_3_dot_9_dot_3')) {
+            action_scheduler_initialize_3_dot_9_dot_3();
+            if (class_exists('ActionScheduler_Versions')) {
+                ActionScheduler_Versions::initialize_latest_version();
+            }
+        } elseif (class_exists('ActionScheduler')) {
+            ActionScheduler::init($actionSchedulerBootstrap);
+        }
+    }
+}
 
 global $wpdb;
 $dbInitialized = false;
