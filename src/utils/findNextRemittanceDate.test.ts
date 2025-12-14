@@ -1,4 +1,4 @@
-import { expect } from '@jest/globals';
+import { expect, test } from 'vitest';
 import { findNextRemittanceDate } from 'src/utils/findNextRemittanceDate';
 import { toDayIsoString } from 'src/utils/toDayIsoString';
 

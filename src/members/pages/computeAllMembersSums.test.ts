@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { computeAllMembersSums } from 'src/members/pages/computeAllMembersSums';
 import { emptyItemSums } from 'src/members/pages/emptyItemSums';
 import type { SumState } from 'src/members/pages/emptySumState';
