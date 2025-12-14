@@ -10,6 +10,8 @@ type RawEmailLogItem = {
     status?: unknown;
     failure_reason?: unknown;
     effective_recipients?: unknown;
+    successful_recipients?: unknown;
+    failed_recipients?: unknown;
     season?: unknown;
     content?: unknown;
 };
@@ -74,6 +76,8 @@ const transformItem = (item: RawEmailLogItem): EmailLogEntry => {
     const status = parseStatus(item.status);
     const failureReason = typeof item.failure_reason === 'string' ? item.failure_reason : null;
     const effectiveRecipients = parseRecipients(item.effective_recipients);
+    const successfulRecipients = parseRecipients(item.successful_recipients);
+    const failedRecipients = parseRecipients(item.failed_recipients);
     const season = coerceNumber(item.season);
     const content = parseEmailContent(item.content);
 
@@ -84,6 +88,8 @@ const transformItem = (item: RawEmailLogItem): EmailLogEntry => {
         status,
         failureReason,
         effectiveRecipients,
+        successfulRecipients,
+        failedRecipients,
         season,
         content,
     };

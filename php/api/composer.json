@@ -1,6 +1,7 @@
 {
     "require": {
         "slim/slim": "3.*",
-        "justinrainbow/json-schema": "^5.2"
+        "justinrainbow/json-schema": "^5.2",
+        "woocommerce/action-scheduler": "^3.8"
     }
 }

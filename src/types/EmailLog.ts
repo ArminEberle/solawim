@@ -9,6 +9,8 @@ export type EmailLogEntry = {
     status: EmailLogStatus;
     failureReason: string | null;
     effectiveRecipients: string[];
+    successfulRecipients: string[];
+    failedRecipients: string[];
     season: number | null;
     content: EmailData | null;
 };

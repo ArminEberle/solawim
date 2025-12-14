@@ -3,6 +3,12 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
+if (!function_exists('as_enqueue_async_action')) {
+    $actionSchedulerBootstrap = __DIR__ . '/vendor/woocommerce/action-scheduler/action-scheduler.php';
+    if (file_exists($actionSchedulerBootstrap)) {
+        require_once $actionSchedulerBootstrap;
+    }
+}
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use JsonSchema\Validator as Validator;
@@ -15,6 +21,12 @@ $dbInitialized = false;
 $SOLAWI_SETTINGS = [
     'EmailSenderAddress' => '',
 ];
+
+const SOLAWIM_SEND_EMAIL_HOOK = 'solawim_send_email_async';
+
+if (function_exists('add_action')) {
+    add_action(SOLAWIM_SEND_EMAIL_HOOK, 'solawim_handle_email_sending', 10, 1);
+}
 
 add_role('vereinsverwaltung', 'Vereinsverwaltung');
 
@@ -54,6 +66,8 @@ function ensureDBInitialized()
             content JSON,
             createdAt DATETIME,
             effective_recipients TEXT,
+            successful_recipients TEXT,
+            failed_recipients TEXT,
             status ENUM('stored', 'send', 'success', 'failed') DEFAULT 'stored',
             failure_reason TEXT,
             season INT,
@@ -63,6 +77,8 @@ function ensureDBInitialized()
     ); 
     $columnChecks = [
         'effective_recipients' => "ALTER TABLE `{$emailsTable}` ADD COLUMN effective_recipients TEXT",
+        'successful_recipients' => "ALTER TABLE `{$emailsTable}` ADD COLUMN successful_recipients TEXT",
+        'failed_recipients' => "ALTER TABLE `{$emailsTable}` ADD COLUMN failed_recipients TEXT",
         'status' => "ALTER TABLE `{$emailsTable}` ADD COLUMN status ENUM('stored', 'send', 'success', 'failed') DEFAULT 'stored'",
         'failure_reason' => "ALTER TABLE `{$emailsTable}` ADD COLUMN failure_reason TEXT",
         'season' => "ALTER TABLE `{$emailsTable}` ADD COLUMN season INT",
@@ -324,6 +340,44 @@ function normalizeEmailList($emails): array
     return array_values($normalized);
 }
 
+function solawim_parse_recipient_list($value): array
+{
+    if (!is_string($value) || trim($value) === '') {
+        return [];
+    }
+    $parts = array_map(
+        static function ($entry) {
+            return trim((string) $entry);
+        },
+        explode(',', $value)
+    );
+    $filtered = array_filter(
+        $parts,
+        static function ($entry) {
+            return $entry !== '';
+        }
+    );
+    return array_values(array_unique($filtered));
+}
+
+function solawim_format_recipient_list(array $emails): string
+{
+    if (count($emails) === 0) {
+        return '';
+    }
+    $normalized = array_values(
+        array_unique(
+            array_map(
+                static function ($entry) {
+                    return trim((string) $entry);
+                },
+                $emails
+            )
+        )
+    );
+    return implode(',', $normalized);
+}
+
 function getEffectiveRecipientEmails($recipientIds, $additionalRecipients = []): array
 {
     $normalizedIds = [];
@@ -368,7 +422,7 @@ function getEffectiveRecipientEmails($recipientIds, $additionalRecipients = []):
     return normalizeEmailList(array_merge($primaryEmails, $extras));
 }
 
-function storeEmailData(object $content, int $accountId, array $effectiveRecipients, int $season)
+function storeEmailData(object $content, int $accountId, array $effectiveRecipients, int $season): int
 {
     ensureDBInitialized();
     global $wpdb;
@@ -376,20 +430,181 @@ function storeEmailData(object $content, int $accountId, array $effectiveRecipie
     $jsonContent = json_encode($content);
     $effectiveRecipientsString = implode(',', $effectiveRecipients);
     $seasonValue = (int) $season;
-    $wpdb->get_results(
+    $result = $wpdb->query(
         $wpdb->prepare(
             "
-        INSERT INTO {$emailsTable} (content, createdBy, createdAt, status, effective_recipients, season)
-        VALUES(%s, %d, NOW(), %s, %s, %d)
+        INSERT INTO {$emailsTable} (content, createdBy, createdAt, status, effective_recipients, successful_recipients, failed_recipients, season)
+        VALUES(%s, %d, NOW(), %s, %s, %s, %s, %d)
         ",
             $jsonContent,
             $accountId,
             'stored',
             $effectiveRecipientsString,
+            '',
+            '',
             $seasonValue
+        )
+    );
+    if ($result === false) {
+        return 0;
+    }
+    return (int) $wpdb->insert_id;
+}
+
+function solawim_queue_email_send(int $emailId): void
+{
+    if ($emailId <= 0) {
+        return;
+    }
+    if (function_exists('as_enqueue_async_action')) {
+        as_enqueue_async_action(SOLAWIM_SEND_EMAIL_HOOK, [$emailId]);
+        return;
+    }
+    error_log('[solawim] Action Scheduler is not available, cannot send email asynchronously.');
+}
+
+function solawim_mark_email_as_failed(int $emailId, string $reason): void
+{
+    ensureDBInitialized();
+    global $wpdb;
+    $emailsTable = "{$wpdb->prefix}solawim_emails";
+    $wpdb->update(
+        $emailsTable,
+        [
+            'status' => 'failed',
+            'failure_reason' => $reason,
+        ],
+        ['id' => $emailId],
+        ['%s', '%s'],
+        ['%d']
+    );
+}
+
+function solawim_handle_email_sending(int $emailId): void
+{
+    $emailId = (int) $emailId;
+    if ($emailId <= 0) {
+        return;
+    }
+
+    ensureDBInitialized();
+    global $wpdb;
+    $emailsTable = "{$wpdb->prefix}solawim_emails";
+
+    $row = $wpdb->get_row(
+        $wpdb->prepare(
+            "SELECT id, content, status, failure_reason, effective_recipients, successful_recipients, failed_recipients
+            FROM {$emailsTable}
+            WHERE id = %d",
+            $emailId
         ),
         ARRAY_A
     );
+
+    if (!is_array($row)) {
+        return;
+    }
+
+    $effectiveRecipients = solawim_parse_recipient_list($row['effective_recipients'] ?? '');
+    if (count($effectiveRecipients) === 0) {
+        solawim_mark_email_as_failed($emailId, 'Keine gültigen Empfänger verfügbar.');
+        return;
+    }
+
+    $successfulRecipients = solawim_parse_recipient_list($row['successful_recipients'] ?? '');
+    $failedRecipients = solawim_parse_recipient_list($row['failed_recipients'] ?? '');
+
+    $sentOrFailed = array_merge($successfulRecipients, $failedRecipients);
+    $remainingRecipients = array_values(array_diff($effectiveRecipients, $sentOrFailed));
+
+    if (count($remainingRecipients) === 0) {
+        $finalStatus = count($failedRecipients) === 0 ? 'success' : 'failed';
+        $updateData = ['status' => $finalStatus];
+        $updateFormat = ['%s'];
+        if ($finalStatus === 'success') {
+            $updateData['failure_reason'] = '';
+            $updateFormat[] = '%s';
+        } elseif (empty($row['failure_reason'])) {
+            $updateData['failure_reason'] = 'Mindestens eine E-Mail konnte nicht zugestellt werden.';
+            $updateFormat[] = '%s';
+        }
+        $wpdb->update($emailsTable, $updateData, ['id' => $emailId], $updateFormat, ['%d']);
+        return;
+    }
+
+    $nextRecipient = array_shift($remainingRecipients);
+
+    $content = json_decode((string) ($row['content'] ?? ''), true);
+    if (!is_array($content)) {
+        $content = [];
+    }
+
+    $subject = isset($content['subject']) ? (string) $content['subject'] : '';
+    $body = isset($content['body']) ? (string) $content['body'] : '';
+
+    $headers = [];
+    global $SOLAWI_SETTINGS;
+    $senderAddress = $SOLAWI_SETTINGS['EmailSenderAddress'] ?? '';
+    if (is_string($senderAddress) && filter_var($senderAddress, FILTER_VALIDATE_EMAIL)) {
+        $headers[] = 'From: ' . $senderAddress;
+    }
+
+    $sendResult = wp_mail($nextRecipient, $subject, $body, $headers);
+
+    if ($sendResult) {
+        $successfulRecipients[] = $nextRecipient;
+        $wpdb->update(
+            $emailsTable,
+            [
+                'status' => 'send',
+                'successful_recipients' => solawim_format_recipient_list($successfulRecipients),
+            ],
+            ['id' => $emailId],
+            ['%s', '%s'],
+            ['%d']
+        );
+    } else {
+        $failedRecipients[] = $nextRecipient;
+        $timestamp = gmdate('c');
+        $existingFailureReason = (string) ($row['failure_reason'] ?? '');
+        $failureMessage = "Fehler beim Versand an {$nextRecipient} ({$timestamp})";
+        if ($existingFailureReason !== '') {
+            $failureMessage = $existingFailureReason . PHP_EOL . $failureMessage;
+        }
+        $wpdb->update(
+            $emailsTable,
+            [
+                'status' => 'send',
+                'failed_recipients' => solawim_format_recipient_list($failedRecipients),
+                'failure_reason' => $failureMessage,
+            ],
+            ['id' => $emailId],
+            ['%s', '%s', '%s'],
+            ['%d']
+        );
+    }
+
+    $sentOrFailed = array_merge($successfulRecipients, $failedRecipients);
+    $remainingRecipients = array_values(array_diff($effectiveRecipients, $sentOrFailed));
+
+    if (count($remainingRecipients) === 0) {
+        $finalStatus = count($failedRecipients) === 0 ? 'success' : 'failed';
+        $updateData = ['status' => $finalStatus];
+        $updateFormat = ['%s'];
+        if ($finalStatus === 'success') {
+            $updateData['failure_reason'] = '';
+            $updateFormat[] = '%s';
+        }
+        $wpdb->update($emailsTable, $updateData, ['id' => $emailId], $updateFormat, ['%d']);
+        return;
+    }
+
+    if (function_exists('as_schedule_single_action')) {
+        as_schedule_single_action(time() + 1, SOLAWIM_SEND_EMAIL_HOOK, [$emailId]);
+        return;
+    }
+
+    solawim_queue_email_send($emailId);
 }
 
 function validateJson($submission, $schemaName)
@@ -559,7 +774,15 @@ $app->post('/email', function (Request $request, Response $response, array $args
 
     $effectiveRecipients = getEffectiveRecipientEmails($content->recipients ?? [], $sanitizedAdditionalRecipients);
 
-    storeEmailData($content, (int) $accountId, $effectiveRecipients, $season);
+    $emailId = storeEmailData($content, (int) $accountId, $effectiveRecipients, $season);
+
+    if ($emailId > 0) {
+        if (count($effectiveRecipients) === 0) {
+            solawim_mark_email_as_failed($emailId, 'Keine Empfänger gefunden.');
+        } else {
+            solawim_queue_email_send($emailId);
+        }
+    }
 
     $response->getBody()->write('{"status": "OK"}');
     return $response->withStatus(202);
@@ -596,7 +819,7 @@ $app->get('/emails', function (Request $request, Response $response, array $args
 
     $items = $wpdb->get_results(
         $wpdb->prepare(
-            "SELECT id, createdBy, createdAt, status, failure_reason, effective_recipients, season, content
+            "SELECT id, createdBy, createdAt, status, failure_reason, effective_recipients, successful_recipients, failed_recipients, season, content
             FROM {$emailsTable}
             ORDER BY createdAt DESC
             LIMIT %d OFFSET %d",

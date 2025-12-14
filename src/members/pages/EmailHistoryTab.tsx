@@ -130,7 +130,7 @@ export const EmailHistoryTab = ({ isActive, page, onPageChange, refreshToken }: 
                             <th style={{ padding: '0.75rem' }}>Test-E-Mail</th>
                             <th style={{ padding: '0.75rem' }}>Status</th>
                             <th style={{ padding: '0.75rem' }}>Auswahl</th>
-                            <th style={{ padding: '0.75rem', textAlign: 'center' }}>Effektive Empfänger</th>
+                            <th style={{ padding: '0.75rem', textAlign: 'center' }}>Versandfortschritt</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -163,6 +163,9 @@ export const EmailHistoryTab = ({ isActive, page, onPageChange, refreshToken }: 
                             const testText = testReceiver ? `Ja (${testReceiver})` : 'Nein';
                             const statusText = STATUS_LABELS[entry.status] ?? entry.status;
                             const totalRecipients = entry.effectiveRecipients.length;
+                            const sentCount = entry.successfulRecipients.length;
+                            const failedCount = entry.failedRecipients.length;
+                            const progressText = failedCount > 0 ? `${sentCount}/${totalRecipients} (${failedCount} Fehler)` : `${sentCount}/${totalRecipients}`;
 
                             return (
                                 <tr
@@ -176,7 +179,7 @@ export const EmailHistoryTab = ({ isActive, page, onPageChange, refreshToken }: 
                                     <td style={{ padding: '0.75rem' }}>{testText}</td>
                                     <td style={{ padding: '0.75rem' }}>{statusText}</td>
                                     <td style={{ padding: '0.75rem' }}>{selectionText}</td>
-                                    <td style={{ padding: '0.75rem', textAlign: 'center' }}>{totalRecipients}</td>
+                                    <td style={{ padding: '0.75rem', textAlign: 'center' }}>{progressText}</td>
                                 </tr>
                             );
                         })}
@@ -287,6 +290,18 @@ export const EmailHistoryTab = ({ isActive, page, onPageChange, refreshToken }: 
                                 <strong>Effektive Empfänger ({selectedEmail.effectiveRecipients.length}):</strong>{' '}
                                 {selectedEmail.effectiveRecipients.length
                                     ? selectedEmail.effectiveRecipients.join(', ')
+                                    : 'Keine'}
+                            </p>
+                            <p>
+                                <strong>Erfolgreich gesendet ({selectedEmail.successfulRecipients.length}):</strong>{' '}
+                                {selectedEmail.successfulRecipients.length
+                                    ? selectedEmail.successfulRecipients.join(', ')
+                                    : 'Keine'}
+                            </p>
+                            <p>
+                                <strong>Nicht zugestellt ({selectedEmail.failedRecipients.length}):</strong>{' '}
+                                {selectedEmail.failedRecipients.length
+                                    ? selectedEmail.failedRecipients.join(', ')
                                     : 'Keine'}
                             </p>
                         </div>
