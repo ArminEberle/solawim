@@ -8,6 +8,7 @@ import { MailRecipientsSelect } from 'src/members/pages/MailRecipientsSelect';
 import { computeMailRecipientUserIdsFromMailRecipientsSelection } from 'src/members/pages/computeMailRecipientUserIdsFromMailRecipientsSelection';
 import type { AllMembersData } from 'src/members/types/AllMembersData';
 import type { MailRecipientsSelection } from './MailRecipientsSelection';
+import { CollapsibleSection } from 'src/molecules/CollapsibleSection';
 
 type MailingProps = {
     members: AllMembersData;
@@ -31,6 +32,22 @@ export const Mailing = ({ members, isMembersLoading }: MailingProps) => {
     const recipientIds = useMemo(() => {
         return computeMailRecipientUserIdsFromMailRecipientsSelection(members, selection);
     }, [members, selection]);
+
+    const sortedMemberNames = useMemo(() => {
+        return members
+            .filter(member => member.membership)
+            .map(member => {
+                const firstname = member.membership?.firstname ?? '';
+                const lastname = member.membership?.lastname ?? '';
+                const primaryName = [firstname, lastname].filter(Boolean).join(' ');
+                const label = `${primaryName} (${member.user_nicename})`;
+                return {
+                    id: member.id,
+                    label,
+                };
+            })
+            .sort((a, b) => a.label.localeCompare(b.label, 'de', { sensitivity: 'base' }));
+    }, [members]);
 
     const canSend =
         recipientIds.length > 0 && subject.trim().length > 0 && body.trim().length > 0 && !sendEmailMutation.isPending;
@@ -60,6 +77,8 @@ export const Mailing = ({ members, isMembersLoading }: MailingProps) => {
         }
     };
 
+    const memberListTitle = `Ausgewählte Empfänger: ${recipientIds.length}`;
+
     return (
         <form
             style={{ padding: '1rem 0', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}
@@ -72,7 +91,16 @@ export const Mailing = ({ members, isMembersLoading }: MailingProps) => {
                     value={selection}
                     onChange={setSelection}
                 />
-                <p style={{ marginTop: '0.75rem' }}>Ausgewählte Empfänger: {recipientIds.length}</p>
+                <CollapsibleSection
+                    title={memberListTitle}
+                    initiallyCollapsed={true}
+                >
+                    <ul style={{ listStyle: 'none', paddingLeft: 0 }}>
+                        {sortedMemberNames.map(member => (
+                            <li key={member.id}>{member.label}</li>
+                        ))}
+                    </ul>
+                </CollapsibleSection>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 <Input
