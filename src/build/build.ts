@@ -174,12 +174,16 @@ const main = async () => {
     for (const arg of calledBuildTasks) {
         const taskModulePath = url.pathToFileURL(path.resolve(process.cwd(), 'src/build/tasks/' + arg + '.ts'));
         const taskModule = await import(taskModulePath.toString());
-        if (!taskModule.default) {
+        let taskExport = taskModule.default as BuildTask | { default?: BuildTask } | undefined;
+        if (taskExport && typeof taskExport === 'object' && 'default' in taskExport && taskExport.default) {
+            taskExport = taskExport.default;
+        }
+        if (!taskExport) {
             log(`Task ${arg} does not export a default at ${taskModulePath}`);
             continue;
         }
         // eslint-disable-next-line no-await-in-loop
-        await executeBuildTask(taskModule.default);
+        await executeBuildTask(taskExport as BuildTask);
     }
 };
 
