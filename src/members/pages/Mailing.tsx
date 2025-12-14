@@ -27,6 +27,7 @@ export const Mailing = ({ members, isMembersLoading }: MailingProps) => {
         abholraeume: [],
         products: [],
         activeMembers: false,
+        allMembers: false,
     });
     const [subject, setSubject] = useState('');
     const [body, setBody] = useState('');
@@ -36,6 +37,10 @@ export const Mailing = ({ members, isMembersLoading }: MailingProps) => {
     });
 
     const recipientIds = useMemo(() => {
+        if (selection.allMembers) {
+            return members.filter(member => member.membership?.member).map(member => member.id);
+        }
+
         if (selection.abholraeume.length === 0 && selection.products.length === 0 && !selection.activeMembers) {
             return [];
         }

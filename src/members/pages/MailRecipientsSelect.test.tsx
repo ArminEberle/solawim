@@ -9,6 +9,7 @@ const INITIAL_SELECTION: MailRecipientsSelection = {
     abholraeume: [],
     products: [],
     activeMembers: false,
+    allMembers: false,
 };
 
 const StatefulRecipientsSelect = ({ disabled = false }: { disabled?: boolean }) => {
@@ -92,7 +93,7 @@ describe('MailRecipientsSelect', () => {
     it('updates selection when toggling active members checkbox', async () => {
         render(<StatefulRecipientsSelect />);
 
-        const activeCheckbox = screen.getByText('Aktive Mitglieder');
+        const activeCheckbox = screen.getByText(text => text.startsWith('Aktive Mitglieder'));
 
         fireEvent.click(activeCheckbox);
         await waitFor(() => {
@@ -103,6 +104,48 @@ describe('MailRecipientsSelect', () => {
         });
 
         fireEvent.click(activeCheckbox);
+        await waitFor(() => {
+            expect(parseSelectionState()).toEqual(INITIAL_SELECTION);
+        });
+    });
+
+    it('turns off all members mode when other filters are chosen', async () => {
+        render(<StatefulRecipientsSelect />);
+
+        const allMembersCheckbox = screen.getByText('Alle Mitglieder');
+        fireEvent.click(allMembersCheckbox);
+
+        await waitFor(() => {
+            expect(parseSelectionState()).toEqual({
+                abholraeume: [],
+                products: [],
+                activeMembers: false,
+                allMembers: true,
+            });
+        });
+
+        const firstAbholraum = abholraumOptions[0];
+        const abholraumLabel = firstAbholraum.display ?? firstAbholraum.value;
+        fireEvent.click(screen.getByText(abholraumLabel));
+
+        await waitFor(() => {
+            expect(parseSelectionState()).toEqual({
+                ...INITIAL_SELECTION,
+                abholraeume: [firstAbholraum.value],
+            });
+        });
+
+        fireEvent.click(allMembersCheckbox);
+        await waitFor(() => {
+            expect(parseSelectionState()).toEqual({
+                abholraeume: [],
+                products: [],
+                activeMembers: false,
+                allMembers: true,
+            });
+        });
+
+        fireEvent.click(allMembersCheckbox);
         await waitFor(() => {
             expect(parseSelectionState()).toEqual(INITIAL_SELECTION);
         });

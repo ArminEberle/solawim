@@ -8,6 +8,7 @@ export type MailRecipientsSelection = {
     abholraeume: Abholraum[];
     products: Product[];
     activeMembers: boolean;
+    allMembers: boolean;
 };
 
 const PRODUCT_OPTIONS: { value: Product; label: string }[] = [
@@ -36,24 +37,34 @@ type MailRecipientsSelectProps = {
 };
 
 export const MailRecipientsSelect = ({ value, onChange, disabled = false }: MailRecipientsSelectProps) => {
+    const getBaseSelection = (): MailRecipientsSelection => {
+        if (value.allMembers) {
+            return { ...value, allMembers: false };
+        }
+
+        return { ...value };
+    };
+
     const toggleAbholraum = (abholraum: Abholraum, checked: boolean) => {
+        const baseSelection = getBaseSelection();
         const nextAbholraeume = checked
-            ? Array.from(new Set([...value.abholraeume, abholraum]))
-            : value.abholraeume.filter(item => item !== abholraum);
+            ? Array.from(new Set([...baseSelection.abholraeume, abholraum]))
+            : baseSelection.abholraeume.filter(item => item !== abholraum);
 
         onChange({
-            ...value,
+            ...baseSelection,
             abholraeume: nextAbholraeume,
         });
     };
 
     const toggleProduct = (product: Product, checked: boolean) => {
+        const baseSelection = getBaseSelection();
         const nextProducts = checked
-            ? Array.from(new Set([...value.products, product]))
-            : value.products.filter(item => item !== product);
+            ? Array.from(new Set([...baseSelection.products, product]))
+            : baseSelection.products.filter(item => item !== product);
 
         onChange({
-            ...value,
+            ...baseSelection,
             products: nextProducts,
         });
     };
@@ -80,9 +91,27 @@ export const MailRecipientsSelect = ({ value, onChange, disabled = false }: Mail
             return;
         }
 
+        const baseSelection = getBaseSelection();
+
         onChange({
-            ...value,
+            ...baseSelection,
             activeMembers: event.target.checked,
+        });
+    };
+
+    const handleAllMembersChange = (event: ChangeEvent<HTMLInputElement>) => {
+        if (disabled) {
+            event.preventDefault();
+            return;
+        }
+
+        const nextAllMembers = event.target.checked;
+
+        onChange({
+            abholraeume: nextAllMembers ? [] : value.abholraeume,
+            products: nextAllMembers ? [] : value.products,
+            activeMembers: nextAllMembers ? false : value.activeMembers,
+            allMembers: nextAllMembers,
         });
     };
 
@@ -127,6 +156,13 @@ export const MailRecipientsSelect = ({ value, onChange, disabled = false }: Mail
                         disabled={disabled}
                     >
                         Aktive Mitglieder (Arbeit gegen Anteile)
+                    </Checkbox>
+                    <Checkbox
+                        value={value.allMembers}
+                        onChange={handleAllMembersChange}
+                        disabled={disabled}
+                    >
+                        Alle Mitglieder
                     </Checkbox>
                 </div>
             </div>
