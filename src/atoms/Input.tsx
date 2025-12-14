@@ -1,5 +1,5 @@
 import type { ChangeEvent, FocusEvent, ReactElement } from 'react';
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import type { FormInputBaseProps } from 'src/atoms/types/FormInputBaseProps';
 import type { LayoutExtraProps } from 'src/atoms/types/LayoutExtraProps';
 import { layoutExtraProps } from 'src/utils/layoutExtraProps';

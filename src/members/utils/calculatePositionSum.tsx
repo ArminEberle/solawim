@@ -1,7 +1,7 @@
 import { calculatePositionPrice } from 'src/members/utils/calculatePositionPrice';
 
 export type CalculatePositionSumParams = {
-    amount?: number;
+    amount?: number | string;
     solidar?: string;
     price: number;
 };

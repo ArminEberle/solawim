@@ -56,7 +56,7 @@ export const esBuildConfig = (production = true): esbuild.BuildOptions => {
                 plugins: [
                     postCssAdvancedVariables({
                         // importPaths: [process.cwd()],
-                        importResolve: async (id: string, cwd: string) => {
+                        importResolve: async (id: string, _cwd: string) => {
                             const file = path.join(process.cwd(), id);
                             const contents = await fs.promises.readFile(file, 'utf-8');
                             return {

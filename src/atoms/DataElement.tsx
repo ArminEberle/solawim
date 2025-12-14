@@ -1,13 +1,12 @@
 import './DataElement.css';
-import React from 'react';
-import { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import { Horizontal } from 'src/layout/Horizontal';
 
 export type DataElementProps = {
     label: string;
     className?: string;
     children?: ReactNode | undefined;
-    style?: React.CSSProperties;
+    style?: CSSProperties;
 };
 
 export const DataElement = (props: DataElementProps) => (

@@ -1,7 +1,6 @@
 import { electronicFormatIBAN } from 'ibantools';
 import isEqual from 'lodash.isequal';
 import toNumber from 'lodash/toNumber';
-import React from 'react';
 import { Button } from 'src/atoms/Button';
 import { Checkbox } from 'src/atoms/Checkbox';
 import { Input } from 'src/atoms/Input';

@@ -1,4 +1,3 @@
-import { getBankingData } from 'src/api/getBankingData';
 import type { AllMembersData } from 'src/members/types/AllMembersData';
 import { calculatePositionSum } from 'src/members/utils/calculatePositionSum';
 import { download } from 'src/members/utils/download';

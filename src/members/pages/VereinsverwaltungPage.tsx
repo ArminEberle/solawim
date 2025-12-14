@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useGetAllMemberData } from 'src/api/getAllMemberData';
 import { ButtonLink } from 'src/atoms/ButtonLink';
 import 'src/css/form.css';
@@ -7,7 +7,6 @@ import { RootContext } from 'src/contexts/RootContext';
 import { Page } from 'src/layout/Page';
 import { Vertical } from 'src/layout/Vertical';
 import { MemberDetailMolecule } from 'src/members/pages/MemberDetailMolecule';
-import { Mailing } from 'src/members/pages/Mailing';
 import { VereinsverwaltungHistory } from 'src/members/pages/VereinsverwaltungHistory';
 import { LoggedInScope } from 'src/members/utils/LoggedInScope';
 import { CollapsibleSection } from 'src/molecules/CollapsibleSection';
@@ -15,6 +14,7 @@ import { abholraumOptions } from 'src/utils/abholraumOptions';
 import { VereinsverwaltungSums } from './VereinsverwaltungSums';
 import { computeAllMembersSums } from './computeAllMembersSums';
 import { emptyOverallSumState } from './emptyOverallSumState';
+import { Button } from 'src/atoms/Button';
 
 export const VereinsverwaltungPage = () => {
     return (
@@ -59,40 +59,32 @@ const VereinsverwaltungPageInternal = () => {
             <Page>
                 <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
                     <label htmlFor="seasonselect">Saison </label>
-                    <SeasonSelect name="seasonselect" />
+                    <div>
+                        <SeasonSelect name="seasonselect" />
+                    </div>
                     <div style={{ display: 'flex', gap: '0.5rem' }}>
-                        <button
-                            type="button"
+                        <Button
                             onClick={() => setActiveTab('verwaltung')}
                             aria-pressed={activeTab === 'verwaltung'}
                             style={{
-                                padding: '0.25rem 0.75rem',
-                                borderRadius: '0.25rem',
-                                border: '1px solid var(--color-primary, #008c45)',
                                 backgroundColor:
                                     activeTab === 'verwaltung' ? 'var(--color-primary, #008c45)' : 'transparent',
                                 color: activeTab === 'verwaltung' ? '#fff' : 'inherit',
-                                cursor: 'pointer',
                             }}
                         >
                             Verwaltung
-                        </button>
-                        <button
-                            type="button"
+                        </Button>
+                        <Button
                             onClick={() => setActiveTab('mailing')}
                             aria-pressed={activeTab === 'mailing'}
                             style={{
-                                padding: '0.25rem 0.75rem',
-                                borderRadius: '0.25rem',
-                                border: '1px solid var(--color-primary, #008c45)',
                                 backgroundColor:
                                     activeTab === 'mailing' ? 'var(--color-primary, #008c45)' : 'transparent',
                                 color: activeTab === 'mailing' ? '#fff' : 'inherit',
-                                cursor: 'pointer',
                             }}
                         >
                             Mailing
-                        </button>
+                        </Button>
                     </div>
                 </div>
                 {activeTab === 'verwaltung' ? (
@@ -156,7 +148,10 @@ const VereinsverwaltungPageInternal = () => {
                         </CollapsibleSection>
                     </>
                 ) : (
-                    <Mailing />
+                    <>
+                        <h3>Some other content</h3>
+                        {/* <Mailing /> */}
+                    </>
                 )}
             </Page>
         </div>

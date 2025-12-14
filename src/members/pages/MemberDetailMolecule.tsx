@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { AiOutlineMail } from 'react-icons/ai';
 import { setMemberData } from 'src/api/setMemberData';
 import { Checkbox } from 'src/atoms/Checkbox';

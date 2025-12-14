@@ -1,4 +1,5 @@
-import React, { CSSProperties, useCallback } from 'react';
+import type { CSSProperties } from 'react';
+import { useCallback } from 'react';
 import { useGetAllMemberData } from 'src/api/getAllMemberData';
 import { Button } from 'src/atoms/Button';
 import { Output } from 'src/atoms/Output';

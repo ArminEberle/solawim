@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { useGetSeasons } from 'src/api/useGetSeasons';
 import { SeasonContext } from 'src/contexts/SeasonContext';
 

@@ -3,10 +3,10 @@ import 'src/css/form.css';
 import { electronicFormatIBAN } from 'ibantools';
 import isEqual from 'lodash.isequal';
 import toNumber from 'lodash/toNumber';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { getMyData } from 'src/api/getMyData';
 import { setMyData as uploadMyData } from 'src/api/setMyData';
-import { useGetCurrentSeason, useGetSeasons } from 'src/api/useGetSeasons';
+import { useGetCurrentSeason } from 'src/api/useGetSeasons';
 import { Alert } from 'src/atoms/Alert';
 import { showAlertWithBackdrop } from 'src/atoms/AlertWithBackdrop';
 import { Button } from 'src/atoms/Button';
@@ -25,7 +25,7 @@ import {
     MemberSelfManagementPagePassiveHint,
     MemberSelfManagementPageYesIWant,
 } from 'src/members/pages/MemberSelfManagementPageText';
-import { emptyMemberData, type ZeroTo30 } from 'src/members/types/MemberData';
+import { emptyMemberData } from 'src/members/types/MemberData';
 import { LoggedInScope } from 'src/members/utils/LoggedInScope';
 import { calculateMemberTotalSum } from 'src/members/utils/calculateMemberTotalSum';
 import { calculatePositionPrice } from 'src/members/utils/calculatePositionPrice';
@@ -37,7 +37,6 @@ import { formMe } from 'src/utils/forms';
 import { has } from 'src/utils/has';
 import { prices } from 'src/utils/prices';
 import { ibanValidator } from 'src/validators/ibanValidator';
-import { FlexGap } from 'src/atoms/FlexGap';
 
 const required = true;
 

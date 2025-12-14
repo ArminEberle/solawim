@@ -1,18 +1,15 @@
-import type { ReactNode } from 'react';
-import React from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import { useLoggedIn } from 'src/hooks/useLoggedIn';
 import { LoginPage } from 'src/members/pages/LoginPage';
 
-type LoggedInScopeProps<C extends ReactNode | undefined, L extends ReactNode | undefined> = {
-    children?: C;
-    loginHint?: L;
+type LoggedInScopeProps = {
+    children?: ReactNode;
+    loginHint?: ReactNode;
 };
 
-export function LoggedInScope<C extends ReactNode | undefined, L extends ReactNode | undefined>(
-    props: LoggedInScopeProps<C, L>,
-): JSX.Element {
+export const LoggedInScope = ({ children, loginHint }: LoggedInScopeProps): ReactElement => {
     if (useLoggedIn()) {
-        return props.children as JSX.Element;
+        return <>{children}</>;
     }
-    return (props.loginHint as JSX.Element) || <LoginPage />;
-}
+    return <>{loginHint ?? <LoginPage />}</>;
+};

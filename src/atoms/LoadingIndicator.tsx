@@ -1,10 +1,10 @@
 // import '/src/atoms/LoadingIndicator.css';
 import './LoadingIndicator.css';
 
-import React from 'react';
+import type { CSSProperties } from 'react';
 
 export const LoadingIndicator = (options: {
-    style?: React.CSSProperties;
+    style?: CSSProperties;
 }) => (
     <div
         className="loader-wrapper"

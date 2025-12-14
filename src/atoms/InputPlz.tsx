@@ -1,5 +1,5 @@
 import type { ChangeEventHandler } from 'react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Input } from 'src/atoms/Input';
 
 export type InputPlzProps = {
