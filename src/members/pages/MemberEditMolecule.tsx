@@ -1,7 +1,7 @@
 import { electronicFormatIBAN } from 'ibantools';
 import isEqual from 'lodash.isequal';
 import toNumber from 'lodash/toNumber';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { Button } from 'src/atoms/Button';
 import { Checkbox } from 'src/atoms/Checkbox';
 import { Input } from 'src/atoms/Input';
@@ -20,6 +20,8 @@ import { amountsToBook } from 'src/utils/amountsToBook';
 import { formMe } from 'src/utils/forms';
 import { prices } from 'src/utils/prices';
 import { ibanValidator } from 'src/validators/ibanValidator';
+import { sanitizeAdditionalEmailReceipients } from 'src/members/utils/additionalEmailReceipients';
+import { MultiEmailInput } from 'src/members/pages/MultiEmailInput';
 
 export type MemberEditProps = {
     data: MemberData | undefined;
@@ -27,38 +29,8 @@ export type MemberEditProps = {
     required: boolean;
 };
 
-const parseAdditionalEmailReceipients = (raw: string): string[] => {
-    if (typeof raw !== 'string' || raw.trim().length === 0) {
-        return [];
-    }
-    const normalized = raw
-        .split(/[\n,;]+/)
-        .map(entry => entry.trim())
-        .filter(entry => entry.length > 0);
-
-    const uniqueMap: Record<string, string> = {};
-    normalized.forEach(email => {
-        const lower = email.toLowerCase();
-        if (!uniqueMap[lower]) {
-            uniqueMap[lower] = email;
-        }
-    });
-    return Object.values(uniqueMap);
-};
-
-const serializeAdditionalEmailReceipients = (emails?: string[]): string => {
-    if (!Array.isArray(emails) || emails.length === 0) {
-        return '';
-    }
-    return emails.join(', ');
-};
-
 export const MemberEditMolecule = (props: MemberEditProps) => {
     const initialData = useMemo(() => props.data ?? emptyMemberData(), [props.data]);
-
-    const [additionalEmailsText, setAdditionalEmailsText] = useState(() =>
-        serializeAdditionalEmailReceipients(initialData.additionalEmailReceipients),
-    );
 
     const season = useSeason();
 
@@ -73,27 +45,20 @@ export const MemberEditMolecule = (props: MemberEditProps) => {
         onSubmit: async (data, setData) => {
             const sanitized: MemberData = {
                 ...data,
-                additionalEmailReceipients: parseAdditionalEmailReceipients(additionalEmailsText),
+                additionalEmailReceipients: sanitizeAdditionalEmailReceipients(data.additionalEmailReceipients ?? []),
             };
             await props.onSave(sanitized);
             setData(sanitized);
-            setAdditionalEmailsText(serializeAdditionalEmailReceipients(sanitized.additionalEmailReceipients));
             console.log('It is done', sanitized);
         },
     });
     const isDirty = !isEqual(initialData, formDataState);
-
-    useEffect(() => {
-        setAdditionalEmailsText(serializeAdditionalEmailReceipients(formDataState.additionalEmailReceipients));
-    }, [formDataState.additionalEmailReceipients]);
-
-    const updateAdditionalEmailReceipients = (rawValue: string) => {
-        const parsed = parseAdditionalEmailReceipients(rawValue);
+    const updateAdditionalEmailReceipients = (emails: string[]) => {
+        const sanitized = sanitizeAdditionalEmailReceipients(emails);
         setState(current => ({
             ...current,
-            additionalEmailReceipients: parsed,
+            additionalEmailReceipients: sanitized,
         }));
-        setAdditionalEmailsText(serializeAdditionalEmailReceipients(parsed));
     };
 
     return (
@@ -387,14 +352,12 @@ export const MemberEditMolecule = (props: MemberEditProps) => {
                     disabled={!formDataState.member}
                     {...register('tel')}
                 />
-                <Input
+                <MultiEmailInput
                     label="Zusätzliche E-Mail-Empfänger*innen"
-                    maxlen={500}
-                    value={additionalEmailsText}
-                    onChange={event => setAdditionalEmailsText(event.target.value)}
-                    onBlur={event => updateAdditionalEmailReceipients(event.target.value)}
+                    value={formDataState.additionalEmailReceipients ?? []}
+                    onChange={updateAdditionalEmailReceipients}
                     disabled={!formDataState.member}
-                    required={false}
+                    maxLength={500}
                     name="additionalEmailReceipients"
                     title="Mehrere E-Mail-Adressen durch Komma, Semikolon oder Zeilenumbruch trennen."
                 />

@@ -133,7 +133,7 @@ export const Mailing = ({ members, isMembersLoading }: MailingProps) => {
             onSubmit={handleSubmit}
         >
             <div>
-                <h3>Empfänger wählen</h3>
+                <h3>Empfängergruppen wählen - mindestens eine</h3>
                 {isMembersLoading && <p>Daten werden geladen …</p>}
                 <MailRecipientsSelect
                     value={selection}
