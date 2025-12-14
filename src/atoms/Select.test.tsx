@@ -1,7 +1,7 @@
-import type { ChangeEvent } from 'react';
 import { fireEvent, render, screen, within } from '@testing-library/react';
-import { describe, expect, test, vi } from 'vitest';
+import type { ChangeEvent } from 'react';
 import { Select } from 'src/atoms/Select';
+import { describe, expect, test, vi } from 'vitest';
 
 describe('Select', () => {
     test('renders options and emits change events', () => {

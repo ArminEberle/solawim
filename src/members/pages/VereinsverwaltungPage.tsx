@@ -1,6 +1,7 @@
 import 'src/css/form.css';
 import { useMemo, useState } from 'react';
 import { useGetAllMemberData } from 'src/api/getAllMemberData';
+import { Button } from 'src/atoms/Button';
 import { ButtonLink } from 'src/atoms/ButtonLink';
 import { SeasonSelect, useSeason } from 'src/atoms/SeasonSelect';
 import { RootContext } from 'src/contexts/RootContext';
@@ -14,7 +15,6 @@ import { abholraumOptions } from 'src/utils/abholraumOptions';
 import { VereinsverwaltungSums } from './VereinsverwaltungSums';
 import { computeAllMembersSums } from './computeAllMembersSums';
 import { emptyOverallSumState } from './emptyOverallSumState';
-import { Button } from 'src/atoms/Button';
 
 export const VereinsverwaltungPage = () => {
     return (

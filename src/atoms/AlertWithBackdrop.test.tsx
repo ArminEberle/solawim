@@ -1,6 +1,6 @@
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { afterEach, describe, expect, test, vi } from 'vitest';
 import { AlertWithBackdrop, showAlertWithBackdrop } from 'src/atoms/AlertWithBackdrop';
+import { afterEach, describe, expect, test, vi } from 'vitest';
 
 afterEach(() => {
     cleanup();

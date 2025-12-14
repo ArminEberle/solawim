@@ -2,21 +2,11 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "definitions": {
         "Abholraum": {
-            "enum": [
-                "gertenbach",
-                "hutzelberghof",
-                "witzenhausen"
-            ],
+            "enum": ["gertenbach", "hutzelberghof", "witzenhausen"],
             "type": "string"
         },
         "Solidar": {
-            "enum": [
-                "-1",
-                "-2",
-                "0",
-                "1",
-                "2"
-            ],
+            "enum": ["-1", "-2", "0", "1", "2"],
             "type": "string"
         },
         "ZeroTo30": {
@@ -146,4 +136,3 @@
     },
     "type": "object"
 }
-

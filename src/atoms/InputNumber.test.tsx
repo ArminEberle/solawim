@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
-import { describe, expect, test } from 'vitest';
 import { InputNumber } from 'src/atoms/InputNumber';
+import { describe, expect, test } from 'vitest';
 
 describe('InputNumber', () => {
     test('applies numeric constraints', () => {

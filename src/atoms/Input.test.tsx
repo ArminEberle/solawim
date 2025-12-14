@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, test, vi } from 'vitest';
 import { Input } from 'src/atoms/Input';
+import { describe, expect, test, vi } from 'vitest';
 
 describe('Input', () => {
     test('fires change and validator with updated value', () => {

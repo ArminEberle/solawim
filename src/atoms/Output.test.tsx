@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
-import { describe, expect, test } from 'vitest';
 import { Output } from 'src/atoms/Output';
+import { describe, expect, test } from 'vitest';
 
 describe('Output', () => {
     test('renders label and formatted value', () => {

@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
-import { describe, expect, test } from 'vitest';
 import { FlexGap } from 'src/atoms/FlexGap';
+import { describe, expect, test } from 'vitest';
 
 describe('FlexGap', () => {
     test('applies flex grow style', () => {

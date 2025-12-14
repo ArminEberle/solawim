@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, test, vi } from 'vitest';
 import { Button } from 'src/atoms/Button';
+import { describe, expect, test, vi } from 'vitest';
 
 describe('Button', () => {
     test('invokes click handler', () => {

@@ -1,12 +1,12 @@
-import esbuild from 'esbuild';
+import fs from 'fs';
+import path from 'path';
+import postCssPlugin from '@deanc/esbuild-plugin-postcss';
 // import postcss2 from 'esbuild-plugin-postcss2';
 import autoprefixer from 'autoprefixer';
-import postCssPlugin from '@deanc/esbuild-plugin-postcss';
+import cssNano from 'cssnano';
+import esbuild from 'esbuild';
 import postCssAdvancedVariables from 'postcss-advanced-variables';
 import postCssNested from 'postcss-nested';
-import cssNano from 'cssnano';
-import path from 'path';
-import fs from 'fs';
 
 export const esBuildConfig = (production = true): esbuild.BuildOptions => {
     return {

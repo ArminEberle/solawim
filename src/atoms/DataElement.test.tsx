@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
-import { describe, expect, test } from 'vitest';
 import { DataElement } from 'src/atoms/DataElement';
+import { describe, expect, test } from 'vitest';
 
 describe('DataElement', () => {
     test('renders label and children', () => {

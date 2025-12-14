@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, test, vi } from 'vitest';
 import { Checkbox } from 'src/atoms/Checkbox';
+import { describe, expect, test, vi } from 'vitest';
 
 describe('Checkbox', () => {
     test('calls onChange when toggled', () => {

@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, test, vi } from 'vitest';
 import { SeasonSelect } from 'src/atoms/SeasonSelect';
 import { SeasonContext } from 'src/contexts/SeasonContext';
+import { describe, expect, test, vi } from 'vitest';
 
 vi.mock('src/api/useGetSeasons', () => ({
     useGetSeasons: () => ({

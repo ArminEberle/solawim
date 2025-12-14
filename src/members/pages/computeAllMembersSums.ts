@@ -1,11 +1,11 @@
+import { type ItemSums, addItemSum, emptyItemSums } from 'src/members/pages/emptyItemSums';
 import { AllMembersData } from 'src/members/types/AllMembersData';
 import type { MemberData } from 'src/members/types/MemberData';
 import { Product } from 'src/members/types/Product';
-import { addItemSum, emptyItemSums, type ItemSums } from 'src/members/pages/emptyItemSums';
 import { calculatePositionSum } from 'src/members/utils/calculatePositionSum';
 import { has } from 'src/utils/has';
 import { prices } from 'src/utils/prices';
-import { emptyOverallSumState, type OverallSumState } from './emptyOverallSumState';
+import { type OverallSumState, emptyOverallSumState } from './emptyOverallSumState';
 
 type AmountField = 'brotMenge' | 'fleischMenge' | 'milchMenge' | 'veggieMenge';
 type SolidarField = 'brotSolidar' | 'fleischSolidar' | 'milchSolidar' | 'veggieSolidar';

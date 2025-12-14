@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, test } from 'vitest';
 import { InputPlz } from 'src/atoms/InputPlz';
+import { describe, expect, test } from 'vitest';
 
 describe('InputPlz', () => {
     test('normalizes value on change and blur', () => {

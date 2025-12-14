@@ -1,6 +1,6 @@
-import { expect, test } from 'vitest';
 import { findNextRemittanceDate } from 'src/utils/findNextRemittanceDate';
 import { toDayIsoString } from 'src/utils/toDayIsoString';
+import { expect, test } from 'vitest';
 
 test('findNextRemittanceDate', () => {
     expect(toDayIsoString(findNextRemittanceDate(0, new Date(Date.parse('2023-01-01'))))).toBe('2023-01-02');

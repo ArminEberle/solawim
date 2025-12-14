@@ -1,6 +1,6 @@
+import fs from 'fs';
 import type { BuildTask } from 'src/build/types/BuildTask';
 import { getDefaultTaskProperties } from 'src/build/utils/getDefaultTaskProperties';
-import fs from 'fs';
 
 export default {
     ...getDefaultTaskProperties(__filename),

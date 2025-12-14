@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
-import { describe, expect, test } from 'vitest';
 import { SolidaritaetSelect } from 'src/atoms/SolidaritaetSelect';
+import { describe, expect, test } from 'vitest';
 
 describe('SolidaritaetSelect', () => {
     test('offers solidaritaet options with default selected', () => {

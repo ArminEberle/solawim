@@ -1,4 +1,4 @@
-import { createContext, useMemo, useState, type PropsWithChildren } from 'react';
+import { type PropsWithChildren, createContext, useMemo, useState } from 'react';
 import { useGetCurrentSeason } from 'src/api/useGetSeasons';
 
 export type SeasonContextType = {

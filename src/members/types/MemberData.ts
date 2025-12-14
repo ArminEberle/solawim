@@ -71,7 +71,7 @@ export enum Abholraum {
     hutzelberghof = 'hutzelberghof',
     witzenhausen = 'witzenhausen',
     gertenbach = 'gertenbach',
-};
+}
 
 export type MemberData = {
     member: boolean;

@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, test, vi } from 'vitest';
 import { ButtonLink } from 'src/atoms/ButtonLink';
+import { describe, expect, test, vi } from 'vitest';
 
 describe('ButtonLink', () => {
     test('navigates to the provided href when clicked', () => {

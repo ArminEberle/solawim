@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
-import { describe, expect, test } from 'vitest';
 import { LoadingIndicator } from 'src/atoms/LoadingIndicator';
+import { describe, expect, test } from 'vitest';
 
 describe('LoadingIndicator', () => {
     test('shows loading text', () => {
