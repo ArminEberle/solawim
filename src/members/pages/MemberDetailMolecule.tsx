@@ -74,6 +74,12 @@ export const MemberDetailMolecule = (props: MemberDetailMoleculeProps) => {
                         </DataElement>
                         <DataElement label="Tel">{props.data.membership.tel}</DataElement>
                     </Horizontal>
+                    {props.data.membership.additionalEmailReceipients &&
+                        props.data.membership.additionalEmailReceipients.length > 0 && (
+                            <DataElement label="Zusätzliche E-Mail-Empfänger*innen">
+                                {props.data.membership.additionalEmailReceipients.join(', ')}
+                            </DataElement>
+                        )}
                     <br />
                     <DataElement
                         label="Arbeit gegen Anteile"

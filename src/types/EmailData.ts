@@ -23,6 +23,10 @@ export type EmailData = {
      */
     body: string;
     /**
+     * Additional e-mail addresses that should receive the mailing alongside the primary member accounts.
+     */
+    additionalRecipients?: string[];
+    /**
      * Captures the selection parameters that produced the recipient list.
      */
     selection: MailRecipientsSelection;

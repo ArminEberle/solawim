@@ -35,6 +35,44 @@ export const Mailing = ({ members, isMembersLoading }: MailingProps) => {
         return computeMailRecipientUserIdsFromMailRecipientsSelection(members, selection);
     }, [members, selection]);
 
+    const additionalRecipientEmails = useMemo(() => {
+        if (recipientIds.length === 0) {
+            return [];
+        }
+        const selectedIds = new Set(recipientIds);
+        const collected: string[] = [];
+
+        members.forEach(member => {
+            if (!selectedIds.has(member.id)) {
+                return;
+            }
+            const extras = member.membership?.additionalEmailReceipients ?? [];
+            extras.forEach(email => {
+                if (typeof email !== 'string') {
+                    return;
+                }
+                const trimmed = email.trim();
+                if (trimmed.length === 0) {
+                    return;
+                }
+                collected.push(trimmed);
+            });
+        });
+
+        if (collected.length === 0) {
+            return [];
+        }
+
+        const uniqueMap: Record<string, string> = {};
+        collected.forEach(email => {
+            const lower = email.toLowerCase();
+            if (!uniqueMap[lower]) {
+                uniqueMap[lower] = email;
+            }
+        });
+        return Object.values(uniqueMap);
+    }, [members, recipientIds]);
+
     const sortedMemberNames = useMemo(() => {
         return members
             .filter(member => member.membership)
@@ -73,6 +111,7 @@ export const Mailing = ({ members, isMembersLoading }: MailingProps) => {
                     recipients: recipientIds,
                     subject: subject.trim(),
                     body: body.trim(),
+                    additionalRecipients: additionalRecipientEmails,
                     selection,
                 },
             });
@@ -83,7 +122,10 @@ export const Mailing = ({ members, isMembersLoading }: MailingProps) => {
         }
     };
 
-    const memberListTitle = `Ausgewählte Empfänger: ${recipientIds.length}`;
+    const memberListTitle =
+        additionalRecipientEmails.length > 0
+            ? `Ausgewählte Empfänger: ${recipientIds.length} Mitglieder (+${additionalRecipientEmails.length} zusätzliche E-Mail-Adressen)`
+            : `Ausgewählte Empfänger: ${recipientIds.length}`;
 
     return (
         <form
@@ -105,6 +147,16 @@ export const Mailing = ({ members, isMembersLoading }: MailingProps) => {
                         {sortedMemberNames.map(member => (
                             <li key={member.id}>{member.label}</li>
                         ))}
+                        {additionalRecipientEmails.length > 0 && (
+                            <>
+                                <li key="extra-heading">
+                                    <strong>Zusätzliche E-Mail-Empfänger*innen</strong>
+                                </li>
+                                {additionalRecipientEmails.map(email => (
+                                    <li key={`extra-${email}`}>{email}</li>
+                                ))}
+                            </>
+                        )}
                     </ul>
                 </CollapsibleSection>
             </div>

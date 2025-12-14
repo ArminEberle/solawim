@@ -21,6 +21,8 @@ export const emptyMemberData = (): MemberData => {
         city: '',
         tel: '',
 
+        additionalEmailReceipients: [],
+
         useSepa: true,
         iban: '',
         bic: '',
@@ -100,6 +102,8 @@ export type MemberData = {
     plz: string;
     city: string;
     tel: string;
+
+    additionalEmailReceipients?: string[];
 
     useSepa?: boolean;
     mandateDate?: string;

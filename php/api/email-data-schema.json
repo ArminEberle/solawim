@@ -21,6 +21,13 @@
     },
     "description": "Represents the data required to send an email to multiple recipients.",
     "properties": {
+        "additionalRecipients": {
+            "description": "Additional e-mail addresses that should receive the mailing alongside the primary member accounts.",
+            "items": {
+                "type": "string"
+            },
+            "type": "array"
+        },
         "body": {
             "description": "The body of the email. Plain text only.",
             "type": "string"
@@ -67,3 +74,4 @@
     },
     "type": "object"
 }
+

@@ -258,63 +258,75 @@ function getMembershipData(string $accountId, $season)
     return getUserData($membershipTable, (object) [], $accountId);
 }
 
-function getEffectiveRecipientEmails($recipientIds): array
+function normalizeEmailList($emails): array
 {
-    if (!is_array($recipientIds) || count($recipientIds) === 0) {
+    if (!is_array($emails)) {
         return [];
     }
 
-    $normalizedIds = array_values(
-        array_unique(
-            array_filter(
-                array_map(
-                    static function ($id) {
-                        return (int) $id;
-                    },
-                    $recipientIds,
-                ),
-                static function ($id) {
-                    return $id > 0;
-                },
-            ),
-        ),
-    );
-
-    if (count($normalizedIds) === 0) {
-        return [];
+    $normalized = [];
+    foreach ($emails as $email) {
+        if (!is_string($email)) {
+            continue;
+        }
+        $trimmed = trim($email);
+        if ($trimmed === '') {
+            continue;
+        }
+        if (!filter_var($trimmed, FILTER_VALIDATE_EMAIL)) {
+            continue;
+        }
+        $lower = strtolower($trimmed);
+        if (!array_key_exists($lower, $normalized)) {
+            $normalized[$lower] = $trimmed;
+        }
     }
 
-    global $wpdb;
-    $placeholders = implode(',', array_fill(0, count($normalizedIds), '%d'));
-    $query = "SELECT user_email FROM {$wpdb->prefix}users WHERE ID IN ({$placeholders})";
-    $results = $wpdb->get_results($wpdb->prepare($query, $normalizedIds), ARRAY_A);
+    return array_values($normalized);
+}
 
-    if (!is_array($results)) {
-        return [];
-    }
-
-    $emails = array_map(
-        static function ($row) {
-            return $row['user_email'] ?? '';
-        },
-        $results
-    );
-
-    return array_values(
-        array_filter(
+function getEffectiveRecipientEmails($recipientIds, $additionalRecipients = []): array
+{
+    $normalizedIds = [];
+    if (is_array($recipientIds) && count($recipientIds) > 0) {
+        $normalizedIds = array_values(
             array_unique(
-                array_map(
-                    static function ($email) {
-                        return trim((string) $email);
+                array_filter(
+                    array_map(
+                        static function ($id) {
+                            return (int) $id;
+                        },
+                        $recipientIds,
+                    ),
+                    static function ($id) {
+                        return $id > 0;
                     },
-                    $emails
                 ),
             ),
-            static function ($email) {
-                return $email !== '';
-            }
-        ),
-    );
+        );
+    }
+
+    $emailsFromUsers = [];
+    if (count($normalizedIds) > 0) {
+        global $wpdb;
+        $placeholders = implode(',', array_fill(0, count($normalizedIds), '%d'));
+        $query = "SELECT user_email FROM {$wpdb->prefix}users WHERE ID IN ({$placeholders})";
+        $results = $wpdb->get_results($wpdb->prepare($query, $normalizedIds), ARRAY_A);
+
+        if (is_array($results)) {
+            $emailsFromUsers = array_map(
+                static function ($row) {
+                    return $row['user_email'] ?? '';
+                },
+                $results
+            );
+        }
+    }
+
+    $primaryEmails = normalizeEmailList($emailsFromUsers);
+    $extras = normalizeEmailList($additionalRecipients);
+
+    return normalizeEmailList(array_merge($primaryEmails, $extras));
 }
 
 function storeEmailData(object $content, int $accountId, array $effectiveRecipients, int $season)
@@ -498,7 +510,15 @@ $app->post('/email', function (Request $request, Response $response, array $args
         return reportError($validateResult, $response, 404);
     }
 
-    $effectiveRecipients = getEffectiveRecipientEmails($content->recipients ?? []);
+    $additionalRecipients = [];
+    if (isset($content->additionalRecipients) && is_array($content->additionalRecipients)) {
+        $additionalRecipients = $content->additionalRecipients;
+    }
+
+    $sanitizedAdditionalRecipients = normalizeEmailList($additionalRecipients);
+    $content->additionalRecipients = $sanitizedAdditionalRecipients;
+
+    $effectiveRecipients = getEffectiveRecipientEmails($content->recipients ?? [], $sanitizedAdditionalRecipients);
 
     storeEmailData($content, (int) $accountId, $effectiveRecipients, $season);
 

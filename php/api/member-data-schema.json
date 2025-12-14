@@ -73,6 +73,12 @@
             "description": "If the member is a working member instead of a regular (paying) member",
             "type": "boolean"
         },
+        "additionalEmailReceipients": {
+            "items": {
+                "type": "string"
+            },
+            "type": "array"
+        },
         "bank": {
             "type": "string"
         },
