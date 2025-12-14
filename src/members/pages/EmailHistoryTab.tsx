@@ -165,7 +165,10 @@ export const EmailHistoryTab = ({ isActive, page, onPageChange, refreshToken }: 
                             const totalRecipients = entry.effectiveRecipients.length;
                             const sentCount = entry.successfulRecipients.length;
                             const failedCount = entry.failedRecipients.length;
-                            const progressText = failedCount > 0 ? `${sentCount}/${totalRecipients} (${failedCount} Fehler)` : `${sentCount}/${totalRecipients}`;
+                            const progressText =
+                                failedCount > 0
+                                    ? `${sentCount}/${totalRecipients} (${failedCount} Fehler)`
+                                    : `${sentCount}/${totalRecipients}`;
 
                             return (
                                 <tr
