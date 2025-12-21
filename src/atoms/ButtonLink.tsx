@@ -1,10 +1,10 @@
-import React from 'react';
+import type { PropsWithChildren } from 'react';
 import { Button } from 'src/atoms/Button';
 import type { ButtonStyleProp } from 'src/atoms/types/ButtonStyleProp';
 import type { HrefProp } from 'src/atoms/types/HrefProp';
 import type { TabIndexProp } from 'src/atoms/types/TabIndexProp';
 
-export type ButtonLinkOptions = React.PropsWithChildren & ButtonStyleProp & HrefProp & TabIndexProp;
+export type ButtonLinkOptions = PropsWithChildren & ButtonStyleProp & HrefProp & TabIndexProp;
 
 export const ButtonLink = (options: ButtonLinkOptions) => (
     <Button

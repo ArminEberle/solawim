@@ -1,4 +1,4 @@
-import React, { CSSProperties } from 'react';
+import type { CSSProperties } from 'react';
 import './Output.css';
 
 export type OutputProps = {

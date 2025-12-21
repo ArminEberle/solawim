@@ -1,0 +1,76 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": {
+        "Abholraum": {
+            "enum": [
+                "gertenbach",
+                "hutzelberghof",
+                "witzenhausen"
+            ],
+            "type": "string"
+        },
+        "Product": {
+            "enum": [
+                "brot",
+                "fleisch",
+                "milch",
+                "veggie"
+            ],
+            "type": "string"
+        }
+    },
+    "description": "Represents the data required to send an email to multiple recipients.",
+    "properties": {
+        "additionalRecipients": {
+            "description": "Additional e-mail addresses that should receive the mailing alongside the primary member accounts.",
+            "items": {
+                "type": "string"
+            },
+            "type": "array"
+        },
+        "body": {
+            "description": "The body of the email. Plain text only.",
+            "type": "string"
+        },
+        "recipients": {
+            "description": "List of email recipients, as user IDs in the system.\nOnly active users will receive the email.",
+            "items": {
+                "type": "string"
+            },
+            "type": "array"
+        },
+        "selection": {
+            "description": "Captures the selection parameters that produced the recipient list.",
+            "properties": {
+                "abholraeume": {
+                    "items": {
+                        "$ref": "#/definitions/Abholraum"
+                    },
+                    "type": "array"
+                },
+                "activeMembers": {
+                    "type": "boolean"
+                },
+                "allMembers": {
+                    "type": "boolean"
+                },
+                "products": {
+                    "items": {
+                        "$ref": "#/definitions/Product"
+                    },
+                    "type": "array"
+                }
+            },
+            "type": "object"
+        },
+        "subject": {
+            "description": "The subject of the email. Plain text only.",
+            "type": "string"
+        },
+        "emailTest": {
+            "description": "Marks the email as a test. In test mode the message is only sent to the configured sender address and appends the list of intended recipients at the end of the body.",
+            "type": "boolean"
+        }
+    },
+    "type": "object"
+}

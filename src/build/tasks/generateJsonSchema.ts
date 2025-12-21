@@ -6,14 +6,16 @@ export default {
     ...getDefaultTaskProperties(__filename),
     action: (name: string) => {
         console.log(name);
+        const baseCommand = 'yarn typescript-json-schema tsconfig.json';
         execSync(
-            'yarn typescript-json-schema src/members/types/MemberData.ts MemberData -o php/api/member-data-schema.json',
+            `${baseCommand} MemberData --include src/members/types/MemberData.ts -o php/api/member-data-schema.json`,
         );
         execSync(
-            'yarn typescript-json-schema src/members/types/MemberDataAdmin.ts MemberDataAdmin -o php/api/member-data-admin-schema.json',
+            `${baseCommand} MemberDataAdmin --include src/members/types/MemberDataAdmin.ts -o php/api/member-data-admin-schema.json`,
         );
         execSync(
-            'yarn typescript-json-schema src/members/types/BankingData.ts BankingData -o php/api/banking-data-schema.json',
+            `${baseCommand} BankingData --include src/members/types/BankingData.ts -o php/api/banking-data-schema.json`,
         );
+        execSync(`${baseCommand} EmailData --include src/types/EmailData.ts -o php/api/email-data-schema.json`);
     },
 } satisfies BuildTask;

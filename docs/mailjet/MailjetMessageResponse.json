@@ -1,0 +1,26 @@
+[
+    {
+        "ArrivedAt": "2025-12-20T13:16:48Z",
+        "AttachmentCount": 0,
+        "AttemptCount": 0,
+        "ContactAlt": "",
+        "ContactID": 16739620865,
+        "Delay": 0,
+        "DestinationID": 101361160,
+        "FilterTime": 0,
+        "ID": 1152921538915322327,
+        "IsClickTracked": false,
+        "IsHTMLPartIncluded": false,
+        "IsOpenTracked": true,
+        "IsTextPartIncluded": true,
+        "IsUnsubTracked": false,
+        "MessageSize": 210,
+        "SenderID": 6484994860,
+        "SpamassassinScore": 0,
+        "SpamassRules": "",
+        "StatePermanent": false,
+        "Status": "sent",
+        "Subject": "",
+        "UUID": "3c8b7df9-9fbc-4ff5-8ea6-8152c3364f03"
+    }
+]

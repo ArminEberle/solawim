@@ -3,10 +3,10 @@ import 'src/css/form.css';
 import { electronicFormatIBAN } from 'ibantools';
 import isEqual from 'lodash.isequal';
 import toNumber from 'lodash/toNumber';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { getMyData } from 'src/api/getMyData';
 import { setMyData as uploadMyData } from 'src/api/setMyData';
-import { useGetCurrentSeason, useGetSeasons } from 'src/api/useGetSeasons';
+import { useGetCurrentSeason } from 'src/api/useGetSeasons';
 import { Alert } from 'src/atoms/Alert';
 import { showAlertWithBackdrop } from 'src/atoms/AlertWithBackdrop';
 import { Button } from 'src/atoms/Button';
@@ -25,8 +25,10 @@ import {
     MemberSelfManagementPagePassiveHint,
     MemberSelfManagementPageYesIWant,
 } from 'src/members/pages/MemberSelfManagementPageText';
-import { emptyMemberData, type ZeroTo30 } from 'src/members/types/MemberData';
+import { MultiEmailInput } from 'src/members/pages/MultiEmailInput';
+import { emptyMemberData } from 'src/members/types/MemberData';
 import { LoggedInScope } from 'src/members/utils/LoggedInScope';
+import { sanitizeAdditionalEmailReceipients } from 'src/members/utils/additionalEmailReceipients';
 import { calculateMemberTotalSum } from 'src/members/utils/calculateMemberTotalSum';
 import { calculatePositionPrice } from 'src/members/utils/calculatePositionPrice';
 import { calculatePositionSum } from 'src/members/utils/calculatePositionSum';
@@ -37,7 +39,6 @@ import { formMe } from 'src/utils/forms';
 import { has } from 'src/utils/has';
 import { prices } from 'src/utils/prices';
 import { ibanValidator } from 'src/validators/ibanValidator';
-import { FlexGap } from 'src/atoms/FlexGap';
 
 const required = true;
 
@@ -80,8 +81,12 @@ export const MemberSelfManagementPageInternal = () => {
                 void showAlertWithBackdrop('Bitte wähle noch den Abholraum aus.');
                 return;
             }
-            await uploadMyData(data);
-            setData(data);
+            const sanitizedData = {
+                ...data,
+                additionalEmailReceipients: sanitizeAdditionalEmailReceipients(data.additionalEmailReceipients ?? []),
+            };
+            await uploadMyData(sanitizedData);
+            setData(sanitizedData);
             await showAlertWithBackdrop(
                 'Deine Daten sind jetzt gespeichert und werden so verwendet, wenn Du sie nicht mehr änderst.',
             );
@@ -98,6 +103,7 @@ export const MemberSelfManagementPageInternal = () => {
             data.milchSolidar = '0';
         }
         data.useSepa = data.useSepa ?? true;
+        data.additionalEmailReceipients = sanitizeAdditionalEmailReceipients(data.additionalEmailReceipients ?? []);
         setFormDataState({ ...data });
         setServerState({ ...data });
         setReloadState(false);
@@ -453,6 +459,20 @@ export const MemberSelfManagementPageInternal = () => {
                                     required={required}
                                     disabled={!formDataState.member}
                                     {...register('tel')}
+                                />
+                                <MultiEmailInput
+                                    label="Zusätzliche E-Mail-Empfänger*innen für Organisations-EMails"
+                                    value={formDataState.additionalEmailReceipients ?? []}
+                                    onChange={emails =>
+                                        setFormDataState(current => ({
+                                            ...current,
+                                            additionalEmailReceipients: sanitizeAdditionalEmailReceipients(emails),
+                                        }))
+                                    }
+                                    disabled={!formDataState.member}
+                                    maxLength={500}
+                                    name="additionalEmailReceipients"
+                                    title="Mehrere E-Mail-Adressen durch Komma, Semikolon oder Zeilenumbruch trennen."
                                 />
                                 <br />
                                 <Checkbox {...register('useSepa')}>

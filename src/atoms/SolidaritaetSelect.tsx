@@ -1,4 +1,3 @@
-import React from 'react';
 import { Select } from 'src/atoms/Select';
 import type { FormInputBaseProps } from 'src/atoms/types/FormInputBaseProps';
 

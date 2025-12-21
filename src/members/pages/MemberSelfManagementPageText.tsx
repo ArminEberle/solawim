@@ -1,5 +1,3 @@
-import React from 'react';
-
 export const MemberSelfManagementPageInto = () => (
     <section>
         <h3>Hallo, schön dass Du beim Höhberg Kollektiv Mitglied werden möchtest oder schon bist!</h3>

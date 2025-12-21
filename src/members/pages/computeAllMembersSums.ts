@@ -1,11 +1,33 @@
+import { type ItemSums, addItemSum, emptyItemSums } from 'src/members/pages/emptyItemSums';
 import { AllMembersData } from 'src/members/types/AllMembersData';
+import type { MemberData } from 'src/members/types/MemberData';
+import { Product } from 'src/members/types/Product';
 import { calculatePositionSum } from 'src/members/utils/calculatePositionSum';
 import { has } from 'src/utils/has';
 import { prices } from 'src/utils/prices';
-import { emptyOverallSumState, type OverallSumState } from './emptyOverallSumState';
-import type { MemberData } from 'src/members/types/MemberData';
-import { Product } from 'src/members/types/Product';
-import { addItemSum, emptyItemSums, type ItemSums } from 'src/members/pages/emptyItemSums';
+import { type OverallSumState, emptyOverallSumState } from './emptyOverallSumState';
+
+type AmountField = 'brotMenge' | 'fleischMenge' | 'milchMenge' | 'veggieMenge';
+type SolidarField = 'brotSolidar' | 'fleischSolidar' | 'milchSolidar' | 'veggieSolidar';
+
+const PRODUCT_FIELD_MAP: Record<Product, { amount: AmountField; solidar: SolidarField }> = {
+    [Product.BROT]: {
+        amount: 'brotMenge',
+        solidar: 'brotSolidar',
+    },
+    [Product.FLEISCH]: {
+        amount: 'fleischMenge',
+        solidar: 'fleischSolidar',
+    },
+    [Product.MILCH]: {
+        amount: 'milchMenge',
+        solidar: 'milchSolidar',
+    },
+    [Product.VEGGIE]: {
+        amount: 'veggieMenge',
+        solidar: 'veggieSolidar',
+    },
+};
 
 export const computeAllMembersSums = (allMembers: AllMembersData, season: number): OverallSumState => {
     const total = emptyOverallSumState();
@@ -55,7 +77,9 @@ const computeMemberProductSum = (product: Product, membership: MemberData, seaso
     result.product = product;
     result.active = membership.active;
 
-    const articleAmount = Number.parseInt((membership?.[product + 'Menge'] as unknown as string) ?? '0') ?? 0;
+    const { amount: amountField, solidar: solidarField } = PRODUCT_FIELD_MAP[product];
+    const rawAmount = membership[amountField] ?? '0';
+    const articleAmount = Number.parseInt(String(rawAmount)) || 0;
     if (articleAmount === 0) {
         return result;
     }
@@ -68,7 +92,8 @@ const computeMemberProductSum = (product: Product, membership: MemberData, seaso
         return result;
     }
 
-    const articleSolidar = membership[product + 'Solidar'] as unknown as string;
+    const rawSolidar = membership[solidarField] ?? '0';
+    const articleSolidar = String(rawSolidar);
     let articleSolidarNumber = Number.parseInt(articleSolidar);
     if (Number.isNaN(articleSolidarNumber)) {
         articleSolidarNumber = 0;

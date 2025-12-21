@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import 'src/css/layout.css';
 import { getAllMemberHistoryData } from 'src/api/getAllMemberHistoryData';
 import { ChangeEntry, SingleMemberHistoryData } from 'src/members/types/AllMembersData';

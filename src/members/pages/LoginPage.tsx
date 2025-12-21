@@ -1,4 +1,3 @@
-import React from 'react';
 import { ButtonLink } from 'src/atoms/ButtonLink';
 import { Page } from 'src/layout/Page';
 

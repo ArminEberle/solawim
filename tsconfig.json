@@ -4,7 +4,7 @@
         "module": "commonjs",
         "moduleResolution": "node",
         "lib": ["ES2019", "DOM"],
-        "types": ["jest"],
+        "types": ["react"],
 
         // "rootDir": "./",
         "baseUrl": ".",
@@ -35,7 +35,7 @@
         "checkJs": false,
         "resolveJsonModule": true,
 
-        "jsx": "react",
+        "jsx": "react-jsx",
 
         "esModuleInterop": true,
         "skipLibCheck": true,

@@ -1,7 +1,7 @@
 import { electronicFormatIBAN } from 'ibantools';
 import isEqual from 'lodash.isequal';
 import toNumber from 'lodash/toNumber';
-import React from 'react';
+import { useMemo } from 'react';
 import { Button } from 'src/atoms/Button';
 import { Checkbox } from 'src/atoms/Checkbox';
 import { Input } from 'src/atoms/Input';
@@ -11,7 +11,9 @@ import { Select } from 'src/atoms/Select';
 import { SolidaritaetSelect } from 'src/atoms/SolidaritaetSelect';
 import { Horizontal } from 'src/layout/Horizontal';
 import { Vertical } from 'src/layout/Vertical';
+import { MultiEmailInput } from 'src/members/pages/MultiEmailInput';
 import { MemberData, emptyMemberData } from 'src/members/types/MemberData';
+import { sanitizeAdditionalEmailReceipients } from 'src/members/utils/additionalEmailReceipients';
 import { calculateMemberTotalSum } from 'src/members/utils/calculateMemberTotalSum';
 import { calculatePositionPrice } from 'src/members/utils/calculatePositionPrice';
 import { calculatePositionSum } from 'src/members/utils/calculatePositionSum';
@@ -28,7 +30,7 @@ export type MemberEditProps = {
 };
 
 export const MemberEditMolecule = (props: MemberEditProps) => {
-    const initialData = props.data ?? emptyMemberData();
+    const initialData = useMemo(() => props.data ?? emptyMemberData(), [props.data]);
 
     const season = useSeason();
 
@@ -37,15 +39,27 @@ export const MemberEditMolecule = (props: MemberEditProps) => {
         handleSubmit,
         register,
         state: formDataState,
+        setState,
     } = formMe({
         data: initialData,
         onSubmit: async (data, setData) => {
-            await props.onSave(data);
-            setData(data);
-            console.log('It is done', data);
+            const sanitized: MemberData = {
+                ...data,
+                additionalEmailReceipients: sanitizeAdditionalEmailReceipients(data.additionalEmailReceipients ?? []),
+            };
+            await props.onSave(sanitized);
+            setData(sanitized);
+            console.log('It is done', sanitized);
         },
     });
     const isDirty = !isEqual(initialData, formDataState);
+    const updateAdditionalEmailReceipients = (emails: string[]) => {
+        const sanitized = sanitizeAdditionalEmailReceipients(emails);
+        setState(current => ({
+            ...current,
+            additionalEmailReceipients: sanitized,
+        }));
+    };
 
     return (
         <form
@@ -337,6 +351,15 @@ export const MemberEditMolecule = (props: MemberEditProps) => {
                     required={props.required}
                     disabled={!formDataState.member}
                     {...register('tel')}
+                />
+                <MultiEmailInput
+                    label="Zusätzliche E-Mail-Empfänger*innen"
+                    value={formDataState.additionalEmailReceipients ?? []}
+                    onChange={updateAdditionalEmailReceipients}
+                    disabled={!formDataState.member}
+                    maxLength={500}
+                    name="additionalEmailReceipients"
+                    title="Mehrere E-Mail-Adressen durch Komma, Semikolon oder Zeilenumbruch trennen."
                 />
             </Vertical>
 

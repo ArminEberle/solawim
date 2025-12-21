@@ -1,5 +1,5 @@
-import React from 'react';
-import { ReactNode, useState } from 'react';
+import type { ReactNode } from 'react';
+import { useState } from 'react';
 import { Checkbox } from 'src/atoms/Checkbox';
 
 export type CollapsibleSectionProps = {

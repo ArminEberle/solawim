@@ -7,6 +7,9 @@ import { getDefaultTaskProperties } from 'src/build/utils/getDefaultTaskProperti
  */
 export default {
     ...getDefaultTaskProperties(__filename),
-    action: taskName => void execSync('yarn biome check --write .'),
+    action: (_taskName, taskLog) => {
+        taskLog('Fixing Biome issues');
+        execSync('yarn biome check --write .');
+    },
     description: 'Runs biome on all TypeScript files and fixes them where possible',
 } satisfies BuildTask;

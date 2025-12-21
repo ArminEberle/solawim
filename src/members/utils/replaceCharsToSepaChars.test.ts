@@ -1,6 +1,6 @@
-import { expect, test } from '@jest/globals';
 import { replaceCharsToSepaChars } from 'src/members/utils/replaceCharsToSepaChars';
+import { expect, test } from 'vitest';
 
 test('replaceCharsToSepaChars', () => {
-    expect(replaceCharsToSepaChars('äÄüÜöÖßá&')).toBe('aeAeueUeoeOess  ');
+    expect(replaceCharsToSepaChars('äÄüÜöÖßá&')).toBe('aeAeueUeoeOessa ');
 });

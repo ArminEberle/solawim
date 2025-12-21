@@ -1,49 +1,8 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "definitions": {
-        "Abholraum": {
-            "enum": ["gertenbach", "hutzelberghof", "witzenhausen"],
-            "type": "string"
-        },
         "Solidar": {
             "enum": ["-1", "-2", "0", "1", "2"],
-            "type": "string"
-        },
-        "ZeroAndHalfTo30": {
-            "enum": [
-                "0",
-                "0.5",
-                "1",
-                "10",
-                "11",
-                "12",
-                "13",
-                "14",
-                "15",
-                "16",
-                "17",
-                "18",
-                "19",
-                "2",
-                "20",
-                "21",
-                "22",
-                "23",
-                "24",
-                "25",
-                "26",
-                "27",
-                "28",
-                "29",
-                "3",
-                "30",
-                "4",
-                "5",
-                "6",
-                "7",
-                "8",
-                "9"
-            ],
             "type": "string"
         },
         "ZeroTo30": {
@@ -87,7 +46,8 @@
         "memberData": {
             "properties": {
                 "abholraum": {
-                    "$ref": "#/definitions/Abholraum"
+                    "enum": ["gertenbach", "hutzelberghof", "witzenhausen"],
+                    "type": "string"
                 },
                 "accountowner": {
                     "type": "string"
@@ -102,7 +62,14 @@
                     "type": "string"
                 },
                 "active": {
+                    "description": "If the member is a working member instead of a regular (paying) member",
                     "type": "boolean"
+                },
+                "additionalEmailReceipients": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
                 },
                 "bank": {
                     "type": "string"
@@ -123,7 +90,7 @@
                     "type": "string"
                 },
                 "fleischMenge": {
-                    "$ref": "#/definitions/ZeroAndHalfTo30"
+                    "$ref": "#/definitions/ZeroTo30"
                 },
                 "fleischSolidar": {
                     "$ref": "#/definitions/Solidar"
@@ -138,7 +105,48 @@
                     "type": "string"
                 },
                 "member": {
+                    "description": "If the member has an active membership",
                     "type": "boolean"
+                },
+                "milchMenge": {
+                    "enum": [
+                        "0",
+                        "1",
+                        "10",
+                        "11",
+                        "12",
+                        "13",
+                        "14",
+                        "15",
+                        "16",
+                        "17",
+                        "18",
+                        "19",
+                        "2",
+                        "20",
+                        "21",
+                        "22",
+                        "23",
+                        "24",
+                        "25",
+                        "26",
+                        "27",
+                        "28",
+                        "29",
+                        "3",
+                        "30",
+                        "4",
+                        "5",
+                        "6",
+                        "7",
+                        "8",
+                        "9"
+                    ],
+                    "type": "string"
+                },
+                "milchSolidar": {
+                    "enum": ["-1", "-2", "0", "1", "2"],
+                    "type": "string"
                 },
                 "plz": {
                     "type": "string"

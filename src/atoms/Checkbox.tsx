@@ -1,7 +1,8 @@
 // import '/src/atoms/Checkbox.css';
 import './Checkbox.css';
 
-import React, { useRef } from 'react';
+import { useRef } from 'react';
+import type { PropsWithChildren } from 'react';
 import { BsToggleOff, BsToggleOn } from 'react-icons/bs';
 import { RxTriangleDown, RxTriangleRight } from 'react-icons/rx';
 import type { FormInputBaseProps } from 'src/atoms/types/FormInputBaseProps';
@@ -10,7 +11,7 @@ export type CheckboxOptions = {
     kind?: 'normal' | 'tree' | 'toggle';
     className?: string;
 } & FormInputBaseProps<HTMLInputElement, boolean> &
-    React.PropsWithChildren;
+    PropsWithChildren;
 
 export const Checkbox = (props: CheckboxOptions) => {
     let className = 'checkbox';

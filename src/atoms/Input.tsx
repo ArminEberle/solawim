@@ -1,5 +1,5 @@
 import type { ChangeEvent, FocusEvent, ReactElement } from 'react';
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import type { FormInputBaseProps } from 'src/atoms/types/FormInputBaseProps';
 import type { LayoutExtraProps } from 'src/atoms/types/LayoutExtraProps';
 import { layoutExtraProps } from 'src/utils/layoutExtraProps';
@@ -11,6 +11,7 @@ export type InputProps = {
     width?: number;
     pattern?: string;
     title?: string;
+    type?: string;
     autocomplete?:
         | 'username'
         | 'password'
@@ -64,7 +65,7 @@ export const Input = (options: InputProps): ReactElement => {
         >
             <label className="control-label">{options.label}</label>
             <input
-                type="text"
+                type={options.type ?? 'text'}
                 className="form-control"
                 name={options.name}
                 placeholder={options.label}

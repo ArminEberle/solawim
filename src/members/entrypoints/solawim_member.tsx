@@ -1,5 +1,4 @@
 import 'src/css/index.css';
-import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { MemberSelfManagementPage } from 'src/members/pages/MemberSelfManagementPage';
 

@@ -1,0 +1,18 @@
+{
+    "Messages": [
+        {
+            "Status": "success",
+            "CustomID": "7",
+            "To": [
+                {
+                    "Email": "info@hoehberg-kollektiv.de",
+                    "MessageUUID": "3c8b7df9-9fbc-4ff5-8ea6-8152c3364f03",
+                    "MessageID": 1152921538915322327,
+                    "MessageHref": "https:\\/\\/api.mailjet.com\\/v3\\/REST\\/message\\/1152921538915322327"
+                }
+            ],
+            "Cc": [],
+            "Bcc": []
+        }
+    ]
+}

@@ -1,4 +1,4 @@
-import React from 'react';
+import type { ReactElement } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Button } from 'src/atoms/Button';
 import 'src/css/alert-with-backdrop.css';
@@ -8,7 +8,7 @@ export type AlertWithBackdropProps = {
     onClose: () => void;
 };
 
-export const AlertWithBackdrop = (props: AlertWithBackdropProps): JSX.Element => {
+export const AlertWithBackdrop = (props: AlertWithBackdropProps): ReactElement => {
     return (
         <>
             <div

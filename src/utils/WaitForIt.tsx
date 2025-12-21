@@ -1,14 +1,14 @@
-import type { ReactNode } from 'react';
-import React, { useEffect } from 'react';
+import type { ReactElement, ReactNode } from 'react';
+import { useEffect } from 'react';
 import { LoadingIndicator } from 'src/atoms/LoadingIndicator';
 
-export type WaitForItProps<C extends ReactNode | undefined> = {
+export type WaitForItProps = {
     redo?: boolean;
     callback: () => Promise<void>;
-    children?: C;
+    children?: ReactNode;
 };
 
-export function WaitForIt<C extends ReactNode | undefined>(options: WaitForItProps<C>): JSX.Element {
+export const WaitForIt = (options: WaitForItProps): ReactElement => {
     useEffect(() => {
         if (options.redo) {
             try {
@@ -18,5 +18,5 @@ export function WaitForIt<C extends ReactNode | undefined>(options: WaitForItPro
             }
         }
     }, [options.redo]);
-    return options.redo ? ((<LoadingIndicator />) as JSX.Element) : (options.children as JSX.Element);
-}
+    return options.redo ? <LoadingIndicator /> : <>{options.children}</>;
+};
