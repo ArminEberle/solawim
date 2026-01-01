@@ -21,17 +21,17 @@ $dbInitialized = false;
 
 add_role('vereinsverwaltung', 'Vereinsverwaltung');
 
-$seasons = [2024, 2025];
-$defaultSeason = 2025;
+$seasons = [2025, 2026];
+$defaultSeason = 2026;
 
 $seasonToMembership = array(
-    2024 => array(
-        "membership" => "{$wpdb->prefix}solawim_2024",
-        "hist" =>  "{$wpdb->prefix}solawim_2024_hist"
-    ),
     2025 => array(
         "membership" => "{$wpdb->prefix}solawim_2025",
         "hist" =>  "{$wpdb->prefix}solawim_2025_hist"
+    ),
+    2026 => array(
+        "membership" => "{$wpdb->prefix}solawim_2026",
+        "hist" =>  "{$wpdb->prefix}solawim_2026_hist"
     ),
 );
 
@@ -603,6 +603,17 @@ $container['errorHandler'] = function ($c) {
             ->write(json_encode($data));
     };
 };
+
+$app->get('/membership', function (Request $request, Response $response, array $args) {
+    $season = getSeasonFromQueryString($request);
+    $userId = getUserId();
+    if (!($userId > 0)) {
+        return reportError('Please login before proceeding', $response, 401);
+    }
+    $result = getMembershipData($userId, $season);
+    $response->getBody()->write(json_encode($result));
+    return $response;
+});
 
 $app->post('/membership', function (Request $request, Response $response, array $args) {
     global $seasonToMembership;

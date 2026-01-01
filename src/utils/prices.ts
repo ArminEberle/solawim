@@ -9,16 +9,16 @@ export type PricesType = Record<
 >;
 
 export const prices: PricesType = {
-    2024: {
-        fleisch: 105,
-        milch: 2,
-        brot: 25,
-        veggie: 105,
-    },
     2025: {
         fleisch: 105,
         milch: 8,
         brot: 25,
         veggie: 105,
+    },
+    2026: {
+        fleisch: 115,
+        milch: 9,
+        brot: 28,
+        veggie: 111,
     },
 };
