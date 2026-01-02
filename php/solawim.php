@@ -103,3 +103,17 @@ function save_custom_user_fields_profile( $user_id ) {
         update_user_meta( $user_id, 'how_found', sanitize_text_field( $_POST['how_found'] ) );
     }
 }
+
+// redirect nach login
+add_filter( 'login_redirect', 'custom_login_redirect', 10, 3 );
+function custom_login_redirect( $redirect_to, $request, $user ) {
+    if ( isset( $user->roles ) && is_array( $user->roles ) ) {
+        // check ob der user die rolle "vereinsverwaltung" hat
+        if ( in_array( 'vereinsverwaltung', $user->roles ) ) {
+            return home_url( '/vereinsverwaltung/' );;
+        }
+        // Ansonsten Mitgliederbereich
+        return home_url( '/mitgliedsantrag/' );
+    }
+    return $redirect_to;
+}
