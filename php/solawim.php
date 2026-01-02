@@ -49,6 +49,8 @@ function solawim_disable_wp_emojis_from_tinymce($plugins)
     return array();
 }
 
+// Remove emoji CDN hostname from DNS prefetching hints.
+// This is to prevent code-clashin g with certain Content Security Policies.
 function solawim_disable_wp_emojis_dns_prefetch($urls, $relation_type)
 {
     if ('dns-prefetch' === $relation_type) {
@@ -57,4 +59,47 @@ function solawim_disable_wp_emojis_dns_prefetch($urls, $relation_type)
     }
 
     return $urls;
+}
+
+// Add custom registration field for "How did you find us?"
+add_action( 'register_form', 'custom_registration_fields' );
+function custom_registration_fields() {
+    ?>
+    <p>
+        <label for="how_found">Wie bist Du auf das Höhberg Kollektiv aufmerksam geworden?<br>
+            <input type="text" name="how_found" id="how_found" class="input" value="<?php echo esc_attr( $_POST['how_found'] ?? '' ); ?>" size="25" required />
+        </label>
+    </p>
+    <?php
+}
+
+add_action( 'user_register', 'save_custom_registration_fields', 10, 1 );
+function save_custom_registration_fields( $user_id ) {
+    if ( isset( $_POST['how_found'] ) ) {
+        update_user_meta( $user_id, 'how_found', sanitize_text_field( $_POST['how_found'] ) );
+    }
+}
+
+add_action( 'show_user_profile', 'display_custom_user_fields' );
+add_action( 'edit_user_profile', 'display_custom_user_fields' );
+function display_custom_user_fields( $user ) {
+    $how_found = get_user_meta( $user->ID, 'how_found', true );
+    ?>
+    <h3>Zusätzliche Informationen</h3>
+    <table class="form-table">
+        <tr>
+            <th><label>Wie bist Du auf das Höhberg Kollektiv aufmerksam geworden?</label></th>
+            <td><input type="text" name="how_found" value="<?php echo esc_attr( $how_found ); ?>" class="regular-text" /></td>
+        </tr>
+    </table>
+    <?php
+}
+
+// Speichern im Profil
+add_action( 'personal_options_update', 'save_custom_user_fields_profile' );
+add_action( 'edit_user_profile_update', 'save_custom_user_fields_profile' );
+function save_custom_user_fields_profile( $user_id ) {
+    if ( current_user_can( 'edit_user', $user_id ) && isset( $_POST['how_found'] ) ) {
+        update_user_meta( $user_id, 'how_found', sanitize_text_field( $_POST['how_found'] ) );
+    }
 }
