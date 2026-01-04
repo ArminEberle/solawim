@@ -68,7 +68,7 @@ export const esBuildConfig = (production = true): esbuild.BuildOptions => {
                     postCssNested,
                     autoprefixer,
                     cssNano({
-                        preset: 'default',
+                        preset: ['default', { discardUnused: false }],
                     }),
                 ],
             }),

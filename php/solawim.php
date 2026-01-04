@@ -67,10 +67,22 @@ function custom_registration_fields() {
     ?>
     <p>
         <label for="how_found">Wie bist Du auf das Höhberg Kollektiv aufmerksam geworden?<br>
-            <input type="text" name="how_found" id="how_found" class="input" value="<?php echo esc_attr( $_POST['how_found'] ?? '' ); ?>" size="25" required />
+            <input type="text" minlength="3" name="how_found" id="how_found" class="input" value="<?php echo esc_attr( $_POST['how_found'] ?? '' ); ?>" size="25" required />
         </label>
     </p>
     <?php
+}
+
+// Validate the custom registration field
+add_filter( 'registration_errors', 'validate_custom_registration_fields', 10, 3 );
+function validate_custom_registration_fields( $errors, $sanitized_user_login, $user_email ) {
+    $how_found = isset($_POST['how_found']) ? trim($_POST['how_found']) : '';
+    if ( $how_found === '' ) {
+        $errors->add( 'how_found_error', __( '<strong>Fehler</strong>: Bitte gib an, wie Du auf das Höhberg Kollektiv aufmerksam geworden bist.', 'solawim' ) );
+    } elseif ( mb_strlen($how_found) < 3 ) {
+        $errors->add( 'how_found_error', __( '<strong>Fehler</strong>: Bitte gib mindestens 3 Zeichen an, wie Du auf das Höhberg Kollektiv aufmerksam geworden bist.', 'solawim' ) );
+    }
+    return $errors;
 }
 
 add_action( 'user_register', 'save_custom_registration_fields', 10, 1 );
