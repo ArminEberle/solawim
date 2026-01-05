@@ -1,7 +1,7 @@
 import { electronicFormatIBAN } from 'ibantools';
 import isEqual from 'lodash.isequal';
 import toNumber from 'lodash/toNumber';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Button } from 'src/atoms/Button';
 import { Checkbox } from 'src/atoms/Checkbox';
 import { Input } from 'src/atoms/Input';
@@ -35,6 +35,7 @@ export const MemberEditMolecule = (props: MemberEditProps) => {
     const initialData = useMemo(() => props.data ?? emptyMemberData(), [props.data]);
 
     const season = useSeason();
+    const [isSavingState, setIsSavingState] = useState(false);
 
     initialData.useSepa = initialData.useSepa ?? true;
     const {
@@ -45,13 +46,19 @@ export const MemberEditMolecule = (props: MemberEditProps) => {
     } = formMe({
         data: initialData,
         onSubmit: async (data, setData) => {
-            const sanitized: MemberData = {
-                ...data,
-                additionalEmailReceipients: sanitizeAdditionalEmailReceipients(data.additionalEmailReceipients ?? []),
-            };
-            await props.onSave(sanitized);
-            setData(sanitized);
-            console.log('It is done', sanitized);
+            setIsSavingState(true);
+            try {
+                const sanitized: MemberData = {
+                    ...data,
+                    additionalEmailReceipients: sanitizeAdditionalEmailReceipients(
+                        data.additionalEmailReceipients ?? [],
+                    ),
+                };
+                await props.onSave(sanitized);
+                setData(sanitized);
+            } finally {
+                setIsSavingState(false);
+            }
         },
     });
     const isDirty = !isEqual(initialData, formDataState);
@@ -460,6 +467,7 @@ export const MemberEditMolecule = (props: MemberEditProps) => {
                     tabIndex={0}
                 >
                     Speichern{!isDirty && <small> (Es gibt nichts zu speichern)</small>}
+                    {isSavingState && <div className="mini-spinner"></div>}
                 </Button>
             </Horizontal>
         </form>

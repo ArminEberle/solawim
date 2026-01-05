@@ -63,6 +63,7 @@ export const MemberSelfManagementPage = () => {
 export const MemberSelfManagementPageInternal = () => {
     const [serverState, setServerState] = useState(emptyMemberData());
     const [reloadState, setReloadState] = useState(true);
+    const [isSavingState, setIsSavingState] = useState(false);
 
     const {
         handleSubmit,
@@ -81,16 +82,23 @@ export const MemberSelfManagementPageInternal = () => {
                 void showAlertWithBackdrop('Bitte wähle noch den Abholraum aus.');
                 return;
             }
-            const sanitizedData = {
-                ...data,
-                additionalEmailReceipients: sanitizeAdditionalEmailReceipients(data.additionalEmailReceipients ?? []),
-            };
-            await uploadMyData(sanitizedData);
-            setData(sanitizedData);
-            await showAlertWithBackdrop(
-                'Deine Daten sind jetzt gespeichert und werden so verwendet, wenn Du sie nicht mehr änderst.',
-            );
-            setReloadState(true);
+            setIsSavingState(true);
+            try {
+                const sanitizedData = {
+                    ...data,
+                    additionalEmailReceipients: sanitizeAdditionalEmailReceipients(
+                        data.additionalEmailReceipients ?? [],
+                    ),
+                };
+                await uploadMyData(sanitizedData);
+                setData(sanitizedData);
+                await showAlertWithBackdrop(
+                    'Deine Daten sind jetzt gespeichert und werden so verwendet, wenn Du sie nicht mehr änderst.',
+                );
+                setReloadState(true);
+            } finally {
+                setIsSavingState(false);
+            }
         },
     });
 
@@ -586,6 +594,7 @@ export const MemberSelfManagementPageInternal = () => {
                                     tabIndex={0}
                                 >
                                     Speichern{!isDirty && <small> (Es gibt nichts zu speichern)</small>}
+                                    {isSavingState && <div className="mini-spinner"></div>}
                                 </Button>
                             </Horizontal>
                         </form>

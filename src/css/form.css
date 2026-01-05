@@ -44,3 +44,19 @@ select.form-control {
 form h3 {
     margin: 0.25rem 0rem 1rem 0rem;
 }
+
+.mini-spinner {
+    border: 2px solid #f3f3f3; /* Light grey */
+    border-top: 2px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 12px;
+    height: 12px;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+    margin-left: 5px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
