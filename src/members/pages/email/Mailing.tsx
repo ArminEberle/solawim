@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { ComposeEmailTab } from 'src/members/pages/ComposeEmailTab';
-import { EmailHistoryTab } from 'src/members/pages/EmailHistoryTab';
+import { ComposeEmailTab } from 'src/members/pages/email/ComposeEmailTab';
+import { EmailHistoryTab } from 'src/members/pages/email/EmailHistoryTab';
 import type { AllMembersData } from 'src/members/types/AllMembersData';
 
 const TAB_COMPOSE = 'compose';

@@ -18,13 +18,6 @@ Wenn Du dich hier das erste Mal angemeldet hast, bekommst Du in den nächsten Ta
 
 TODOS:
 
-/ Mails versenden für interne Mitteilung über eigenes Plugin
-
-/ mit Liste der vergangenen Mails
-/ Weitere Emails eintragen für Abonnenten
-
-/ Woher kennt Ihr uns - bei der Registrierung mit angeben.
-
 - Aufteilen des Tieranteils für die Milchprodukte
   - Joghurt
   - Quark

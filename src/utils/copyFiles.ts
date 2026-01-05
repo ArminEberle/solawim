@@ -1,17 +1,16 @@
 import fs from 'fs';
 import path from 'path';
+import { ensureParentDirExists } from 'src/utils/ensureParentDirExists';
 
-export async function copyFile(source: string, target: string): Promise<void> {
-    await fs.promises.mkdir(path.dirname(target), { recursive: true });
-    if (fs.existsSync(target)) {
-        if ((await fs.promises.lstat(target)).isDirectory()) {
-            throw new Error(target + ' is a directory');
-        }
-    }
-
-    await fs.promises.writeFile(target, await fs.promises.readFile(source));
-    // console.log('copied to file ' + target);
-}
+/**
+ * Copies a file from sourcePath to destPath, ensuring that the destination directory exists.
+ * @param sourcePath
+ * @param destPath
+ */
+export const copyFile = async (sourcePath: string, destPath: string): Promise<void> => {
+    await ensureParentDirExists(destPath);
+    return fs.promises.copyFile(sourcePath, destPath);
+};
 
 export async function copyFolderRecursiveAndWatch(source: string, target: string): Promise<void> {
     await copyFolderRecursive(source, target);

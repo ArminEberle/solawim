@@ -1,5 +1,4 @@
-// import '/src/atoms/LoadingIndicator.css';
-import './LoadingIndicator.css';
+import 'src/atoms/LoadingIndicator.css';
 
 import type { CSSProperties } from 'react';
 

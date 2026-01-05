@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Vertical } from 'src/layout/Vertical';
-import { MemberDetailMolecule } from 'src/members/pages/MemberDetailMolecule';
-import type { OverallSumState } from 'src/members/pages/emptyOverallSumState';
-import { VereinsverwaltungHistory } from 'src/members/pages/VereinsverwaltungHistory';
-import { VereinsverwaltungSums } from 'src/members/pages/VereinsverwaltungSums';
+import { MemberDetailMolecule } from 'src/members/pages/management/MemberDetailMolecule';
+import type { OverallSumState } from 'src/members/utils/emptyOverallSumState';
+import { VereinsverwaltungHistory } from 'src/members/pages/management/VereinsverwaltungHistory';
+import { VereinsverwaltungSums } from 'src/members/pages/management/VereinsverwaltungSums';
 import type { AllMembersData } from 'src/members/types/AllMembersData';
 import { CollapsibleSection } from 'src/molecules/CollapsibleSection';
 import { abholraumOptions } from 'src/utils/abholraumOptions';

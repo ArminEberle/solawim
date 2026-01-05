@@ -6,7 +6,7 @@ import { DataElement } from 'src/atoms/DataElement';
 import { useSeason } from 'src/atoms/SeasonSelect';
 import { Horizontal } from 'src/layout/Horizontal';
 import { Vertical } from 'src/layout/Vertical';
-import { MemberEditMolecule } from 'src/members/pages/MemberEditMolecule';
+import { MemberEditMolecule } from 'src/members/pages/management/MemberEditMolecule';
 import { SingleMemberData } from 'src/members/types/AllMembersData';
 import { calculateMemberTotalSum } from 'src/members/utils/calculateMemberTotalSum';
 import { calculatePositionSum } from 'src/members/utils/calculatePositionSum';

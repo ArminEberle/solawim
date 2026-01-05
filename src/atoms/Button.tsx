@@ -1,5 +1,4 @@
-import './Button.css';
-// import '/src/atoms/Button.css';
+import 'src/atoms/Button.css';
 
 import type { CSSProperties, PropsWithChildren, ReactElement } from 'react';
 import type { ButtonStyleProp } from 'src/atoms/types/ButtonStyleProp';

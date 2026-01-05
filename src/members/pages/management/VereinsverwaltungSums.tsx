@@ -6,7 +6,7 @@ import { Output } from 'src/atoms/Output';
 import { useSeason } from 'src/atoms/SeasonSelect';
 import { Horizontal } from 'src/layout/Horizontal';
 import { Vertical } from 'src/layout/Vertical';
-import { SumState } from 'src/members/pages/emptySumState';
+import { SumState } from 'src/members/utils/emptySumState';
 import { Product } from 'src/members/types/Product';
 import { createAndDownloadCSVFile } from 'src/members/utils/createAndDownloadCSVFile';
 import { createAndDownloadSepaFiles } from 'src/members/utils/createAndDownloadSepaFiles';

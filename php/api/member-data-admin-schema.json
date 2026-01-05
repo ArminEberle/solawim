@@ -2,7 +2,13 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "definitions": {
         "Solidar": {
-            "enum": ["-1", "-2", "0", "1", "2"],
+            "enum": [
+                "-1",
+                "-2",
+                "0",
+                "1",
+                "2"
+            ],
             "type": "string"
         },
         "ZeroTo30": {
@@ -46,7 +52,11 @@
         "memberData": {
             "properties": {
                 "abholraum": {
-                    "enum": ["gertenbach", "hutzelberghof", "witzenhausen"],
+                    "enum": [
+                        "gertenbach",
+                        "hutzelberghof",
+                        "witzenhausen"
+                    ],
                     "type": "string"
                 },
                 "accountowner": {
@@ -108,6 +118,23 @@
                     "description": "If the member has an active membership",
                     "type": "boolean"
                 },
+                "milchAnteilDistribution": {
+                    "properties": {
+                        "extra": {
+                            "type": "number"
+                        },
+                        "hartkaese": {
+                            "type": "number"
+                        },
+                        "joghurt": {
+                            "type": "number"
+                        },
+                        "milch": {
+                            "type": "number"
+                        }
+                    },
+                    "type": "object"
+                },
                 "milchMenge": {
                     "enum": [
                         "0",
@@ -145,7 +172,13 @@
                     "type": "string"
                 },
                 "milchSolidar": {
-                    "enum": ["-1", "-2", "0", "1", "2"],
+                    "enum": [
+                        "-1",
+                        "-2",
+                        "0",
+                        "1",
+                        "2"
+                    ],
                     "type": "string"
                 },
                 "plz": {
@@ -175,3 +208,4 @@
     },
     "type": "object"
 }
+

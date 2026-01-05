@@ -1,4 +1,4 @@
-import { type ItemSums, addItemSum, emptyItemSums } from 'src/members/pages/emptyItemSums';
+import { type ItemSums, addItemSum, emptyItemSums } from 'src/members/utils/emptyItemSums';
 import { AllMembersData } from 'src/members/types/AllMembersData';
 import type { MemberData } from 'src/members/types/MemberData';
 import { Product } from 'src/members/types/Product';

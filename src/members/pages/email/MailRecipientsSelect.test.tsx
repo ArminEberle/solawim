@@ -1,6 +1,6 @@
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { useState } from 'react';
-import { MailRecipientsSelect } from 'src/members/pages/MailRecipientsSelect';
+import { MailRecipientsSelect } from 'src/members/pages/email/MailRecipientsSelect';
 import type { MailRecipientsSelection } from 'src/members/types/MailRecipientsSelection';
 import { Product } from 'src/members/types/Product';
 import { abholraumOptions } from 'src/utils/abholraumOptions';

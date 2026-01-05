@@ -1,5 +1,3 @@
-import 'src/css/form.css';
-
 import { electronicFormatIBAN } from 'ibantools';
 import isEqual from 'lodash.isequal';
 import toNumber from 'lodash/toNumber';
@@ -24,8 +22,8 @@ import {
     MemberSelfManagementPageInto,
     MemberSelfManagementPagePassiveHint,
     MemberSelfManagementPageYesIWant,
-} from 'src/members/pages/MemberSelfManagementPageText';
-import { MultiEmailInput } from 'src/members/pages/MultiEmailInput';
+} from 'src/members/pages/member/MemberSelfManagementPageText';
+import { MultiEmailInput } from 'src/members/pages/email/MultiEmailInput';
 import { emptyMemberData } from 'src/members/types/MemberData';
 import { LoggedInScope } from 'src/members/utils/LoggedInScope';
 import { sanitizeAdditionalEmailReceipients } from 'src/members/utils/additionalEmailReceipients';
@@ -39,6 +37,8 @@ import { formMe } from 'src/utils/forms';
 import { has } from 'src/utils/has';
 import { prices } from 'src/utils/prices';
 import { ibanValidator } from 'src/validators/ibanValidator';
+import { MilchAnteilDistributionEditor } from 'src/molecules/MilchAnteilDistributionEditor';
+import { defaultMilchAnteilDistribution } from 'src/members/types/MilchAnteilDistribution';
 
 const required = true;
 
@@ -168,7 +168,7 @@ export const MemberSelfManagementPageInternal = () => {
                             <br />
 
                             <h3>Deine Anteile</h3>
-                            <Horizontal>
+                            <Horizontal jc="flex-start">
                                 <h3
                                     className="min-w-8 max-w-8"
                                     style={{ marginBottom: '6px', alignSelf: 'end' }}
@@ -224,7 +224,7 @@ export const MemberSelfManagementPageInternal = () => {
                                 )}
                             </Horizontal>
 
-                            <Horizontal>
+                            <Horizontal jc="flex-start">
                                 <h3
                                     className="min-w-8 max-w-8"
                                     style={{ marginBottom: '6px', alignSelf: 'end' }}
@@ -239,6 +239,7 @@ export const MemberSelfManagementPageInternal = () => {
                                     maxWidth={6}
                                     {...register('fleischMenge')}
                                 />
+
                                 {!activeMember && (
                                     <>
                                         <SolidaritaetSelect
@@ -279,60 +280,76 @@ export const MemberSelfManagementPageInternal = () => {
                                     </>
                                 )}
                             </Horizontal>
-                            {!activeMember && (
-                                <>
-                                    <Horizontal>
-                                        <h3
-                                            className="min-w-8 max-w-8"
-                                            style={{ marginBottom: '6px', alignSelf: 'end' }}
-                                        >
-                                            Milch
-                                        </h3>
-                                        <Select
-                                            label="Anzahl / Liter"
-                                            options={amountsToBook}
-                                            maxWidth={6}
-                                            required={required}
-                                            disabled={
-                                                !formDataState.member || toNumber(formDataState.fleischMenge) === 0
-                                            }
-                                            {...register('milchMenge')}
-                                        />
-                                        <div
-                                            style={{
-                                                alignSelf: 'flex-end',
-                                                paddingBottom: '1rem',
-                                                flexGrow: 1,
-                                            }}
-                                        >
-                                            <small>
-                                                (nur zusammen mit Fleisch, keine Solidarmöglichkeit,{' '}
-                                                {calculatePositionPrice({
-                                                    price: prices[season].milch,
-                                                    solidar: formDataState.milchSolidar,
-                                                })}{' '}
-                                                EUR / pro Anteil)
-                                            </small>
-                                        </div>
-                                        <Input
-                                            label="Summe"
-                                            value={String(
-                                                calculatePositionSum({
-                                                    amount: Number.parseInt(formDataState.milchMenge ?? '0'),
-                                                    solidar: formDataState.milchSolidar,
-                                                    price: prices[season].milch,
-                                                }),
-                                            )}
-                                            disabled={true}
-                                            maxlen={4}
-                                            maxWidth={4}
-                                            style={{ fontWeight: 'bold', textAlign: 'end', paddingRight: '1em' }}
-                                        />
-                                    </Horizontal>
-                                </>
+                            {formDataState.member && toNumber(formDataState.fleischMenge) > 0 && (
+                                <Horizontal>
+                                    <div></div>
+                                    <MilchAnteilDistributionEditor
+                                        showInfo={true}
+                                        value={
+                                            formDataState.milchAnteilDistribution ?? defaultMilchAnteilDistribution()
+                                        }
+                                        onChange={newValue => {
+                                            setFormDataState(prevState => ({
+                                                ...prevState,
+                                                milchAnteilDistribution: newValue,
+                                            }));
+                                        }}
+                                        disabled={!formDataState.member || toNumber(formDataState.fleischMenge) === 0}
+                                    />
+                                </Horizontal>
+                            )}
+                            {!activeMember && formDataState.member && toNumber(formDataState.fleischMenge) > 0 && (
+                                <Horizontal style={{ marginTop: '1rem' }}>
+                                    <div></div>
+                                    <Vertical>
+                                        <b>Extra Milch</b>
+                                        <Horizontal>
+                                            <Select
+                                                label="Liter/Woche"
+                                                options={amountsToBook}
+                                                maxWidth={6}
+                                                required={required}
+                                                disabled={
+                                                    !formDataState.member || toNumber(formDataState.fleischMenge) === 0
+                                                }
+                                                {...register('milchMenge')}
+                                            />
+                                            <div
+                                                style={{
+                                                    alignSelf: 'flex-end',
+                                                    paddingBottom: '1rem',
+                                                    flexGrow: 1,
+                                                }}
+                                            >
+                                                <small>
+                                                    (nur zusammen mit Fleisch, keine Solidarmöglichkeit,{' '}
+                                                    {calculatePositionPrice({
+                                                        price: prices[season].milch,
+                                                        solidar: formDataState.milchSolidar,
+                                                    })}{' '}
+                                                    EUR / pro Anteil)
+                                                </small>
+                                            </div>
+                                            <Input
+                                                label="Summe"
+                                                value={String(
+                                                    calculatePositionSum({
+                                                        amount: Number.parseInt(formDataState.milchMenge ?? '0'),
+                                                        solidar: formDataState.milchSolidar,
+                                                        price: prices[season].milch,
+                                                    }),
+                                                )}
+                                                disabled={true}
+                                                maxlen={4}
+                                                maxWidth={4}
+                                                style={{ fontWeight: 'bold', textAlign: 'end', paddingRight: '1em' }}
+                                            />
+                                        </Horizontal>
+                                    </Vertical>
+                                </Horizontal>
                             )}
 
-                            <Horizontal>
+                            <Horizontal jc="flex-start">
                                 <h3
                                     className="min-w-8 max-w-8"
                                     style={{ marginBottom: '6px', alignSelf: 'end' }}
@@ -513,7 +530,8 @@ export const MemberSelfManagementPageInternal = () => {
                                                 label="BIC (Nur Großbuchstaben oder Ziffern, erste sechs Zeichen nur Großbuchstaben)"
                                                 minlen={8}
                                                 maxlen={11}
-                                                pattern="[A-Z]{6,6}[A-Z2-9][A-NP-Z0-9]([A-Z0-9]{3,3}){0,1}"
+                                                pattern="^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$"
+                                                // pattern="[A-Z]{6,6}[A-Z2-9][A-NP-Z0-9]([A-Z0-9]{3,3}){0,1}"
                                                 title="Nur Großbuchstaben oder Ziffern, erste sechs Zeichen nur Großbuchstaben, mindestens 8, höchstens 11 Zeichen"
                                                 autocomplete="payee-bank-code"
                                                 required={required}

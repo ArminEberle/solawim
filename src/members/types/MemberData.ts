@@ -1,3 +1,8 @@
+import {
+    defaultMilchAnteilDistribution,
+    type MilchAnteilDistribution,
+} from 'src/members/types/MilchAnteilDistribution';
+
 export const emptyMemberData = (): MemberData => {
     return {
         member: false,
@@ -31,6 +36,8 @@ export const emptyMemberData = (): MemberData => {
         accountownerStreet: '',
         accountownerPlz: '',
         accountownerCity: '',
+
+        milchAnteilDistribution: defaultMilchAnteilDistribution(),
     };
 };
 
@@ -89,6 +96,8 @@ export type MemberData = {
     brotSolidar: Solidar;
     fleischMenge: ZeroTo30;
     fleischSolidar: Solidar;
+    milchAnteilDistribution?: MilchAnteilDistribution;
+
     milchMenge?: ZeroTo30;
     milchSolidar?: Solidar;
     veggieMenge: ZeroTo30;

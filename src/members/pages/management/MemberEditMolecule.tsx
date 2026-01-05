@@ -11,12 +11,14 @@ import { Select } from 'src/atoms/Select';
 import { SolidaritaetSelect } from 'src/atoms/SolidaritaetSelect';
 import { Horizontal } from 'src/layout/Horizontal';
 import { Vertical } from 'src/layout/Vertical';
-import { MultiEmailInput } from 'src/members/pages/MultiEmailInput';
+import { MultiEmailInput } from 'src/members/pages/email/MultiEmailInput';
 import { MemberData, emptyMemberData } from 'src/members/types/MemberData';
+import { defaultMilchAnteilDistribution } from 'src/members/types/MilchAnteilDistribution';
 import { sanitizeAdditionalEmailReceipients } from 'src/members/utils/additionalEmailReceipients';
 import { calculateMemberTotalSum } from 'src/members/utils/calculateMemberTotalSum';
 import { calculatePositionPrice } from 'src/members/utils/calculatePositionPrice';
 import { calculatePositionSum } from 'src/members/utils/calculatePositionSum';
+import { MilchAnteilDistributionEditor } from 'src/molecules/MilchAnteilDistributionEditor';
 import { abholraumOptions } from 'src/utils/abholraumOptions';
 import { amountsToBook } from 'src/utils/amountsToBook';
 import { formMe } from 'src/utils/forms';
@@ -183,22 +185,33 @@ export const MemberEditMolecule = (props: MemberEditProps) => {
                     style={{ fontWeight: 'bold', textAlign: 'end', paddingRight: '1em' }}
                 />
             </Horizontal>
-
-            {toNumber(formDataState.fleischMenge) > 0 && (
-                <>
-                    <Horizontal>
-                        <h3 className="min-w-8 max-w-8">Milch</h3>
+            <Horizontal>
+                <div></div>
+                <Vertical style={{ marginTop: '1rem' }}>
+                    <MilchAnteilDistributionEditor
+                        showInfo={false}
+                        value={formDataState.milchAnteilDistribution ?? defaultMilchAnteilDistribution()}
+                        disabled={!formDataState.member || toNumber(formDataState.fleischMenge) === 0}
+                        onChange={newValue => {
+                            setState(prevState => ({
+                                ...prevState,
+                                milchAnteilDistribution: newValue,
+                            }));
+                        }}
+                    />
+                    <Horizontal style={{ marginTop: '1rem' }}>
+                        <h4 className="min-w-8 max-w-8">Milch</h4>
                         <Select
                             label="Anzahl / Liter"
                             options={amountsToBook}
                             maxWidth={6}
                             required={props.required}
-                            disabled={!formDataState.member}
+                            disabled={!formDataState.member || toNumber(formDataState.fleischMenge) <= 0}
                             {...register('milchMenge')}
                         />
                         <SolidaritaetSelect
                             required={props.required}
-                            disabled={!formDataState.member}
+                            disabled={!formDataState.member || toNumber(formDataState.fleischMenge) <= 0}
                             {...register('milchSolidar')}
                         />
                         <div
@@ -232,8 +245,8 @@ export const MemberEditMolecule = (props: MemberEditProps) => {
                             style={{ fontWeight: 'bold', textAlign: 'end', paddingRight: '1em' }}
                         />
                     </Horizontal>
-                </>
-            )}
+                </Vertical>
+            </Horizontal>
 
             <Horizontal>
                 <h3 className="min-w-8 max-w-8">Gemüse</h3>

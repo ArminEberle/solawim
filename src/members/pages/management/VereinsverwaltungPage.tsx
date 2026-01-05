@@ -1,4 +1,3 @@
-import 'src/css/form.css';
 import { useMemo, useState } from 'react';
 import { useGetAllMemberData } from 'src/api/getAllMemberData';
 import { Button } from 'src/atoms/Button';
@@ -6,11 +5,11 @@ import { ButtonLink } from 'src/atoms/ButtonLink';
 import { SeasonSelect, useSeason } from 'src/atoms/SeasonSelect';
 import { RootContext } from 'src/contexts/RootContext';
 import { Page } from 'src/layout/Page';
-import { Mailing } from 'src/members/pages/Mailing';
-import { VereinsverwaltungTab } from 'src/members/pages/VereinsverwaltungTab';
+import { Mailing } from 'src/members/pages/email/Mailing';
+import { VereinsverwaltungTab } from 'src/members/pages/management/VereinsverwaltungTab';
 import { LoggedInScope } from 'src/members/utils/LoggedInScope';
-import { computeAllMembersSums } from './computeAllMembersSums';
-import { emptyOverallSumState } from './emptyOverallSumState';
+import { computeAllMembersSums } from '../../utils/computeAllMembersSums';
+import { emptyOverallSumState } from '../../utils/emptyOverallSumState';
 
 export const VereinsverwaltungPage = () => {
     return (

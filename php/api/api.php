@@ -605,105 +605,51 @@ $container['errorHandler'] = function ($c) {
 };
 
 $app->get('/membership', function (Request $request, Response $response, array $args) {
-    $season = getSeasonFromQueryString($request);
     $userId = getUserId();
     if (!($userId > 0)) {
         return reportError('Please login before proceeding', $response, 401);
     }
+    $season = getSeasonFromQueryString($request);
     $result = getMembershipData($userId, $season);
     $response->getBody()->write(json_encode($result));
     return $response;
 });
 
 $app->post('/membership', function (Request $request, Response $response, array $args) {
-    global $seasonToMembership;
-    $season = getSeasonFromQueryString($request);
-    $membershipTable = $seasonToMembership[$season]["membership"];
     $userId = getUserId();
     if (!($userId > 0)) {
         return reportError('Please login before proceeding', $response, 401);
     }
+    global $seasonToMembership;
+    $season = getSeasonFromQueryString($request);
+    $membershipTable = $seasonToMembership[$season]["membership"];
     $contentString = $request->getBody()->getContents();
     if (strlen(trim($contentString)) === 0) {
         $result = clearUserData($membershipTable, $userId);
         $response->getBody()->write(json_encode($result));
         return $response;
-    $queryParams = $request->getQueryParams();
-    $page = isset($queryParams['page']) ? max(1, (int)$queryParams['page']) : 1;
-    $pageSize = isset($queryParams['pageSize']) ? max(1, (int)$queryParams['pageSize']) : 25;
-    $offset = ($page - 1) * $pageSize;
-        $content->active = $previousActiveMembership;
-    // Get total count
-    $total = (int)$wpdb->get_var("SELECT COUNT(*) FROM {$emailsTable}");
     }
-    // Get emails with pagination
-    $emails = $wpdb->get_results(
-        $wpdb->prepare(
-            "SELECT * FROM {$emailsTable} ORDER BY createdAt DESC LIMIT %d OFFSET %d",
-            $pageSize,
-            $offset
-        ),
-        ARRAY_A
-    );
 
-    // Get all email IDs in this page
-    $emailIds = array_column($emails, 'id');
-    $recipientStatuses = [];
-    if (count($emailIds) > 0) {
-        // Get all recipient statuses for these emails
-        $placeholders = implode(',', array_fill(0, count($emailIds), '%d'));
-        $rows = $wpdb->get_results(
-            $wpdb->prepare(
-                "SELECT email_id, recipient_email, status, status_code FROM {$sendStatusTable} WHERE email_id IN ($placeholders)",
-                ...$emailIds
-            ),
-            ARRAY_A
-        );
-        // Group by email_id
-        foreach ($rows as $row) {
-            $eid = $row['email_id'];
-            if (!isset($recipientStatuses[$eid])) {
-                $recipientStatuses[$eid] = [];
-            }
-            $recipientStatuses[$eid][$row['recipient_email']] = [
-                'status' => $row['status'],
-                'statusCode' => $row['status_code'],
-            ];
+    $content = json_decode($contentString, false);
+
+    // we cannot change this activeMembership state with this service
+    // thus we set the previous or false as the value up front
+    $previousVersion = getMembershipData($userId, $season);
+    if (!is_null($previousVersion)) {
+        $previousActiveMembership = $previousVersion->active;
+        if (is_null($previousActiveMembership)) {
+            $previousActiveMembership = false;
         }
-    }
-    $validateResult = validateJson($content, 'member-data-schema.json');
-    // Build response items
-    $items = [];
-    foreach ($emails as $email) {
-        $entry = [
-            'id' => (int)$email['id'],
-            'createdBy' => isset($email['createdBy']) ? (int)$email['createdBy'] : null,
-            'createdAt' => $email['createdAt'],
-            'status' => $email['status'],
-            'failureReason' => $email['failure_reason'],
-            'effectiveRecipients' => solawim_parse_recipient_list($email['effective_recipients'] ?? ''),
-            'season' => isset($email['season']) ? (int)$email['season'] : null,
-            'content' => isset($email['content']) ? json_decode($email['content'], true) : null,
-            'processingStatus' => isset($email['processing_status']) ? $email['processing_status'] : null,
-            'recipientStatuses' => isset($recipientStatuses[$email['id']]) ? $recipientStatuses[$email['id']] : null,
-        ];
-        $items[] = $entry;
+        $content->active = $previousActiveMembership;
     }
 
-    $result = [
-        'page' => $page,
-        'pageSize' => $pageSize,
-        'total' => $total,
-        'items' => $items,
-    ];
-    $response->getBody()->write(json_encode($result));
-    return $response->withHeader('Content-Type', 'application/json');
+    $validateResult = validateJson($content, 'member-data-schema.json');
+
     if (!is_null($validateResult)) {
         return reportError($validateResult, $response, 404);
     }
 
     $result = setUserData($membershipTable, $content, $userId, $userId);
-    $response = $response->withHeader('Content-Type', 'application/json');
     $response->getBody()->write(json_encode($result));
     return $response;
 });

@@ -1,6 +1,6 @@
-import { computeAllMembersSums } from 'src/members/pages/computeAllMembersSums';
-import { emptyItemSums } from 'src/members/pages/emptyItemSums';
-import type { SumState } from 'src/members/pages/emptySumState';
+import { computeAllMembersSums } from 'src/members/utils/computeAllMembersSums';
+import { emptyItemSums } from 'src/members/utils/emptyItemSums';
+import type { SumState } from 'src/members/utils/emptySumState';
 import type { AllMembersData } from 'src/members/types/AllMembersData';
 import { Abholraum, type MemberData, type Solidar } from 'src/members/types/MemberData';
 import { ZeroTo30 } from 'src/members/types/MemberData';

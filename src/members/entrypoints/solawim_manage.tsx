@@ -1,7 +1,6 @@
 import 'src/css/index.css';
-
 import { createRoot } from 'react-dom/client';
-import { VereinsverwaltungPage } from 'src/members/pages/VereinsverwaltungPage';
+import { VereinsverwaltungPage } from 'src/members/pages/management/VereinsverwaltungPage';
 import { has } from 'src/utils/has';
 
 window.addEventListener('load', () => {

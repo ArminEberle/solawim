@@ -1,7 +1,7 @@
+import 'src/atoms/AlertWithBackdrop.css';
 import type { ReactElement } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Button } from 'src/atoms/Button';
-import 'src/css/alert-with-backdrop.css';
 
 export type AlertWithBackdropProps = {
     text: string;

@@ -1,5 +1,4 @@
-// import '/src/atoms/Checkbox.css';
-import './Checkbox.css';
+import 'src/atoms/Checkbox.css';
 
 import { useRef } from 'react';
 import type { PropsWithChildren } from 'react';

@@ -1,5 +1,4 @@
-// import '/src/atoms/Select.css';
-import './Select.css';
+import 'src/atoms/Select.css';
 
 import type { FormInputBaseProps } from 'src/atoms/types/FormInputBaseProps';
 import type { LayoutExtraProps } from 'src/atoms/types/LayoutExtraProps';

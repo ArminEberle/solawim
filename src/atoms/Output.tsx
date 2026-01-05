@@ -1,5 +1,5 @@
+import 'src/atoms/Output.css';
 import type { CSSProperties } from 'react';
-import './Output.css';
 
 export type OutputProps = {
     label: string;

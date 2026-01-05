@@ -1,3 +1,5 @@
+import { MAX_MILCH_ANTEILE } from 'src/members/types/MilchAnteilDistribution';
+
 export const MemberSelfManagementPageInto = () => (
     <section>
         <h3>Hallo, schön dass Du beim Höhberg Kollektiv Mitglied werden möchtest oder schon bist!</h3>
@@ -64,6 +66,18 @@ export const MemberSelfManagementPagePassiveHint = ({ active = false }: { active
                 )}
                 {!active &&
                     'Du bist als passives Mitglied registriert. Wenn du dich aktiv an der Hofarbeit, Gremien und/oder Aktionen beteiligen willst, melde Dich bei uns.'}
+            </p>
+        </section>
+    );
+};
+
+export const MemberSelfManagementPageMilchAnteilHint = () => {
+    return (
+        <section>
+            <p>
+                Du kannst hier die Verteilung deines Milchanteils auf Milch, Joghurt, Hart-/Schnittkäse und Extra (im
+                Wechsel Quark, Frischkäse, Feta, Butter, Saure Sahne) anpassen. Die Summe muss immer {MAX_MILCH_ANTEILE}{' '}
+                ergeben.
             </p>
         </section>
     );

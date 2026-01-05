@@ -10,7 +10,10 @@ import postCssNested from 'postcss-nested';
 
 export const esBuildConfig = (production = true): esbuild.BuildOptions => {
     return {
-        entryPoints: ['src/members/entrypoints/solawim_manage.tsx', 'src/members/entrypoints/solawim_member.tsx'],
+        entryPoints: [
+            'src/members/entrypoints/solawim_manage.tsx', //
+            'src/members/entrypoints/solawim_member.tsx', //
+        ],
         bundle: true,
         platform: 'browser',
         outdir: '.build-tmp/site',
