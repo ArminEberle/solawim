@@ -129,3 +129,16 @@ function custom_login_redirect( $redirect_to, $request, $user ) {
     }
     return $redirect_to;
 }
+
+add_action('init', function() {
+    add_rewrite_endpoint('abholraumzettel', EP_ROOT | EP_PAGES);
+});
+add_action('template_redirect', function() {
+  if (get_query_var('abholraumzettel')) {
+    // Custom output, no theme
+    echo '<!DOCTYPE html><html><head><title>Abholraum Zettel</title></head><body>Bla Bla';
+    // Your full page content here
+    echo '</body></html>';
+    exit;
+  }
+});

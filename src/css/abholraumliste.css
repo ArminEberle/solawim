@@ -1,0 +1,44 @@
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    border: 1px solid black;
+    padding: 8px;
+    text-align: left;
+}
+
+td {
+    border: 1px solid rgb(193, 192, 192);
+    padding: 8px;
+    text-align: left;
+}
+
+.numCol {
+    text-align: center;
+}
+
+@media print {
+  footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    font-size: 0.8rem;
+    background: white;
+    border-top: 1px solid #ccc;
+    padding: 0.5em 0;
+  }
+  tr {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  body {
+    margin-bottom: 2.5cm; /* adjust to footer height */
+  }
+}
+
+@page {
+  size: portrait;
+}

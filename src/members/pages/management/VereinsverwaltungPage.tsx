@@ -49,7 +49,10 @@ const VereinsverwaltungPageInternal = () => {
             onKeyDown={e => e.stopPropagation()}
         >
             <Page>
-                <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+                <div
+                    style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}
+                    className="noprint"
+                >
                     <label htmlFor="seasonselect">Saison </label>
                     <div>
                         <SeasonSelect name="seasonselect" />
@@ -77,6 +80,7 @@ const VereinsverwaltungPageInternal = () => {
                         >
                             Mailing
                         </Button>
+                        <ButtonLink href="/wp-content/plugins/solawim/abholraumzettel.php">Abholraum Zettel</ButtonLink>
                     </div>
                 </div>
                 {activeTab === 'verwaltung' && (

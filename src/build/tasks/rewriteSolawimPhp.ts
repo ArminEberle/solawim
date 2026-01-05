@@ -11,19 +11,19 @@ export default {
     action: async () => {
         const memberFiles = await findPageFiles('solawim_member');
         const manageFiles = await findPageFiles('solawim_manage');
+        const abholraumFiles = await findPageFiles('solawim_abholraumzettel');
 
         const solawimPhpPath = path.resolve(finalPluginPath, 'solawim.php');
-        let fileText = (await fs.promises.readFile(solawimPhpPath)).toString();
+        await fs.promises.writeFile(
+            solawimPhpPath,
+            await replaceText(solawimPhpPath, memberFiles, manageFiles, abholraumFiles),
+        );
 
-        const date = new Date();
-        const dStamp = `${date.getUTCFullYear()}${date.getUTCMonth()}${date.getUTCDay()}${date.getUTCHours()}${date.getUTCMinutes()}${date.getUTCSeconds()}`;
-        fileText = fileText.replace(/versionqualifier/g, dStamp);
-
-        fileText = fileText.replace(/solawim_member\/solawim_member\.css/g, `solawim_member/${memberFiles.cssFile}`);
-        fileText = fileText.replace(/solawim_member\/solawim_member\.js/g, `solawim_member/${memberFiles.jsFile}`);
-        fileText = fileText.replace(/solawim_manage\/solawim_manage\.css/g, `solawim_manage/${manageFiles.cssFile}`);
-        fileText = fileText.replace(/solawim_manage\/solawim_manage\.js/g, `solawim_manage/${manageFiles.jsFile}`);
-        await fs.promises.writeFile(solawimPhpPath, fileText);
+        const abholraumPhpPath = path.resolve(finalPluginPath, 'abholraumzettel.php');
+        await fs.promises.writeFile(
+            abholraumPhpPath,
+            await replaceText(abholraumPhpPath, abholraumFiles, manageFiles, abholraumFiles),
+        );
 
         // copy the assets to the target
         const memberDir = path.resolve(path.join(finalPluginPath, 'solawim_member'));
@@ -33,9 +33,13 @@ export default {
 
         const manageDir = path.resolve(path.join(finalPluginPath, 'solawim_manage'));
         console.log('copying assets to ' + manageDir);
-        console.log('from ', manageFiles.jsFullPath);
         await copyFile(manageFiles.jsFullPath, path.join(manageDir, manageFiles.jsFile));
         await copyFile(manageFiles.cssFullPath, path.join(manageDir, manageFiles.cssFile));
+
+        const abholraumDir = path.resolve(path.join(finalPluginPath, 'solawim_abholraumzettel'));
+        console.log('copying assets to ' + abholraumDir);
+        await copyFile(abholraumFiles.jsFullPath, path.join(abholraumDir, abholraumFiles.jsFile));
+        await copyFile(abholraumFiles.cssFullPath, path.join(abholraumDir, abholraumFiles.cssFile));
     },
     dependencies: [
         // 'build',
@@ -60,3 +64,30 @@ const findPageFiles = async (pageQualifier: string) => {
     const cssFullPath = path.join(assetsDir, cssFile);
     return { cssFile, jsFile, jsFullPath, cssFullPath };
 };
+
+async function replaceText(
+    solawimPhpPath: string,
+    memberFiles: { cssFile: string; jsFile: string; jsFullPath: string; cssFullPath: string },
+    manageFiles: { cssFile: string; jsFile: string; jsFullPath: string; cssFullPath: string },
+    abholraumFiles: { cssFile: string; jsFile: string; jsFullPath: string; cssFullPath: string },
+) {
+    let fileText = (await fs.promises.readFile(solawimPhpPath)).toString();
+
+    const date = new Date();
+    const dStamp = `${date.getUTCFullYear()}${date.getUTCMonth()}${date.getUTCDay()}${date.getUTCHours()}${date.getUTCMinutes()}${date.getUTCSeconds()}`;
+    fileText = fileText.replace(/versionqualifier/g, dStamp);
+
+    fileText = fileText.replace(/solawim_member\/solawim_member\.css/g, `solawim_member/${memberFiles.cssFile}`);
+    fileText = fileText.replace(/solawim_member\/solawim_member\.js/g, `solawim_member/${memberFiles.jsFile}`);
+    fileText = fileText.replace(/solawim_manage\/solawim_manage\.css/g, `solawim_manage/${manageFiles.cssFile}`);
+    fileText = fileText.replace(/solawim_manage\/solawim_manage\.js/g, `solawim_manage/${manageFiles.jsFile}`);
+    fileText = fileText.replace(
+        /solawim_abholraumzettel\/solawim_abholraumzettel\.css/g,
+        `solawim_abholraumzettel/${abholraumFiles.cssFile}`,
+    );
+    fileText = fileText.replace(
+        /solawim_abholraumzettel\/solawim_abholraumzettel\.js/g,
+        `solawim_abholraumzettel/${abholraumFiles.jsFile}`,
+    );
+    return fileText;
+}

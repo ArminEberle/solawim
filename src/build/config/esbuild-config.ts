@@ -13,6 +13,7 @@ export const esBuildConfig = (production = true): esbuild.BuildOptions => {
         entryPoints: [
             'src/members/entrypoints/solawim_manage.tsx', //
             'src/members/entrypoints/solawim_member.tsx', //
+            'src/members/entrypoints/solawim_abholraumzettel.tsx', //
         ],
         bundle: true,
         platform: 'browser',
