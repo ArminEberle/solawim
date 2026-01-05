@@ -18,6 +18,7 @@ export const SeasonSelect = (props: SeasonSelectProps) => {
         <>
             {seasonsQuery.isFetched && (
                 <select
+                    id={props.name}
                     name={props.name}
                     onChange={event => seasonContext.setSeason?.(Number.parseInt(event.target.value))}
                     value={seasonContext.season}

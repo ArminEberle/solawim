@@ -2,18 +2,18 @@ import 'src/css/abholraumliste.css';
 import { useMemo, useState } from 'react';
 import { useGetAllMemberData } from 'src/api/getAllMemberData';
 import { ButtonLink } from 'src/atoms/ButtonLink';
-import { useSeason } from 'src/atoms/SeasonSelect';
+import { SeasonSelect, useSeason } from 'src/atoms/SeasonSelect';
 import { RootContext } from 'src/contexts/RootContext';
 import type { AllMembersData } from 'src/members/types/AllMembersData';
 import type { Abholraum } from 'src/members/types/MemberData';
 import { defaultMilchAnteilDistribution } from 'src/members/types/MilchAnteilDistribution';
 import { DeliverableProduct, deliverableProductToLabelMap } from 'src/members/types/Product';
 import { LoggedInScope } from 'src/members/utils/LoggedInScope';
-import { abholraumOptions, abholraumOptionsMap } from 'src/utils/abholraumOptions';
+import { abholraumOptionsMap } from 'src/utils/abholraumOptions';
 
-type AbholraumZettelTabProps = {
-    members: AllMembersData;
-    isMembersLoading: boolean;
+type SeasonAndDate = {
+    season: number;
+    date: string;
 };
 
 /**
@@ -70,6 +70,12 @@ const AbholraumZettelPageInternal = () => {
         <div>
             <section className="noprint">
                 <h2>Abholraum-Zettel</h2>
+                <br />
+                <label htmlFor="seasonselect">Saison </label>
+                <SeasonSelect name="seasonselect" />
+                <br />
+                <br />
+                <br />
                 <ButtonLink
                     buttonType="primary"
                     href="/vereinsverwaltung"
@@ -84,6 +90,10 @@ const AbholraumZettelPageInternal = () => {
                     <section className="start-new-page">
                         <p className="noprint">
                             Hier kannst Du pro Abholraum ausdrucken, was wieviel geliefert und abgeholt werden soll.
+                            Einfach die Druckfunktion des Browsers benutzen (Strg+P / Cmd+P).
+                            <br />
+                            <strong>Wichtig:</strong> Bitte im Druck-Dialog "Hintergrundgrafiken drucken" aktivieren,
+                            damit die Tabellenränder mitgedruckt werden.
                         </p>
                         <h3>Gesamt-Lieferliste, insgesamt zu liefernde Mengen:</h3>
                         <table>
@@ -106,17 +116,22 @@ const AbholraumZettelPageInternal = () => {
                         </table>
                     </section>
 
-                    <AllAbholraumSections byAbholraum={abholraumZettelData!.byAbholraum} />
+                    <AllAbholraumSections
+                        byAbholraum={abholraumZettelData!.byAbholraum}
+                        season={season}
+                        date={dateString}
+                    />
                 </>
             )}
-            <footer style={{ marginTop: '2rem', fontSize: '0.8rem' }}>
-                {dateString}, Höhberg Kollektiv Abholraumliste, Saison {season}
-            </footer>
         </div>
     );
 };
 
-const AllAbholraumSections = ({ byAbholraum }: Pick<AbholraumZettelData, 'byAbholraum'>) => {
+const AllAbholraumSections = ({
+    byAbholraum,
+    season,
+    date,
+}: Pick<AbholraumZettelData, 'byAbholraum'> & SeasonAndDate) => {
     return (
         <div>
             {Object.entries(byAbholraum).map(([abholraum, data]) => (
@@ -124,6 +139,8 @@ const AllAbholraumSections = ({ byAbholraum }: Pick<AbholraumZettelData, 'byAbho
                     key={abholraum}
                     abholraum={abholraum as Abholraum}
                     data={data}
+                    season={season}
+                    date={date}
                 />
             ))}
         </div>
@@ -133,6 +150,8 @@ const AllAbholraumSections = ({ byAbholraum }: Pick<AbholraumZettelData, 'byAbho
 const AbholraumZettelAbholraumSection = ({
     abholraum,
     data,
+    season,
+    date,
 }: {
     abholraum: Abholraum;
     data: {
@@ -144,7 +163,7 @@ const AbholraumZettelAbholraumSection = ({
             memberAnteile: Record<DeliverableProduct, number>;
         }>;
     };
-}) => {
+} & SeasonAndDate) => {
     const sortedMembers = useMemo(() => {
         return data.member.sort((a, b) => {
             const lastNameComparison = a.lastname.localeCompare(b.lastname);
@@ -159,6 +178,9 @@ const AbholraumZettelAbholraumSection = ({
         <>
             <section className="start-new-page">
                 <h3>Lieferliste Abholraum: {abholraumOptionsMap[abholraum]}</h3>
+                <p>
+                    {date}, Höhberg Kollektiv Abholraumliste, Saison {season}
+                </p>
                 <h4>Zu liefernde Mengen:</h4>
                 <table>
                     <thead>
@@ -187,6 +209,9 @@ const AbholraumZettelAbholraumSection = ({
             </section>
             <section className="start-new-page">
                 <h3>Abholliste Abholraum: {abholraumOptionsMap[abholraum]}</h3>
+                <p>
+                    {date}, Höhberg Kollektiv Abholraumliste, Saison {season}
+                </p>
                 <h4>Mengen pro Mitglied:</h4>
                 <table>
                     <thead>
