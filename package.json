@@ -20,6 +20,7 @@
         "lodash.isequal": "^4.5.0",
         "react": "^18.3.1",
         "react-dom": "^18.3.1",
+        "react-feather": "^2.0.10",
         "react-hook-form": "^7.68.0",
         "react-icons": "^4.7.1",
         "sepa": "^1.0.3",

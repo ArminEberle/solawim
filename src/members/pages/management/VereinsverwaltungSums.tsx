@@ -11,13 +11,7 @@ import { Product } from 'src/members/types/Product';
 import { createAndDownloadCSVFile } from 'src/members/utils/createAndDownloadCSVFile';
 import { createAndDownloadSepaFiles } from 'src/members/utils/createAndDownloadSepaFiles';
 import { preventDefault } from 'src/utils/preventDefault';
-
-const productToText: Record<Product, string> = {
-    fleisch: 'Fleisch',
-    milch: 'Milch',
-    brot: 'Brot',
-    veggie: 'Gemüse',
-};
+import { productToText } from 'src/members/pages/management/productToText';
 
 export function VereinsverwaltungSums(props: {
     sumState: SumState;

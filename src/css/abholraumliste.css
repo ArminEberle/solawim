@@ -1,22 +1,50 @@
-table {
+table.liste {
     width: 100%;
     border-collapse: collapse;
+    th {
+        border: 1px solid black;
+        padding: 8px;
+        text-align: left;
+    }
+    
+    td {
+        border: 1px solid rgb(193, 192, 192);
+        padding: 8px;
+        text-align: left;
+    }
 }
 
-th {
-    border: 1px solid black;
-    padding: 8px;
-    text-align: left;
+table.layout {
+    width: 100%;
+    border-collapse: collapse;
+    border: none;
+    margin-bottom: 1rem;
+    th {
+        border: none;
+        padding: 8px;
+        text-align: left;
+    }
+    
+    td {
+        border: none;
+        padding: 8px;
+        text-align: left;
+    }
 }
 
-td {
-    border: 1px solid rgb(193, 192, 192);
-    padding: 8px;
-    text-align: left;
+.clickable {
+    cursor: pointer;
+}
+.clickable:hover {
+    background-color: #f0f0f0;
 }
 
 .numCol {
     text-align: center;
+}
+
+.leftCol {
+    text-align: left;
 }
 
 select {
