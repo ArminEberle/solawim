@@ -29,3 +29,12 @@ export const useGetCurrentSeason = (): number => {
     }
     return computedCurrentSeason;
 };
+
+export const useGetLatestSeason = (): number => {
+    const seasons = useGetSeasons().data;
+    const computedLatestSeason = new Date().getFullYear();
+    if (!seasons.includes(computedLatestSeason) && seasons.length > 0) {
+        return seasons[seasons.length - 1];
+    }
+    return computedLatestSeason;
+};

@@ -4,7 +4,7 @@ import toNumber from 'lodash/toNumber';
 import { useState } from 'react';
 import { getMyData } from 'src/api/getMyData';
 import { setMyData as uploadMyData } from 'src/api/setMyData';
-import { useGetCurrentSeason } from 'src/api/useGetSeasons';
+import { useGetLatestSeason } from 'src/api/useGetSeasons';
 import { Alert } from 'src/atoms/Alert';
 import { showAlertWithBackdrop } from 'src/atoms/AlertWithBackdrop';
 import { Button } from 'src/atoms/Button';
@@ -117,7 +117,7 @@ export const MemberSelfManagementPageInternal = () => {
         setReloadState(false);
     };
 
-    const season = useGetCurrentSeason();
+    const season = useGetLatestSeason();
 
     const abholraumClassName = formDataState.member && !has(formDataState.abholraum) ? 'red' : '';
 

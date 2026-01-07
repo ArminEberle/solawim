@@ -207,7 +207,7 @@ export const MemberEditMolecule = (props: MemberEditProps) => {
                         }}
                     />
                     <Horizontal style={{ marginTop: '1rem' }}>
-                        <h4 className="min-w-8 max-w-8">Milch</h4>
+                        <b className="min-w-8 max-w-8">Milch</b>
                         <Select
                             label="Anzahl / Liter"
                             options={amountsToBook}
