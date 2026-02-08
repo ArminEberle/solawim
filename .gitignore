@@ -1,8 +1,8 @@
-node_modules
-lib
-.history
-.build-tmp
-yarn-error.log
-notes.txt
+/node_modules
+/lib
+/.history
+/.build-tmp
+/yarn-error.log
+/notes.txt
 install-state.gz
-todo.md
+/todo.md
