@@ -304,14 +304,18 @@ function getAllMemberData($season)
             u.user_nicename,
             u.user_email,
             m.content as membership,
-            mandateDate.mandateDate
+            mandateDate.mandateDate,
+            um_how_found.meta_value as how_found
     FROM    {$wpdb->prefix}users u
             LEFT JOIN {$membershipTable} m on u.ID = m.user_id
+            LEFT JOIN {$wpdb->prefix}usermeta um_how_found ON
+                um_how_found.user_id = u.ID AND
+                um_how_found.meta_key = 'how_found'
             LEFT JOIN (
-                SELECT 	c.user_id as user_id,
+                SELECT  c.user_id as user_id,
                         coalesce(min(h.createdAt), c.createdAt) as mandateDate
-                FROM 	{$membershipTable} c
-                        LEFT JOIN {$membershipTableHist} h ON 
+                FROM    {$membershipTable} c
+                        LEFT JOIN {$membershipTableHist} h ON
                             c.user_id = h.user_id
                             AND json_extract(c.content, '$.bic') = json_extract(h.content, '$.bic')
                             AND json_extract(c.content, '$.iban') = json_extract(h.content, '$.iban')
@@ -333,6 +337,73 @@ function getAllMemberData($season)
             $row["membership"]->mandateDate = (new DateTime($row["mandateDate"]))->format('Y-m-d');
             unset($row["mandateDate"]);
         }
+    }
+    return $results;
+}
+
+function normalizeLastLogin($lastLogin)
+{
+    if (is_null($lastLogin) || $lastLogin === '') {
+        return null;
+    }
+    if (is_numeric($lastLogin)) {
+        return date('c', (int) $lastLogin);
+    }
+    return $lastLogin;
+}
+
+function normalizeBooleanValue($value)
+{
+    if (is_null($value) || $value === '') {
+        return null;
+    }
+    $normalized = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+    if (is_null($normalized)) {
+        return null;
+    }
+    return $normalized;
+}
+
+function getAllUserMarketingData($season)
+{
+    ensureDBInitialized();
+    global $seasonToMembership;
+    global $wpdb;
+    $membershipTable = $seasonToMembership[$season]["membership"];
+    $query = "
+    SELECT  u.ID as id,
+            u.user_login,
+            u.user_email,
+            u.display_name,
+            u.user_registered,
+            um_how_found.meta_value as how_found,
+            um_last_login.meta_value as last_login,
+            um_first_name.meta_value as first_name,
+            um_last_name.meta_value as last_name,
+            JSON_UNQUOTE(JSON_EXTRACT(m.content, '$.member')) as is_member
+    FROM    {$wpdb->prefix}users u
+            LEFT JOIN {$membershipTable} m on u.ID = m.user_id
+            LEFT JOIN {$wpdb->prefix}usermeta um_how_found ON
+                um_how_found.user_id = u.ID AND
+                um_how_found.meta_key = 'how_found'
+            LEFT JOIN {$wpdb->prefix}usermeta um_last_login ON
+                um_last_login.user_id = u.ID AND
+                um_last_login.meta_key = 'last_login'
+            LEFT JOIN {$wpdb->prefix}usermeta um_first_name ON
+                um_first_name.user_id = u.ID AND
+                um_first_name.meta_key = 'first_name'
+            LEFT JOIN {$wpdb->prefix}usermeta um_last_name ON
+                um_last_name.user_id = u.ID AND
+                um_last_name.meta_key = 'last_name'
+    ORDER BY u.user_registered DESC
+    ";
+    $results = $wpdb->get_results(
+        $wpdb->prepare($query),
+        ARRAY_A
+    );
+    foreach ($results as &$row) {
+        $row['last_login'] = normalizeLastLogin($row['last_login']);
+        $row['is_member'] = normalizeBooleanValue($row['is_member']);
     }
     return $results;
 }
@@ -945,6 +1016,17 @@ $app->get('/membershistory', function (Request $request, Response $response, arr
     $season = getSeasonFromQueryString($request);
     $response = $response->withHeader('Content-Type', 'application/json');
     $response->getBody()->write(json_encode(getAllMemberDataHistory($season)));
+    return $response->withStatus(200);
+});
+
+$app->get('/users-marketing', function (Request $request, Response $response, array $args) {
+    $checkResult = checkUserIsVereinsverwaltung($request, $response);
+    if (!is_null($checkResult)) {
+        return $checkResult;
+    }
+    $season = getSeasonFromQueryString($request);
+    $response = $response->withHeader('Content-Type', 'application/json');
+    $response->getBody()->write(json_encode(getAllUserMarketingData($season)));
     return $response->withStatus(200);
 });
 

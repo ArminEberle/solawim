@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react';
 import { useCallback } from 'react';
 import { useGetAllMemberData } from 'src/api/getAllMemberData';
+import { getAllUserMarketingData } from 'src/api/getAllUserMarketingData';
 import { Button } from 'src/atoms/Button';
 import { Output } from 'src/atoms/Output';
 import { useSeason } from 'src/atoms/SeasonSelect';
@@ -9,6 +10,7 @@ import { Vertical } from 'src/layout/Vertical';
 import { SumState } from 'src/members/utils/emptySumState';
 import { Product } from 'src/members/types/Product';
 import { createAndDownloadCSVFile } from 'src/members/utils/createAndDownloadCSVFile';
+import { createAndDownloadMarketingCSVFile } from 'src/members/utils/createAndDownloadMarketingCSVFile';
 import { createAndDownloadSepaFiles } from 'src/members/utils/createAndDownloadSepaFiles';
 import { preventDefault } from 'src/utils/preventDefault';
 import { productToText } from 'src/members/pages/management/productToText';
@@ -18,18 +20,22 @@ export function VereinsverwaltungSums(props: {
     withButtons?: boolean;
 }) {
     const memberdataQuery = useGetAllMemberData();
-
     const season = useSeason();
 
     const createSepaFiles = useCallback(async () => {
         await memberdataQuery.refetch();
         await createAndDownloadSepaFiles(memberdataQuery.data, season);
-    }, [memberdataQuery]);
+    }, [memberdataQuery, season]);
 
     const createCSV = useCallback(async () => {
         await memberdataQuery.refetch();
         await createAndDownloadCSVFile(memberdataQuery.data, season);
-    }, [memberdataQuery]);
+    }, [memberdataQuery, season]);
+
+    const createMarketingCSV = useCallback(async () => {
+        const data = await getAllUserMarketingData(season);
+        await createAndDownloadMarketingCSVFile(data);
+    }, [season]);
 
     return (
         <form onSubmit={preventDefault}>
@@ -60,6 +66,7 @@ export function VereinsverwaltungSums(props: {
                     <Horizontal jc="flex-end">
                         <Button onClick={createSepaFiles}>SEPA Lastschrift Datei herunterladen</Button>
                         <Button onClick={createCSV}>CSV Datei herunterladen</Button>
+                        <Button onClick={createMarketingCSV}>Marketing CSV herunterladen</Button>
                     </Horizontal>
                 )}
                 {Object.values(Product).map(product => (
