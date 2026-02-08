@@ -304,14 +304,18 @@ function getAllMemberData($season)
             u.user_nicename,
             u.user_email,
             m.content as membership,
-            mandateDate.mandateDate
+            mandateDate.mandateDate,
+            um_how_found.meta_value as how_found
     FROM    {$wpdb->prefix}users u
             LEFT JOIN {$membershipTable} m on u.ID = m.user_id
+            LEFT JOIN {$wpdb->prefix}usermeta um_how_found ON
+                um_how_found.user_id = u.ID AND
+                um_how_found.meta_key = 'how_found'
             LEFT JOIN (
-                SELECT 	c.user_id as user_id,
+                SELECT  c.user_id as user_id,
                         coalesce(min(h.createdAt), c.createdAt) as mandateDate
-                FROM 	{$membershipTable} c
-                        LEFT JOIN {$membershipTableHist} h ON 
+                FROM    {$membershipTable} c
+                        LEFT JOIN {$membershipTableHist} h ON
                             c.user_id = h.user_id
                             AND json_extract(c.content, '$.bic') = json_extract(h.content, '$.bic')
                             AND json_extract(c.content, '$.iban') = json_extract(h.content, '$.iban')

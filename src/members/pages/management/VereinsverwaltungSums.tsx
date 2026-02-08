@@ -24,12 +24,12 @@ export function VereinsverwaltungSums(props: {
     const createSepaFiles = useCallback(async () => {
         await memberdataQuery.refetch();
         await createAndDownloadSepaFiles(memberdataQuery.data, season);
-    }, [memberdataQuery]);
+    }, [memberdataQuery, season]);
 
     const createCSV = useCallback(async () => {
         await memberdataQuery.refetch();
         await createAndDownloadCSVFile(memberdataQuery.data, season);
-    }, [memberdataQuery]);
+    }, [memberdataQuery, season]);
 
     return (
         <form onSubmit={preventDefault}>
