@@ -84,7 +84,7 @@ export const esBuildConfig = (production = true): esbuild.BuildOptions => {
         resolveExtensions: ['.js', '.jsx', '.ts', '.tsx', '.json', '.css'],
         // We'll always have to generate a metafile to be able to analyze the build
         // This is necessary to generate the license reports
-        metafile: false,
+        metafile: true,
         // // We'll set this to `true` to make @jgoz/esbuild-plugin-livereload work
         // write: true,
         logLevel: 'debug',

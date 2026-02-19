@@ -1,6 +1,6 @@
 import { electronicFormatIBAN } from 'ibantools';
-import isEqual from 'lodash.isequal';
 import toNumber from 'lodash/toNumber';
+import deepEqual from 'fast-deep-equal';
 import { useMemo, useState } from 'react';
 import { Button } from 'src/atoms/Button';
 import { Checkbox } from 'src/atoms/Checkbox';
@@ -61,7 +61,7 @@ export const MemberEditMolecule = (props: MemberEditProps) => {
             }
         },
     });
-    const isDirty = !isEqual(initialData, formDataState);
+    const isDirty = !deepEqual(initialData, formDataState);
     const updateAdditionalEmailReceipients = (emails: string[]) => {
         const sanitized = sanitizeAdditionalEmailReceipients(emails);
         setState(current => ({

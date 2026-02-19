@@ -101,10 +101,10 @@ const AbholraumZettelPageInternal = () => {
         <div>
             <section className="noprint">
                 <h2>Abholraum-Zettel</h2>
-                <p>
+                <div>
                     <label htmlFor="seasonselect">Saison </label>
                     <SeasonSelect name="seasonselect" />
-                </p>
+                </div>
                 <p>
                     <ButtonLink
                         buttonType="primary"
@@ -113,12 +113,12 @@ const AbholraumZettelPageInternal = () => {
                         Zurück zur Vereinsverwaltung
                     </ButtonLink>
                 </p>
-                <p>
+                <div>
                     <PacklistenSelect
                         value={packlisteSelection}
                         onChange={newValue => setPacklisteSelection(newValue)}
                     />
-                </p>
+                </div>
             </section>
             {allMembersQuery.isLoading && <p>Daten werden geladen...</p>}
             {allMembersQuery.isError && <p>Fehler beim Laden der Daten: {allMembersQuery.error.message}</p>}
@@ -209,7 +209,7 @@ const LieferListe = ({
                             }
                         }
                         return (
-                            <>
+                            <div key={abholraum}>
                                 <h3>Abholraum: {abholraumOptionsMap[abholraum]}</h3>
                                 <table className="liste">
                                     <thead>
@@ -240,7 +240,7 @@ const LieferListe = ({
                                             ))}
                                     </tbody>
                                 </table>
-                            </>
+                            </div>
                         );
                     })}
                 </section>
@@ -268,7 +268,10 @@ const LieferListe = ({
                             return null;
                         }
                         return (
-                            <section className="start-new-page">
+                            <section
+                                className="start-new-page"
+                                key={abholraum}
+                            >
                                 <h3>
                                     Abholliste {productToText[product]}, Abholraum: {abholraumOptionsMap[abholraum]}
                                 </h3>

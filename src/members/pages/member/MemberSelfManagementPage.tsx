@@ -1,5 +1,4 @@
 import { electronicFormatIBAN } from 'ibantools';
-import isEqual from 'lodash.isequal';
 import toNumber from 'lodash/toNumber';
 import { useState } from 'react';
 import { getMyData } from 'src/api/getMyData';
@@ -40,6 +39,7 @@ import { ibanValidator } from 'src/validators/ibanValidator';
 import { MilchAnteilDistributionEditor } from 'src/molecules/MilchAnteilDistributionEditor';
 import { defaultMilchAnteilDistribution } from 'src/members/types/MilchAnteilDistribution';
 import Decimal from 'decimal.js';
+import deepEqual from 'fast-deep-equal';
 
 const required = true;
 
@@ -122,7 +122,7 @@ export const MemberSelfManagementPageInternal = () => {
 
     const abholraumClassName = formDataState.member && !has(formDataState.abholraum) ? 'red' : '';
 
-    const isDirty = !isEqual(formDataState, serverState);
+    const isDirty = !deepEqual(formDataState, serverState);
     globalDirty = isDirty;
 
     let activeMember = formDataState.active;

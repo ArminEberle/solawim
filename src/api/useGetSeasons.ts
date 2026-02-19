@@ -1,12 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
-import isEqual from 'lodash.isequal';
+import deepEqual from 'fast-deep-equal';
 import { apiBaseUrl } from 'src/api/apiBaseUrl';
 import { getJsonBody } from 'src/api/getJsonBody';
 import { getCurrentSeason } from 'src/utils/getCurrentSeason';
 
 export const getSeasons = async (): Promise<number[]> => {
     const serverResult = await getJsonBody(await fetch(apiBaseUrl + 'seasons'));
-    if (isEqual(serverResult, {})) {
+    if (deepEqual(serverResult, {})) {
         return [];
     }
     return serverResult;

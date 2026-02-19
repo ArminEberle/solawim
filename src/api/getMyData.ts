@@ -1,4 +1,4 @@
-import isEqual from 'lodash.isequal';
+import deepEqual from 'fast-deep-equal';
 import { apiBaseUrl } from 'src/api/apiBaseUrl';
 import { getJsonBody } from 'src/api/getJsonBody';
 import { isDeveloping } from 'src/api/isDeveloping';
@@ -31,7 +31,7 @@ export const getMyData = async (): Promise<MemberData> => {
         });
     }
     const serverResult = await getJsonBody(await fetch(apiBaseUrl + 'membership'));
-    if (isEqual(serverResult, {})) {
+    if (deepEqual(serverResult, {})) {
         return emptyMemberData();
     }
     return serverResult;

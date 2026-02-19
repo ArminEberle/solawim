@@ -4,7 +4,7 @@ import {
     parseAdditionalEmailReceipients,
     sanitizeAdditionalEmailReceipients,
 } from 'src/members/utils/additionalEmailReceipients';
-import validator from 'validator';
+import isEmail from 'validator/es/lib/isEmail.js';
 
 export type MultiEmailInputProps = {
     label: string;
@@ -29,7 +29,7 @@ export const MultiEmailInput = ({
 
     const parsedDraft = parseAdditionalEmailReceipients(draft);
     const trimmedDraft = draft.trim();
-    const invalidEmail = parsedDraft.find(email => !validator.isEmail(email, { ignore_max_length: true }));
+    const invalidEmail = parsedDraft.find(email => !isEmail(email, { ignore_max_length: true }));
     const errorMessage = invalidEmail ? `Ungültige E-Mail-Adresse: ${invalidEmail}` : undefined;
     const canAdd = parsedDraft.length > 0 && trimmedDraft.length > 0 && !invalidEmail && !disabled;
 
