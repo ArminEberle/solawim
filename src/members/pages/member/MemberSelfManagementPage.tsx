@@ -39,6 +39,7 @@ import { prices } from 'src/utils/prices';
 import { ibanValidator } from 'src/validators/ibanValidator';
 import { MilchAnteilDistributionEditor } from 'src/molecules/MilchAnteilDistributionEditor';
 import { defaultMilchAnteilDistribution } from 'src/members/types/MilchAnteilDistribution';
+import Decimal from 'decimal.js';
 
 const required = true;
 
@@ -125,6 +126,17 @@ export const MemberSelfManagementPageInternal = () => {
     globalDirty = isDirty;
 
     let activeMember = formDataState.active;
+
+    const totalSum = calculateMemberTotalSum(formDataState, season);
+
+    const tax = new Decimal(totalSum)
+        .div(107)
+        .times(7)
+        .toDecimalPlaces(2, Decimal.ROUND_HALF_UP)
+        .toNumber()
+        .toFixed(2)
+        .replace('.', ',');
+    const netTotalSum = new Decimal(totalSum).minus(tax.replace(',', '.')).toNumber().toFixed(2).replace('.', ',');
 
     // stopPropagation in next line is to prevent errors in elementor
     return (
@@ -413,11 +425,19 @@ export const MemberSelfManagementPageInternal = () => {
                                 )}
                             </Horizontal>
                             <br />
-                            {calculateMemberTotalSum(formDataState, season) > 0 && (
+                            {totalSum > 0 && (
                                 <p className="alert">
-                                    In Summe werde ich dann ab April {season} bis einschließlich März {season + 1} zum
-                                    Anfang jeden Monats{' '}
-                                    <b>{calculateMemberTotalSum(formDataState, season)},-&nbsp;EUR</b> bezahlen.
+                                    <span style={{ fontSize: '1.2em' }}>
+                                        In Summe werde ich dann ab April {season} bis einschließlich März {season + 1}{' '}
+                                        zum Beginn jeden Monats{' '}
+                                        <b style={{ textDecoration: 'underline double' }}>{totalSum},-&nbsp;EUR</b>{' '}
+                                        <small>(Bruttopreis inkl. 7% MwSt.)</small> bezahlen.
+                                    </span>
+                                    <br></br>
+                                    <small>
+                                        Der Nettobetrag ist <b>{netTotalSum}&nbsp;EUR</b> und die enthaltene
+                                        Mehrwertsteuer (7%) beträgt <b>{tax}&nbsp;EUR</b>.
+                                    </small>
                                 </p>
                             )}
                             <br />

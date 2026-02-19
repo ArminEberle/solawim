@@ -144,6 +144,16 @@ export const ComposeEmailTab = ({ members, isMembersLoading, onEmailSent }: Comp
             <div>
                 <h3>Empfängergruppen wählen - mindestens eine</h3>
                 {isMembersLoading && <p>Daten werden geladen …</p>}
+                <p>
+                    <small>
+                        Info: Diese Gruppen hier wirken 'additiv': Wenn ihr mehrere Gruppen auswählt, werden alle
+                        Mitglieder der ausgewählten Gruppen als Mailempfänger verwendet. Also zum Beispiel: 'Produkt
+                        Gemüse' und 'Abholraum Witzenhausen': Alle Mitglieder, die Gemüse beziehen, erhalten die E-Mail,
+                        ebenso alle Mitglieder, die im Abholraum Witzenhausen ihre Anteile abholen – auch wenn sie keine
+                        Gemüseanteile beziehen. Eine Auswahl 'Nur Gemüse-Mitglieder die im Abholraum Witzenhausen
+                        abholen' geht nicht.
+                    </small>
+                </p>
                 <MailRecipientsSelect
                     value={selection}
                     onChange={setSelection}

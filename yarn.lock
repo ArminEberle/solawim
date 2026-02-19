@@ -5865,6 +5865,7 @@ __metadata:
     autoprefixer: "npm:^10.4.13"
     chokidar: "npm:^3.5.3"
     cssnano: "npm:^7.0.6"
+    decimal.js: "npm:^10.6.0"
     esbuild-plugin-postcss2: "npm:^0.1.2"
     eslint: "npm:^8.30.0"
     eslint-config-prettier: "npm:^9.1.0"
