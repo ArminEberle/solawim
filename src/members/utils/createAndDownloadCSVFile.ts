@@ -22,6 +22,7 @@ const csvHeaders: string[] = [
     'Gesammtsumme',
     'Sepateilnahme (ja,nein)',
     'Anteile gegen Mitarbeit',
+    'Wie bist Du auf uns aufmerksam geworden?',
 ];
 
 const stringWrap = (str: string): string => `"${str}"`;
@@ -84,6 +85,7 @@ export const createAndDownloadCSVFile = async (memberData: AllMembersData, seaso
                 numberToGermanString(veggieSum + brotSum + fleischSum + milchSum),
                 stringWrap(member.membership?.useSepa ? 'JA' : 'NEIN'),
                 stringWrap(member.membership?.active ? 'JA' : 'NEIN'),
+                stringWrap(member.how_found ?? ''),
             ].join(';');
             csvLines.push(line);
         }

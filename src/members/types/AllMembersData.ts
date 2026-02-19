@@ -11,6 +11,10 @@ export type SingleMemberData = {
      */
     user_email: string;
     /**
+     * Registration answer for "Wie bist Du auf das Höhberg Kollektiv aufmerksam geworden?"
+     */
+    how_found?: string | null;
+    /**
      * Our custom membership data
      */
     membership?: MemberData;
