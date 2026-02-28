@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { type FormEvent, useMemo, useState } from 'react';
+import { type ChangeEvent, type FormEvent, useMemo, useRef, useState } from 'react';
 import { sendEmail } from 'src/api/sendEmail';
 import { Alert } from 'src/atoms/Alert';
 import { Button } from 'src/atoms/Button';
@@ -11,6 +11,11 @@ import { computeMailRecipientUserIdsFromMailRecipientsSelection } from 'src/memb
 import type { AllMembersData } from 'src/members/types/AllMembersData';
 import type { MailRecipientsSelection } from 'src/members/types/MailRecipientsSelection';
 import { CollapsibleSection } from 'src/molecules/CollapsibleSection';
+
+const MAX_ATTACHMENTS = 5;
+const MAX_FILE_SIZE_MB = 10;
+const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+const ACCEPTED_FILE_TYPES = '.pdf,.jpg,.jpeg,.png,.gif,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv';
 
 export type ComposeEmailTabProps = {
     members: AllMembersData;
@@ -29,6 +34,8 @@ export const ComposeEmailTab = ({ members, isMembersLoading, onEmailSent }: Comp
     const [subject, setSubject] = useState('');
     const [body, setBody] = useState('');
     const [isTestEmail, setIsTestEmail] = useState(false);
+    const [attachments, setAttachments] = useState<File[]>([]);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const sendEmailMutation = useMutation({
         mutationFn: sendEmail,
@@ -92,6 +99,42 @@ export const ComposeEmailTab = ({ members, isMembersLoading, onEmailSent }: Comp
             .sort((a, b) => a.label.localeCompare(b.label, 'de', { sensitivity: 'base' }));
     }, [members]);
 
+    const handleFilesSelected = (event: ChangeEvent<HTMLInputElement>) => {
+        const files = event.target.files;
+        if (!files) {
+            return;
+        }
+        const newFiles = Array.from(files);
+        const errors: string[] = [];
+
+        for (const file of newFiles) {
+            if (file.size > MAX_FILE_SIZE_BYTES) {
+                errors.push(`"${file.name}" ist zu groß (max. ${MAX_FILE_SIZE_MB} MB).`);
+            }
+        }
+
+        const validFiles = newFiles.filter(f => f.size <= MAX_FILE_SIZE_BYTES);
+        const combined = [...attachments, ...validFiles];
+        if (combined.length > MAX_ATTACHMENTS) {
+            errors.push(`Maximal ${MAX_ATTACHMENTS} Anhänge erlaubt.`);
+        }
+
+        setAttachments(combined.slice(0, MAX_ATTACHMENTS));
+
+        if (errors.length > 0) {
+            window.alert(errors.join('\n'));
+        }
+
+        // Reset file input so the same file can be re-selected
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
+    };
+
+    const removeAttachment = (index: number) => {
+        setAttachments(prev => prev.filter((_, i) => i !== index));
+    };
+
     const canSend =
         recipientIds.length > 0 && subject.trim().length > 0 && body.trim().length > 0 && !sendEmailMutation.isPending;
 
@@ -118,6 +161,7 @@ export const ComposeEmailTab = ({ members, isMembersLoading, onEmailSent }: Comp
                     selection,
                     emailTest: isTestEmail,
                 },
+                attachments,
             });
             if (isTestEmail) {
                 setIsTestEmail(false);
@@ -125,6 +169,7 @@ export const ComposeEmailTab = ({ members, isMembersLoading, onEmailSent }: Comp
                 setSubject('');
                 setBody('');
             }
+            setAttachments([]);
             onEmailSent();
         } catch (err) {
             // handled by mutation state
@@ -199,6 +244,51 @@ export const ComposeEmailTab = ({ members, isMembersLoading, onEmailSent }: Comp
                         rows={8}
                         required={true}
                     />
+                </div>
+                <div className="input-wrapper">
+                    <label className="control-label">
+                        Anhänge (max. {MAX_ATTACHMENTS} Dateien, je max. {MAX_FILE_SIZE_MB} MB)
+                    </label>
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        multiple
+                        accept={ACCEPTED_FILE_TYPES}
+                        onChange={handleFilesSelected}
+                        className="form-control"
+                    />
+                    {attachments.length > 0 && (
+                        <ul style={{ listStyle: 'none', paddingLeft: 0, marginTop: '0.5rem' }}>
+                            {attachments.map((file, index) => (
+                                <li
+                                    key={`${file.name}-${index}`}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '0.5rem',
+                                        marginBottom: '0.25rem',
+                                    }}
+                                >
+                                    <span>
+                                        {file.name} ({(file.size / 1024).toFixed(0)} KB)
+                                    </span>
+                                    <button
+                                        type="button"
+                                        onClick={() => removeAttachment(index)}
+                                        className="btn"
+                                        style={{
+                                            padding: '0.1rem 0.4rem',
+                                            lineHeight: 1,
+                                        }}
+                                        aria-label={`Anhang ${attachments[index].name} entfernen`}
+                                        title={`Anhang ${attachments[index].name} entfernen`}
+                                    >
+                                        ×
+                                    </button>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
                 </div>
                 <Checkbox
                     value={isTestEmail}

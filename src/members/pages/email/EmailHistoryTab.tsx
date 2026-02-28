@@ -52,6 +52,20 @@ const STATUS_LABELS: Record<EmailLogStatus, string> = {
     partially_failed: 'Teilweise fehlgeschlagen',
 };
 
+/** Extracts display file names from server-side attachment paths. */
+const getAttachmentNames = (paths: string[] | undefined): string[] => {
+    if (!paths || paths.length === 0) {
+        return [];
+    }
+    return paths.map(p => {
+        // Path format: .../67890abcdef12_Original_Name.pdf
+        const filename = p.split('/').pop() ?? p;
+        // Strip the uniqid prefix (13 hex chars + underscore)
+        const withoutPrefix = filename.replace(/^[a-f0-9]+_/, '');
+        return withoutPrefix || filename;
+    });
+};
+
 const formatDateTime = (value: string): string => {
     if (!value) {
         return '-';
@@ -151,6 +165,7 @@ export const EmailHistoryTab = ({ isActive, page, onPageChange, refreshToken }: 
                             <th style={{ padding: '0.75rem' }}>Betreff</th>
                             <th style={{ padding: '0.75rem' }}>Status</th>
                             <th style={{ padding: '0.75rem' }}>Gruppen</th>
+                            <th style={{ padding: '0.75rem' }}>Anhänge</th>
                             <th style={{ padding: '0.75rem' }}>Empfänger insgesamt</th>
                             <th style={{ padding: '0.75rem' }}>Versendet</th>
                             <th style={{ padding: '0.75rem' }}>In Warteschlange</th>
@@ -161,7 +176,7 @@ export const EmailHistoryTab = ({ isActive, page, onPageChange, refreshToken }: 
                         {isLoading && items.length === 0 && (
                             <tr>
                                 <td
-                                    colSpan={8}
+                                    colSpan={9}
                                     style={{ padding: '1rem', textAlign: 'center' }}
                                 >
                                     Lade Daten …
@@ -171,7 +186,7 @@ export const EmailHistoryTab = ({ isActive, page, onPageChange, refreshToken }: 
                         {!isLoading && items.length === 0 && (
                             <tr>
                                 <td
-                                    colSpan={7}
+                                    colSpan={9}
                                     style={{ padding: '1rem', textAlign: 'center' }}
                                 >
                                     Keine E-Mails gefunden.
@@ -204,6 +219,13 @@ export const EmailHistoryTab = ({ isActive, page, onPageChange, refreshToken }: 
                                     <td style={{ padding: '0.75rem' }}>{statusText}</td>
                                     {/* Gruppen */}
                                     <td style={{ padding: '0.75rem' }}>{selectionText}</td>
+                                    {/* Anhänge */}
+                                    <td style={{ padding: '0.75rem' }}>
+                                        {(() => {
+                                            const names = getAttachmentNames(entry.content?.attachmentPaths);
+                                            return names.length > 0 ? names.join(', ') : '<KEINE>';
+                                        })()}
+                                    </td>
                                     {/* Empfänger insgesamt */}
                                     <td style={{ padding: '0.75rem', textAlign: 'center' }}>{totalRecipients}</td>
                                     {/* Versendet */}

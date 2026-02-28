@@ -88,22 +88,21 @@ function ensureDBInitialized()
     return;
 }
 
-function send_email_with_wpmail( $to, $subject, $message ) {
+function send_email_with_wpmail( $to, $subject, $message, $attachments = [] ) {
     $headers = array( 'Content-Type: text/plain; charset=UTF-8' );
-    
+
     add_filter( 'wp_mail_content_type', function() { return 'text/plain'; } );
-    
-    $result = wp_mail( $to, $subject, $message, $headers );
-    
+
+    $result = wp_mail( $to, $subject, $message, $headers, $attachments );
+
     // Clean up filter
     remove_all_filters( 'wp_mail_content_type' );
-    
+
     if ( $result ) {
         error_log( "Email sent successfully to: $to" );
         return true;
     } else {
         error_log( "wp_mail failed for: $to" );
-        // Optional: Hook into wp_mail_failed for more details
         return false;
     }
 }
@@ -131,7 +130,7 @@ function solawim_handle_email_sending_with_wpmail(int $emailId): void
     // Retrieve the email row
     $emailRow = $wpdb->get_row(
         $wpdb->prepare(
-            "SELECT subject, body FROM {$emailsTable} WHERE id = %d",
+            "SELECT subject, body, content FROM {$emailsTable} WHERE id = %d",
             $emailId
         ),
         ARRAY_A
@@ -141,6 +140,15 @@ function solawim_handle_email_sending_with_wpmail(int $emailId): void
     }
     $subject = $emailRow['subject'] ?? '';
     $body = $emailRow['body'] ?? '';
+
+    // Extract attachment paths from stored content JSON
+    $attachmentPaths = [];
+    if (!empty($emailRow['content'])) {
+        $contentObj = json_decode($emailRow['content'], false);
+        if ($contentObj && isset($contentObj->attachmentPaths) && is_array($contentObj->attachmentPaths)) {
+            $attachmentPaths = $contentObj->attachmentPaths;
+        }
+    }
 
     // Get all recipients in 'stored' status for this email
     $recipients = $wpdb->get_results(
@@ -162,7 +170,7 @@ function solawim_handle_email_sending_with_wpmail(int $emailId): void
     foreach ($recipients as $row) {
         $recipientEmail = $row['recipient_email'];
         $statusId = $row['id'];
-        $success = send_email_with_wpmail($recipientEmail, $subject, $body);
+        $success = send_email_with_wpmail($recipientEmail, $subject, $body, $attachmentPaths);
         if ($success) {
             $successCount++;
         } else {
@@ -793,7 +801,19 @@ $app->post('/email', function (Request $request, Response $response, array $args
     }
     $season = (int) getSeasonFromQueryString($request);
 
-    $contentString = $request->getBody()->getContents();
+    // Support both multipart/form-data (with attachments) and plain JSON
+    $parsedBody = $request->getParsedBody();
+
+    if (isset($parsedBody['emailData'])) {
+        // Multipart request: wp_unslash needed because WordPress's wp_magic_quotes() adds slashes to $_POST
+        $contentString = wp_unslash($parsedBody['emailData']);
+    } elseif (isset($_POST['emailData'])) {
+        $contentString = wp_unslash($_POST['emailData']);
+    } else {
+        // Plain JSON body (no attachments)
+        $contentString = $request->getBody()->getContents();
+    }
+
     if (strlen(trim($contentString)) === 0) {
         return reportError('Email data must not be empty', $response, 400);
     }
@@ -806,6 +826,65 @@ $app->post('/email', function (Request $request, Response $response, array $args
     $validateResult = validateJson($content, 'email-data-schema.json');
     if (!is_null($validateResult)) {
         return reportError($validateResult, $response, 404);
+    }
+
+    // Handle file attachments via $_FILES (more robust than Slim's getUploadedFiles in WP context)
+    $attachmentPaths = [];
+    $maxAttachments = 5;
+    $maxFileSize = 10 * 1024 * 1024; // 10 MB
+    $allowedMimeTypes = [
+        'application/pdf',
+        'image/jpeg', 'image/png', 'image/gif',
+        'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+        'text/plain', 'text/csv',
+    ];
+
+    if (!empty($_FILES['attachments'])) {
+        $files = $_FILES['attachments'];
+        // Normalize to array of files (PHP stores multiple files with name[], tmp_name[], etc.)
+        $fileCount = is_array($files['name']) ? count($files['name']) : 1;
+
+        if ($fileCount > $maxAttachments) {
+            return reportError("Maximal {$maxAttachments} Anhänge erlaubt.", $response, 400);
+        }
+
+        $uploadDir = wp_upload_dir();
+        $attachmentDir = $uploadDir['basedir'] . '/solawim-attachments/' . date('Y-m');
+        if (!is_dir($attachmentDir)) {
+            wp_mkdir_p($attachmentDir);
+        }
+
+        for ($i = 0; $i < $fileCount; $i++) {
+            $error = is_array($files['error']) ? $files['error'][$i] : $files['error'];
+            $size = is_array($files['size']) ? $files['size'][$i] : $files['size'];
+            $tmpName = is_array($files['tmp_name']) ? $files['tmp_name'][$i] : $files['tmp_name'];
+            $originalName = is_array($files['name']) ? $files['name'][$i] : $files['name'];
+            $mimeType = is_array($files['type']) ? $files['type'][$i] : $files['type'];
+
+            if ($error !== UPLOAD_ERR_OK) {
+                continue;
+            }
+            if ($size > $maxFileSize) {
+                return reportError('Datei "' . $originalName . '" ist zu groß (max. 10 MB).', $response, 400);
+            }
+            if (!in_array($mimeType, $allowedMimeTypes, true)) {
+                return reportError('Dateityp "' . $mimeType . '" ist nicht erlaubt.', $response, 400);
+            }
+            $safeName = preg_replace('/[^a-zA-Z0-9._-]/', '_', $originalName);
+            $uniqueName = uniqid() . '_' . $safeName;
+            $targetPath = $attachmentDir . '/' . $uniqueName;
+            if (!move_uploaded_file($tmpName, $targetPath)) {
+                return reportError('Fehler beim Speichern der Datei "' . $originalName . '".', $response, 500);
+            }
+            $attachmentPaths[] = $targetPath;
+        }
+    }
+
+    // Store attachment paths in the content object for later retrieval
+    if (count($attachmentPaths) > 0) {
+        $content->attachmentPaths = $attachmentPaths;
     }
 
     $additionalRecipients = [];

@@ -30,4 +30,8 @@ export type EmailData = {
      * Captures the selection parameters that produced the recipient list.
      */
     selection: MailRecipientsSelection;
+    /**
+     * Server-side file paths of attachments. Present only when attachments were uploaded.
+     */
+    attachmentPaths?: string[];
 };

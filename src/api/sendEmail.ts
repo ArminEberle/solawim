@@ -8,18 +8,26 @@ export type SendEmailResponse = {
 export type SendEmailPayload = {
     season: number;
     emailData: EmailData;
+    attachments?: File[];
 };
 
-export const sendEmail = async ({ season, emailData }: SendEmailPayload): Promise<SendEmailResponse> => {
+export const sendEmail = async ({ season, emailData, attachments }: SendEmailPayload): Promise<SendEmailResponse> => {
     const url = `${apiBaseUrl}email?season=${encodeURIComponent(String(season))}`;
+
+    const formData = new FormData();
+    formData.append('emailData', JSON.stringify(emailData));
+    if (attachments) {
+        for (const file of attachments) {
+            formData.append('attachments[]', file);
+        }
+    }
 
     const response = await fetch(url, {
         method: 'POST',
         headers: {
             Accept: 'application/json',
-            'Content-Type': 'application/json',
         },
-        body: JSON.stringify(emailData),
+        body: formData,
     });
 
     const responseText = await response.text();
