@@ -1,0 +1,7 @@
+{
+  "user": "deploy-user",
+  "password": "your-password",
+  "server": "example.com",
+  "port": 22,
+  "path": "/var/www/html/wp-content/plugins/solawim"
+}

@@ -37,7 +37,7 @@ import { has } from 'src/utils/has';
 import { prices } from 'src/utils/prices';
 import { ibanValidator } from 'src/validators/ibanValidator';
 import { MilchAnteilDistributionEditor } from 'src/molecules/MilchAnteilDistributionEditor';
-import { defaultMilchAnteilDistribution } from 'src/members/types/MilchAnteilDistribution';
+import { defaultMilchAnteilDistribution } from 'src/members/types/MILCH_ANTEIL_PUNKTE';
 import Decimal from 'decimal.js';
 import deepEqual from 'fast-deep-equal';
 
@@ -302,7 +302,7 @@ export const MemberSelfManagementPageInternal = () => {
                             </Horizontal>
                             {formDataState.member && toNumber(formDataState.fleischMenge) > 0 && (
                                 <Horizontal>
-                                    <div></div>
+                                    <div className="min-w-1 max-w-4 fg-0"></div>
                                     <MilchAnteilDistributionEditor
                                         showInfo={true}
                                         value={
@@ -320,7 +320,7 @@ export const MemberSelfManagementPageInternal = () => {
                             )}
                             {!activeMember && formDataState.member && toNumber(formDataState.fleischMenge) > 0 && (
                                 <Horizontal style={{ marginTop: '1rem' }}>
-                                    <div></div>
+                                    <div className="min-w-1 max-w-4 fg-0"></div>
                                     <Vertical>
                                         <b>Extra Milch</b>
                                         <Horizontal>

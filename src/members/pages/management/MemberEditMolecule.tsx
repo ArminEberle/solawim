@@ -13,7 +13,7 @@ import { Horizontal } from 'src/layout/Horizontal';
 import { Vertical } from 'src/layout/Vertical';
 import { MultiEmailInput } from 'src/members/pages/email/MultiEmailInput';
 import { MemberData, emptyMemberData } from 'src/members/types/MemberData';
-import { defaultMilchAnteilDistribution } from 'src/members/types/MilchAnteilDistribution';
+import { defaultMilchAnteilDistribution } from 'src/members/types/MILCH_ANTEIL_PUNKTE';
 import { sanitizeAdditionalEmailReceipients } from 'src/members/utils/additionalEmailReceipients';
 import { calculateMemberTotalSum } from 'src/members/utils/calculateMemberTotalSum';
 import { calculatePositionPrice } from 'src/members/utils/calculatePositionPrice';
@@ -193,7 +193,7 @@ export const MemberEditMolecule = (props: MemberEditProps) => {
                 />
             </Horizontal>
             <Horizontal>
-                <div></div>
+                <div className="min-w-4 max-w-4 fg-0"></div>
                 <Vertical style={{ marginTop: '1rem' }}>
                     <MilchAnteilDistributionEditor
                         showInfo={false}

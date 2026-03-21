@@ -1,4 +1,7 @@
-import { MAX_MILCH_ANTEILE } from 'src/members/types/MilchAnteilDistribution';
+import 'src/members/pages/member/MemberSelfManagementPageText.css';
+
+import { MAX_MILCH_ANTEILE } from 'src/members/types/MILCH_ANTEIL_PUNKTE';
+import { CollapsibleSection } from 'src/molecules/CollapsibleSection';
 
 export const MemberSelfManagementPageInto = () => (
     <section>
@@ -73,12 +76,30 @@ export const MemberSelfManagementPagePassiveHint = ({ active = false }: { active
 
 export const MemberSelfManagementPageMilchAnteilHint = () => {
     return (
-        <section>
-            <p>
-                Du kannst hier die Verteilung deines Milchanteils auf Milch, Joghurt, Hart-/Schnittkäse und Extra (im
-                Wechsel Quark, Frischkäse, Feta, Butter, Saure Sahne) anpassen. Die Summe muss immer {MAX_MILCH_ANTEILE}{' '}
-                ergeben.
-            </p>
-        </section>
+        <CollapsibleSection
+            title={
+                <span className="member-self-management-page-hint-title">Hinweise zur Milch-Anteils-Verteilung</span>
+            }
+            initiallyCollapsed={true}
+        >
+            <section>
+                <p className="member-self-management-page-hint-text">
+                    {`
+Jedes Produkt erhält Punkte, je nach dem wie aufwendig sie produziert wurden.
+
+Mit eurer Anmeldung wählt ihr den Standardanteil, jeder Anteil enthält ${MAX_MILCH_ANTEILE} Milchkontopunkte. Ihr könnt euren Anteil aus folgenden Punkten zusammen setzen:
+
+1 L Milch = 1 Punkt
+480 ml Joghurt = 1 Punkt
+ca. 300 g Schnittkäse = 4 Punkte
+wechselndes Extra* = 2 Punkte
+
+*Im Wechsel Quark, Frischkäse, „Feta“, Butter, Saure-Sahne, Mozzarella
+
+Beispiel:
+Es ist möglich z.b. keinen Schnittkäse zu beziehen und für diese 4 Punkte 2 Mal das „Extra“ zu beziehen oder z.B. 3 x Joghurt und 1l Milch. Nicht funktionieren: 2 Punkte beim Schnittkäse oder einer beim „Extra“, hier geht immer nur ganz (2/4 Punkte) oder Gar-nicht (0 Punkte)`}
+                </p>
+            </section>
+        </CollapsibleSection>
     );
 };

@@ -7,7 +7,7 @@ import { SeasonSelect, useSeason } from 'src/atoms/SeasonSelect';
 import { RootContext } from 'src/contexts/RootContext';
 import type { AllMembersData } from 'src/members/types/AllMembersData';
 import { Abholraum } from 'src/members/types/MemberData';
-import { defaultMilchAnteilDistribution } from 'src/members/types/MilchAnteilDistribution';
+import { defaultMilchAnteilDistribution } from 'src/members/types/MILCH_ANTEIL_PUNKTE';
 import { DeliverableProduct, deliverableProductToLabelMap, Product } from 'src/members/types/Product';
 import { LoggedInScope } from 'src/members/utils/LoggedInScope';
 import { abholraumOptionsMap } from 'src/utils/abholraumOptions';

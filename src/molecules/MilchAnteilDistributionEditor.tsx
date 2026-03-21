@@ -1,11 +1,16 @@
 import { Horizontal } from 'src/layout/Horizontal';
 import { MemberSelfManagementPageMilchAnteilHint } from 'src/members/pages/member/MemberSelfManagementPageText';
 import {
-    MAX_MILCH_ANTEILE,
-    MIN_MILCH_ANTEILE,
+    getMaxMilchAnteilCount,
+    getMilchAnteilPoints,
+    normalizeMilchAnteilDistribution,
     validateMilchAnteilDistribution,
     type MilchAnteilDistribution,
 } from 'src/members/types/MilchAnteilDistribution';
+import { MAX_MILCH_ANTEILE } from 'src/members/types/MILCH_ANTEIL_PUNKTE';
+import { MIN_MILCH_ANTEILE } from 'src/members/types/MILCH_ANTEIL_PUNKTE';
+import { MILCH_ANTEIL_PUNKTE } from 'src/members/types/MILCH_ANTEIL_PUNKTE';
+import { useEffect } from 'react';
 import { Noop } from 'src/utils/Noop';
 
 const milchAnteileSequence: { key: keyof MilchAnteilDistribution; label: string }[] = [
@@ -34,40 +39,30 @@ export const MilchAnteilDistributionEditor = ({
     onChange = Noop,
     disabled,
 }: MilchAnteilDistributionEditorProps) => {
-    const currentError = validateMilchAnteilDistribution(value);
+    const normalizedValue = normalizeMilchAnteilDistribution(value);
+    const currentError = validateMilchAnteilDistribution(normalizedValue);
+    const usedPoints = getMilchAnteilPoints(normalizedValue);
+
+    useEffect(() => {
+        if (
+            value.milch !== normalizedValue.milch ||
+            value.joghurt !== normalizedValue.joghurt ||
+            value.hartkaese !== normalizedValue.hartkaese ||
+            value.extra !== normalizedValue.extra
+        ) {
+            onChange(normalizedValue);
+        }
+    }, [normalizedValue, onChange, value.extra, value.hartkaese, value.joghurt, value.milch]);
 
     const handleChange = (field: keyof MilchAnteilDistribution, newPartValue: number) => {
-        newPartValue = Math.max(MIN_MILCH_ANTEILE, Math.min(MAX_MILCH_ANTEILE, newPartValue));
-        const valueDifference = newPartValue - value[field];
-        console.log('Changed field', field, 'from', value[field], 'to', newPartValue, 'difference', valueDifference);
-        const newValue = { ...value, [field]: newPartValue };
-        // adjust other fields to keep the total sum 8
-        const myIndex = milchAnteileSequence.findIndex(item => item.key === field);
-        let otherFields = milchAnteileSequence
-            .map(item => item.key)
-            .filter((f, index) => f !== field && index > myIndex);
-        otherFields = otherFields.concat(
-            milchAnteileSequence.map(item => item.key).filter((f, index) => index <= myIndex),
-        );
+        const clampedValue = Math.max(MIN_MILCH_ANTEILE, Math.min(getMaxMilchAnteilCount(field), newPartValue));
+        const newValue = rebalanceMilchAnteilDistribution({
+            currentValue: normalizedValue,
+            changedField: field,
+            changedFieldValue: clampedValue,
+        });
 
-        let remainingDifference = -valueDifference;
-        for (const otherField of otherFields) {
-            if (remainingDifference === 0) break;
-            const currentOtherValue = newValue[otherField];
-            let newOtherValue = currentOtherValue + remainingDifference;
-            if (newOtherValue < MIN_MILCH_ANTEILE) {
-                remainingDifference = newOtherValue;
-                newOtherValue = MIN_MILCH_ANTEILE;
-            } else if (newOtherValue > MAX_MILCH_ANTEILE) {
-                remainingDifference = newOtherValue - MAX_MILCH_ANTEILE;
-                newOtherValue = MAX_MILCH_ANTEILE;
-            } else {
-                remainingDifference = 0;
-            }
-            newValue[otherField] = newOtherValue;
-        }
-        const error = validateMilchAnteilDistribution(newValue);
-        if (error === null) {
+        if (newValue) {
             onChange(newValue);
         }
     };
@@ -75,6 +70,11 @@ export const MilchAnteilDistributionEditor = ({
     return (
         <div>
             <b>Milch-Anteils-Verteilung</b>
+            <div style={{ margin: '0.25rem 0 0.5rem 0' }}>
+                <small>
+                    Verwendete Punkte: {usedPoints} / {MAX_MILCH_ANTEILE}
+                </small>
+            </div>
             {showInfo && <MemberSelfManagementPageMilchAnteilHint />}
 
             <Horizontal className="mb-4">
@@ -85,23 +85,88 @@ export const MilchAnteilDistributionEditor = ({
                             htmlFor={`manteil_${key}`}
                             style={{ marginRight: '0.5rem' }}
                         >
-                            {label} Anteil
+                            {label} Anteil ({MILCH_ANTEIL_PUNKTE[key]} Punkt{MILCH_ANTEIL_PUNKTE[key] > 1 ? 'e' : ''})
                         </label>
                         <input
                             type="number"
                             id={`manteil_${key}`}
                             min={MIN_MILCH_ANTEILE}
-                            max={MAX_MILCH_ANTEILE}
+                            max={getMaxMilchAnteilCount(key)}
                             step={1}
-                            value={value[key]}
+                            value={normalizedValue[key]}
                             onChange={e => handleChange(key, parseInt(e.target.value, 10) || 0)}
                             className="form-control"
                             disabled={disabled ?? false}
                         />
+                        <small>
+                            Aktuell: {normalizedValue[key] * MILCH_ANTEIL_PUNKTE[key]} / {MAX_MILCH_ANTEILE} Punkte
+                        </small>
                     </div>
                 ))}
             </Horizontal>
             {currentError && <p className="text-red-600 mt-2">{currentError}</p>}
         </div>
     );
+};
+
+const rebalanceMilchAnteilDistribution = ({
+    currentValue,
+    changedField,
+    changedFieldValue,
+}: {
+    currentValue: MilchAnteilDistribution;
+    changedField: keyof MilchAnteilDistribution;
+    changedFieldValue: number;
+}): MilchAnteilDistribution | null => {
+    const targetPointsForOtherFields = MAX_MILCH_ANTEILE - changedFieldValue * MILCH_ANTEIL_PUNKTE[changedField];
+    if (targetPointsForOtherFields < 0) {
+        return null;
+    }
+
+    const otherFields = milchAnteileSequence.map(item => item.key).filter(field => field !== changedField);
+    const candidates: MilchAnteilDistribution[] = [];
+
+    for (let firstValue = MIN_MILCH_ANTEILE; firstValue <= getMaxMilchAnteilCount(otherFields[0]); firstValue += 1) {
+        for (
+            let secondValue = MIN_MILCH_ANTEILE;
+            secondValue <= getMaxMilchAnteilCount(otherFields[1]);
+            secondValue += 1
+        ) {
+            for (
+                let thirdValue = MIN_MILCH_ANTEILE;
+                thirdValue <= getMaxMilchAnteilCount(otherFields[2]);
+                thirdValue += 1
+            ) {
+                const candidate = {
+                    ...currentValue,
+                    [changedField]: changedFieldValue,
+                    [otherFields[0]]: firstValue,
+                    [otherFields[1]]: secondValue,
+                    [otherFields[2]]: thirdValue,
+                };
+
+                const candidatePointsWithoutChangedField =
+                    candidate[otherFields[0]] * MILCH_ANTEIL_PUNKTE[otherFields[0]] +
+                    candidate[otherFields[1]] * MILCH_ANTEIL_PUNKTE[otherFields[1]] +
+                    candidate[otherFields[2]] * MILCH_ANTEIL_PUNKTE[otherFields[2]];
+
+                if (candidatePointsWithoutChangedField === targetPointsForOtherFields) {
+                    candidates.push(candidate);
+                }
+            }
+        }
+    }
+
+    if (candidates.length === 0) {
+        return null;
+    }
+
+    candidates.sort(
+        (candidateA, candidateB) => scoreCandidate(candidateA, currentValue) - scoreCandidate(candidateB, currentValue),
+    );
+    return candidates[0];
+};
+
+const scoreCandidate = (candidate: MilchAnteilDistribution, currentValue: MilchAnteilDistribution): number => {
+    return milchAnteileSequence.reduce((score, { key }) => score + Math.abs(candidate[key] - currentValue[key]), 0);
 };

@@ -1,14 +1,41 @@
 import fs from 'fs';
+import { createRequire } from 'module';
 import path from 'path';
 import postCssPlugin from '@deanc/esbuild-plugin-postcss';
 // import postcss2 from 'esbuild-plugin-postcss2';
 import autoprefixer from 'autoprefixer';
-import cssNano from 'cssnano';
 import esbuild from 'esbuild';
 import postCssAdvancedVariables from 'postcss-advanced-variables';
 import postCssNested from 'postcss-nested';
 
+const require = createRequire(import.meta.url);
+
 export const esBuildConfig = (production = true): esbuild.BuildOptions => {
+    const postCssPlugins = [
+        postCssAdvancedVariables({
+            // importPaths: [process.cwd()],
+            importResolve: async (id: string, _cwd: string) => {
+                const file = path.join(process.cwd(), id);
+                const contents = await fs.promises.readFile(file, 'utf-8');
+                return {
+                    file,
+                    contents,
+                };
+            },
+        }),
+        postCssNested,
+        autoprefixer,
+    ];
+
+    if (production) {
+        const cssNano = require('cssnano');
+        postCssPlugins.push(
+            cssNano({
+                preset: ['default', { discardUnused: false }],
+            }),
+        );
+    }
+
     return {
         entryPoints: [
             'src/members/entrypoints/solawim_manage.tsx', //
@@ -57,24 +84,7 @@ export const esBuildConfig = (production = true): esbuild.BuildOptions => {
         target: ['es2022', 'chrome80', 'edge80', 'firefox72', 'safari14'],
         plugins: [
             postCssPlugin({
-                plugins: [
-                    postCssAdvancedVariables({
-                        // importPaths: [process.cwd()],
-                        importResolve: async (id: string, _cwd: string) => {
-                            const file = path.join(process.cwd(), id);
-                            const contents = await fs.promises.readFile(file, 'utf-8');
-                            return {
-                                file,
-                                contents,
-                            };
-                        },
-                    }),
-                    postCssNested,
-                    autoprefixer,
-                    cssNano({
-                        preset: ['default', { discardUnused: false }],
-                    }),
-                ],
+                plugins: postCssPlugins,
             }),
         ],
 

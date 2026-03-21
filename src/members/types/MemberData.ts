@@ -1,7 +1,5 @@
-import {
-    defaultMilchAnteilDistribution,
-    type MilchAnteilDistribution,
-} from 'src/members/types/MilchAnteilDistribution';
+import { type MilchAnteilDistribution } from 'src/members/types/MilchAnteilDistribution';
+import { defaultMilchAnteilDistribution } from './MILCH_ANTEIL_PUNKTE';
 
 export const emptyMemberData = (): MemberData => {
     return {

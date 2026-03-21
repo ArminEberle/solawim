@@ -39,6 +39,184 @@ $senderAddress = 'info@hoehberg-kollektiv.de';
 $testEmailPrefix = '[SOLAWI-ORGA-TEST] ';
 $forRealEmailPrefix = '[SOLAWI-ORGA] ';
 
+function defaultMilchAnteilDistribution()
+{
+    return (object) [
+        'milch' => 1,
+        'joghurt' => 1,
+        'hartkaese' => 1,
+        'extra' => 1,
+    ];
+}
+
+function getPersistenceMigrations(): array
+{
+    return [
+        1 => function (): void {
+            global $seasonToMembership;
+
+            foreach ($seasonToMembership as $tableInfo) {
+                solawim_apply_migration_to_membership_table($tableInfo['membership'], 1, function (object $memberData): object {
+                    $memberData->milchAnteilDistribution = defaultMilchAnteilDistribution();
+                    return $memberData;
+                });
+            }
+        },
+    ];
+}
+
+function getPersistenceVersionTableName(): string
+{
+    global $wpdb;
+    return "{$wpdb->prefix}solawim_persistence_version";
+}
+
+function ensurePersistenceVersionTableExists(): void
+{
+    global $wpdb;
+    $versionTable = getPersistenceVersionTableName();
+    $wpdb->query(
+        "CREATE TABLE IF NOT EXISTS `{$versionTable}` (
+            persistence_key VARCHAR(191) PRIMARY KEY,
+            version INT NOT NULL,
+            updatedAt DATETIME NOT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"
+    );
+}
+
+function getCurrentPersistenceVersion(): int
+{
+    global $wpdb;
+    $versionTable = getPersistenceVersionTableName();
+    $tableExists = $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $versionTable));
+    if ($tableExists !== $versionTable) {
+        return 0;
+    }
+
+    $version = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT version FROM `{$versionTable}` WHERE persistence_key = %s",
+            'membership'
+        )
+    );
+    if (is_null($version)) {
+        return 0;
+    }
+
+    return (int) $version;
+}
+
+function setCurrentPersistenceVersion(int $version): void
+{
+    global $wpdb;
+    $versionTable = getPersistenceVersionTableName();
+    ensurePersistenceVersionTableExists();
+    $wpdb->query(
+        $wpdb->prepare(
+            "
+            INSERT INTO `{$versionTable}` (persistence_key, version, updatedAt)
+            VALUES (%s, %d, NOW())
+            ON DUPLICATE KEY UPDATE version = VALUES(version), updatedAt = NOW()
+            ",
+            'membership',
+            $version
+        )
+    );
+}
+
+function getHighestPersistenceVersion(): int
+{
+    $migrations = getPersistenceMigrations();
+    if (count($migrations) === 0) {
+        return 0;
+    }
+
+    $versions = array_keys($migrations);
+    return (int) max($versions);
+}
+
+function solawim_apply_migration_to_membership_table(string $membershipTable, int $migrationVersion, callable $migrateMemberData): void
+{
+    global $wpdb;
+    $historyTable = "{$membershipTable}_hist";
+    $rows = $wpdb->get_results("SELECT user_id, content, createdAt, createdBy FROM `{$membershipTable}`", ARRAY_A);
+    if (!is_array($rows) || count($rows) === 0) {
+        return;
+    }
+
+    foreach ($rows as $row) {
+        if (!isset($row['user_id'], $row['content'])) {
+            continue;
+        }
+
+        $memberData = json_decode($row['content']);
+        if (!is_object($memberData)) {
+            continue;
+        }
+
+        $migratedMemberData = $migrateMemberData($memberData);
+        if (!is_object($migratedMemberData)) {
+            continue;
+        }
+
+        $migratedContent = json_encode($migratedMemberData);
+        if ($migratedContent === false || $migratedContent === $row['content']) {
+            continue;
+        }
+
+        $previousCreatedAt = isset($row['createdAt']) && !is_null($row['createdAt']) ? (string) $row['createdAt'] : current_time('mysql');
+        $previousCreatedBy = isset($row['createdBy']) && !is_null($row['createdBy']) ? (string) $row['createdBy'] : '';
+
+        $wpdb->query(
+            $wpdb->prepare(
+                "
+                INSERT INTO `{$historyTable}` (user_id, content, createdAt, createdBy)
+                VALUES (%d, %s, %s, %s)
+                ",
+                (int) $row['user_id'],
+                $row['content'],
+                $previousCreatedAt,
+                $previousCreatedBy
+            )
+        );
+
+        $wpdb->query(
+            $wpdb->prepare(
+                "
+                UPDATE `{$membershipTable}`
+                SET content = %s, createdAt = NOW(), createdBy = %s
+                WHERE user_id = %d
+                ",
+                $migratedContent,
+                "migration_v{$migrationVersion}",
+                (int) $row['user_id']
+            )
+        );
+    }
+}
+
+function runPersistenceMigrations(): void
+{
+    ensurePersistenceVersionTableExists();
+
+    $currentVersion = getCurrentPersistenceVersion();
+    $targetVersion = getHighestPersistenceVersion();
+    if ($currentVersion >= $targetVersion) {
+        return;
+    }
+
+    $migrations = getPersistenceMigrations();
+    for ($nextVersion = $currentVersion + 1; $nextVersion <= $targetVersion; $nextVersion++) {
+        if (!array_key_exists($nextVersion, $migrations)) {
+            throw new RuntimeException("Missing persistence migration for version {$nextVersion}.");
+        }
+
+        $migration = $migrations[$nextVersion];
+        $migration();
+        setCurrentPersistenceVersion($nextVersion);
+    }
+}
+
 function ensureDBInitialized()
 {
     global $wpdb;
@@ -84,6 +262,7 @@ function ensureDBInitialized()
         ARRAY_A
     );
 
+    runPersistenceMigrations();
     $dbInitialized = true;
     return;
 }

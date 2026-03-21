@@ -2,6 +2,9 @@
     "folders": [
         {
             "path": "."
+        },
+        {
+            "path": "../../../../../mnt/e/private/wordpress/wp-content/plugins/solawim"
         }
     ],
     "settings": {}
