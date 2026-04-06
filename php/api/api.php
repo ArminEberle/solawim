@@ -55,9 +55,22 @@ function getPersistenceMigrations(): array
         1 => function (): void {
             global $seasonToMembership;
 
-            foreach ($seasonToMembership as $tableInfo) {
-                solawim_apply_migration_to_membership_table($tableInfo['membership'], 1, function (object $memberData): object {
+            foreach ($seasonToMembership as $season => $tableInfo) {
+                solawim_apply_migration_to_membership_table($season, $tableInfo['membership'], 1, function (object $memberData): object {
                     $memberData->milchAnteilDistribution = defaultMilchAnteilDistribution();
+                    return $memberData;
+                });
+            }
+        },
+        2 => function (): void {
+            global $seasonToMembership;
+
+            foreach ($seasonToMembership as $season => $tableInfo) {
+                solawim_apply_migration_to_membership_table($season, $tableInfo['membership'], 2, function (object $memberData): object {
+                    if (!property_exists($memberData, 'useSepa')) {
+                        $memberData->useSepa = true;
+                    }
+
                     return $memberData;
                 });
             }
@@ -69,6 +82,12 @@ function getPersistenceVersionTableName(): string
 {
     global $wpdb;
     return "{$wpdb->prefix}solawim_persistence_version";
+}
+
+function getPersistenceMigrationLogTableName(int $season): string
+{
+    global $wpdb;
+    return "{$wpdb->prefix}solawim_{$season}_migration_log";
 }
 
 function ensurePersistenceVersionTableExists(): void
@@ -135,10 +154,36 @@ function getHighestPersistenceVersion(): int
     return (int) max($versions);
 }
 
-function solawim_apply_migration_to_membership_table(string $membershipTable, int $migrationVersion, callable $migrateMemberData): void
+function computeMemberDataChangeSet(object $before, object $after): array
+{
+    $beforeArray = get_object_vars($before);
+    $afterArray = get_object_vars($after);
+    $allKeys = array_unique(array_merge(array_keys($beforeArray), array_keys($afterArray)));
+    sort($allKeys);
+
+    $changes = [];
+    foreach ($allKeys as $key) {
+        $beforeValue = array_key_exists($key, $beforeArray) ? $beforeArray[$key] : null;
+        $afterValue = array_key_exists($key, $afterArray) ? $afterArray[$key] : null;
+
+        if (json_encode($beforeValue) === json_encode($afterValue)) {
+            continue;
+        }
+
+        $changes[$key] = [
+            'from' => $beforeValue,
+            'to' => $afterValue,
+        ];
+    }
+
+    return $changes;
+}
+
+function solawim_apply_migration_to_membership_table(int $season, string $membershipTable, int $migrationVersion, callable $migrateMemberData): void
 {
     global $wpdb;
     $historyTable = "{$membershipTable}_hist";
+    $migrationLogTable = getPersistenceMigrationLogTableName($season);
     $rows = $wpdb->get_results("SELECT user_id, content, createdAt, createdBy FROM `{$membershipTable}`", ARRAY_A);
     if (!is_array($rows) || count($rows) === 0) {
         return;
@@ -162,6 +207,12 @@ function solawim_apply_migration_to_membership_table(string $membershipTable, in
         $migratedContent = json_encode($migratedMemberData);
         if ($migratedContent === false || $migratedContent === $row['content']) {
             continue;
+        }
+
+        $changes = computeMemberDataChangeSet($memberData, $migratedMemberData);
+        $changesJson = json_encode($changes);
+        if ($changesJson === false) {
+            $changesJson = json_encode([]);
         }
 
         $previousCreatedAt = isset($row['createdAt']) && !is_null($row['createdAt']) ? (string) $row['createdAt'] : current_time('mysql');
@@ -190,6 +241,20 @@ function solawim_apply_migration_to_membership_table(string $membershipTable, in
                 $migratedContent,
                 "migration_v{$migrationVersion}",
                 (int) $row['user_id']
+            )
+        );
+
+        $wpdb->query(
+            $wpdb->prepare(
+                "
+                INSERT INTO `{$migrationLogTable}` (user_id, migrationVersion, beforeContent, afterContent, changedFields, migratedAt)
+                VALUES (%d, %d, %s, %s, %s, NOW())
+                ",
+                (int) $row['user_id'],
+                $migrationVersion,
+                $row['content'],
+                $migratedContent,
+                $changesJson
             )
         );
     }
@@ -230,6 +295,22 @@ function ensureDBInitialized()
         $tablename = "{$wpdb->prefix}solawim_{$season}";
         $wpdb->get_results("CREATE TABLE IF NOT EXISTS `{$tablename}` (user_id INT PRIMARY KEY, content JSON, createdAt DATETIME, createdBy varchar(255));", ARRAY_A);
         $wpdb->get_results("CREATE TABLE IF NOT EXISTS `{$tablename}_hist` (user_id INT, content JSON, createdAt DATETIME, createdBy varchar(255));", ARRAY_A);
+        $migrationLogTable = getPersistenceMigrationLogTableName($season);
+        $wpdb->get_results(
+            "CREATE TABLE IF NOT EXISTS `{$migrationLogTable}` (
+                id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                user_id INT NOT NULL,
+                migrationVersion INT NOT NULL,
+                beforeContent JSON NOT NULL,
+                afterContent JSON NOT NULL,
+                changedFields JSON NOT NULL,
+                migratedAt DATETIME NOT NULL,
+                INDEX idx_solawim_migration_log_user_id (user_id),
+                INDEX idx_solawim_migration_log_migration_version (migrationVersion),
+                INDEX idx_solawim_migration_log_migrated_at (migratedAt)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4",
+            ARRAY_A
+        );
     }
     $emailsTable = "{$wpdb->prefix}solawim_emails";
     $wpdb->get_results("CREATE TABLE IF NOT EXISTS `{$emailsTable}` (

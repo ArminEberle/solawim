@@ -83,7 +83,7 @@ export const createAndDownloadCSVFile = async (memberData: AllMembersData, seaso
                 numberToGermanString(fleischSum),
                 numberToGermanString(milchSum),
                 numberToGermanString(veggieSum + brotSum + fleischSum + milchSum),
-                stringWrap(member.membership?.useSepa ? 'JA' : 'NEIN'),
+                stringWrap((member.membership?.useSepa ?? true) ? 'JA' : 'NEIN'),
                 stringWrap(member.membership?.active ? 'JA' : 'NEIN'),
                 stringWrap(member.how_found ?? ''),
             ].join(';');
